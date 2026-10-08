@@ -10,7 +10,7 @@ export class HealthController {
   @Get()
   @ApiOperation({ summary: 'Prüft, ob die HTTP-Anwendung erreichbar ist.' })
   check(): { status: string; service: string } {
-    return { status: 'ok', service: 'kochfaul-backend' };
+    return { status: 'ok', service: 'smartspoon-backend' };
   }
 
   @Get('ready')

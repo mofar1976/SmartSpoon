@@ -1,25 +1,52 @@
-<div class="page-container auth-layout">
-  <aside class="auth-intro" aria-labelledby="intro-title">
-    <span class="eyebrow">DEIN ALLTAG. DEIN BUDGET.</span>
-    <h2 id="intro-title">Weniger überlegen.<br /><span>Mehr genießen.</span></h2>
-    <p>
+<div
+  class="page-container grid grid-cols-2 items-start gap-20 pt-16 pb-18 max-lg:gap-8 max-md:grid-cols-1 max-md:pt-8 max-md:pb-12"
+>
+  <aside class="min-w-0 pt-8 max-md:pt-0" aria-labelledby="intro-title">
+    <span class="text-label font-bold tracking-[1.3px] text-brand">DEIN ALLTAG. DEIN BUDGET.</span>
+    <h2 class="my-5.5 text-auth-title leading-[1.15] font-bold tracking-[-1.8px]" id="intro-title">
+      Weniger überlegen.<br /><span class="text-brand">Mehr genießen.</span>
+    </h2>
+    <p class="my-[1em] max-w-100 leading-[1.8] text-muted">
       Ein guter Essensplan beginnt mit dir. Finde Rezepte, die zu deinem Alltag und deinem
       Geldbeutel passen.
     </p>
-    <ul class="benefits">
-      <li>Dein Supermarkt und dein Budget</li>
-      <li>Rezepte nach deinen Essenswünschen</li>
-      <li>Eine Einkaufsliste für alles</li>
+    <ul class="my-7 list-none p-0">
+      <li
+        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
+      >
+        Dein Supermarkt und dein Budget
+      </li>
+      <li
+        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
+      >
+        Rezepte nach deinen Essenswünschen
+      </li>
+      <li
+        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
+      >
+        Eine Einkaufsliste für alles
+      </li>
     </ul>
-    <div class="privacy-note">
-      <strong>Du entscheidest jedes Mal neu.</strong>
-      <p>Deine Essenswünsche und dein Budget werden nicht in deinem Konto gespeichert.</p>
+    <div
+      class="mt-9.5 max-w-102.5 rounded-2xl bg-brand-soft px-5.5 py-5 max-md:mt-6 max-md:max-w-none"
+    >
+      <strong class="text-caption">Du entscheidest jedes Mal neu.</strong>
+      <p class="mt-[1em] mb-0 text-xs leading-[1.7] text-muted">
+        Deine Essenswünsche und dein Budget werden nicht in deinem Konto gespeichert.
+      </p>
     </div>
   </aside>
-  <section class="auth-card" aria-labelledby="auth-title">
-    <span class="eyebrow">{{ register ? 'SCHÖN, DASS DU DA BIST' : 'WILLKOMMEN ZURÜCK' }}</span>
-    <h1 id="auth-title">{{ register ? 'Dein Konto erstellen' : 'Anmelden' }}</h1>
-    <p class="card-description">
+  <section
+    class="min-w-0 rounded-3xl border border-border bg-surface p-9 max-lg:p-7 max-md:row-start-1 max-md:px-5 max-md:py-6"
+    aria-labelledby="auth-title"
+  >
+    <span class="text-label font-bold tracking-[1.3px] text-brand">{{
+      register ? 'SCHÖN, DASS DU DA BIST' : 'WILLKOMMEN ZURÜCK'
+    }}</span>
+    <h1 class="my-3.5 text-3xl font-bold tracking-[-1px] max-md:text-title-lg" id="auth-title">
+      {{ register ? 'Dein Konto erstellen' : 'Anmelden' }}
+    </h1>
+    <p class="mt-[1em] mb-7 text-sm leading-[1.7] text-muted">
       {{
         register
           ? 'Drei Angaben, und du bist dabei.'
@@ -27,19 +54,26 @@
       }}
     </p>
     @if (reason === 'expired' || auth.session.expired()) {
-      <p class="session-notice" role="status">
+      <p
+        class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
+        role="status"
+      >
         Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.
       </p>
     }
     @if (auth.session.status() === 'unavailable') {
-      <div class="session-notice" role="status">
-        <p>Deine bestehende Sitzung konnte gerade nicht geprüft werden.</p>
+      <div
+        class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
+        role="status"
+      >
+        <p class="m-0">Deine bestehende Sitzung konnte gerade nicht geprüft werden.</p>
         <button type="button" (click)="retrySession()" [disabled]="busy()" class="btn btn-text">
           Verbindung erneut prüfen
         </button>
       </div>
     }
     <form
+      class="flex flex-col gap-5.5"
       #formElement
       [formGroup]="form"
       (ngSubmit)="submit()"
@@ -73,11 +107,11 @@
           </p>
         }
       </div>
-      <div class="field has-password-toggle">
+      <div class="field">
         <label class="field-label" for="auth-password">Passwort</label>
         <input
           id="auth-password"
-          class="field-control"
+          class="field-control pr-28"
           [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
           [attr.aria-describedby]="
             (register ? 'auth-password-hint' : '') +
@@ -94,7 +128,7 @@
           required
         />
         <button
-          class="btn btn-text password-toggle"
+          class="btn btn-text absolute top-1.25 right-1 min-w-17.5 px-2 text-label"
           type="button"
           (click)="showPassword.set(!showPassword())"
           [attr.aria-pressed]="showPassword()"
@@ -143,9 +177,14 @@
         </div>
       }
       @if (error()) {
-        <p class="form-error" role="alert">{{ error() }}</p>
+        <p
+          class="m-0 rounded-xl bg-danger-soft px-4 py-3.5 text-caption leading-[1.6] text-danger"
+          role="alert"
+        >
+          {{ error() }}
+        </p>
       }
-      <button type="submit" class="btn btn-primary submit-button" [disabled]="busy()">
+      <button type="submit" class="btn btn-primary mt-1 w-full" [disabled]="busy()">
         {{
           busy()
             ? register
@@ -154,17 +193,20 @@
             : register
               ? 'Konto erstellen'
               : 'Anmelden'
-        }}<span aria-hidden="true">↗</span>
+        }}<span class="ml-3.5" aria-hidden="true">↗</span>
       </button>
     </form>
-    <p class="switch-link">
-      {{ register ? 'Schon ein Konto?' : 'Neu bei Kochfaul?' }}
+    <p class="mt-6 mb-[1em] text-center text-caption leading-[1.7]">
+      {{ register ? 'Schon ein Konto?' : 'Neu bei SmartSpoon?' }}
       <a
+        class="ml-1 font-semibold underline underline-offset-[3px]"
         [routerLink]="register ? '/anmelden' : '/registrieren'"
         [queryParams]="{ returnUrl: returnUrl }"
         >{{ register ? 'Jetzt anmelden' : 'Konto erstellen' }}</a
       >
     </p>
-    <p class="session-footnote">Deine Anmeldung bleibt in diesem Tab erhalten.</p>
+    <p class="mt-4.5 mb-0 text-center text-label text-muted">
+      Deine Anmeldung bleibt in diesem Tab erhalten.
+    </p>
   </section>
 </div>

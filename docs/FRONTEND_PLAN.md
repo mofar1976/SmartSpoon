@@ -1,4 +1,4 @@
-# Kochfaul – Frontend-Architektur und Umsetzung
+# SmartSpoon – Frontend-Architektur und Umsetzung
 
 Stand: 8. Oktober 2026. Schritte 1–5 implementiert; erste Frontend-Version abgeschlossen.
 
@@ -10,7 +10,7 @@ Angular-Anwendung im Ordner `Frontend/`, getrennt vom NestJS-Backend. Erste Vers
 
 - Aktuelle stabile Angular-Version beim Projektstart prüfen; TypeScript im Strict-Modus, Standalone-Komponenten und Angular Router mit lazy geladenen Features.
 - Browser-Anwendung ohne SSR für die erste Version.
-- Tailwind CSS/PostCSS für gemeinsame UI-Gestaltung; native Formulare und eigene zugängliche Mehrfachauswahl. Bestehende SCSS-Seitenlayouts und Designvariablen erhalten. Angular Material/CDK entfernt.
+- Tailwind CSS/PostCSS für gemeinsame UI-Gestaltung; native Formulare und eigene zugängliche Mehrfachauswahl. Utility-Layouts in Templates und zentrale Tailwind-Theme-Tokens; Preflight aktiviert. Angular Material/CDK entfernt.
 - Typisierte Reactive Forms für Registrierung und Rezeptparameter. Signals für Benutzerstatus, Ladezustände und temporäre Ergebnisse; HttpClient/RxJS für API-Anfragen. Feature-Services kapseln Abläufe. Zunächst kein zusätzlicher globaler Store.
 - API-Typen anhand des bestehenden OpenAPI-Vertrags. Backend entscheidet über Berechtigungen, gültige Produkte und Kosten; Frontend stellt Ergebnisse dar und validiert Eingaben für unmittelbares Feedback.
 
@@ -148,3 +148,19 @@ Backend-Speicher-API ist implementiert; Details in Backend/README.md. Frontend-A
 - Geprüft: TypeScript und Produktionsbuild; 49 Frontend-Tests einschließlich unveränderter/erweiterter Snapshot-Payloads, Doppelklickschutz, echtem Formular-Submit ohne Reload, Fehler-/Timeout-Retry, Sitzungswechsel, Häkchen-Wiederherstellung, Pagination/Löschung und sicheren Rückkehrpfaden.
 - Browser mit realem Backend/Gemini bestätigt Generierung 200, explizites Speichern, vollständiges Öffnen/Neuladen und persistierten Häkchenstand, Übersicht/Leerzustand, Löschbestätigung, Löschen und Guard. Mock-503 bei Speichern/Löschen erhält Daten und erlaubt manuelle Wiederholung. Ansichten bei 320/390/768/1440 ohne Überlaufen, Desktop/Mobil visuell geprüft, keine Laufzeitfehler. Temporären Nutzer und seine gespeicherten Auswahlen gelöscht.
 - Abschlussprüfung: aktualisiertes Frontend-Docker-Image gebaut, alle Dienste healthy. Vier Docker-HTTP-Integrationstests einschließlich gespeicherter SPA-Routen erfolgreich; Browserablauf mit Mock-API gegen den Produktionsbuild bestätigt Speichern, Öffnen, Neuladen und Löschen ohne Laufzeitfehler.
+
+## Projektname SmartSpoon – 9. Oktober 2026
+
+- Projekt und App auf Nutzerwunsch in SmartSpoon umbenannt: Oberfläche/SEO/Seitentitel, API/Health, npm-Pakete und Lockfiles, Angular-Projekt/Buildpfad, Nginx und CI-/Testnamen.
+- JWT-Issuer/Audiences und Session-Key ebenfalls umbenannt; erneute Anmeldung erforderlich. Alte ungespeicherte Generierungen benötigen einen neuen Speichernachweis. Bereits gespeicherte Auswahlen bleiben erhalten.
+- Physische MongoDB-Datenbank kochfaul und vorhandenes Volume kochfaul_mongodb_data aus Kompatibilitätsgründen erhalten. CI erhält explizit ein eigenes Volume, damit Cleanup niemals Anwendungsdaten entfernt.
+- Geprüft: beide TypeScript-Prüfungen und Builds, 31 Backend- und 49 Frontend-Tests, MongoDB-HTTP-Integration sowie vier Docker-HTTP-Tests bestanden. Neue Images gebaut und alle SmartSpoon-Dienste healthy; HTML, Health und Swagger tragen den neuen Namen. Vorhandenes Datenvolume per Container-Mount bestätigt. Projektordner ebenfalls in SmartSpoon umbenannt; GitHub-Remote weiterhin nicht gesetzt.
+
+## Frontend-Refactoring – konsequente Tailwind-Nutzung, 9. Oktober 2026
+
+- 1.406 Zeilen Komponenten-SCSS durch Tailwind-Utilities ersetzt; eigene Komponentenordner und separate Dateien beibehalten. Layout, Abstände, responsive Anpassungen und Zustände direkt in Templates; Host-Layout über statische Tailwind-Klassen. Keine Backend- oder Produktänderungen.
+- Tailwind-Preflight aktiviert. Zentrales @theme mit Farben, Typografie inklusive fluiden Überschriften, Radien, Content-Breite und bisherigen Layout-Breakpoints. Gemeinsame Buttons/Formularfelder als begrenzte @apply-Komponenten; page-container als wiederverwendbare Utility. Keine doppelte CSS-Variablenpalette.
+- Aktive Navigation über ARIA-Varianten, Wizard-Schritte über group-aria, Einkaufsartikel über has-checked/group-has-checked. Fokus/Fehler/disabled/Backdrop und reduzierte Animation als Tailwind-Varianten. Dialog nach Preflight explizit zentriert.
+- prettier-plugin-tailwindcss in beiden vorhandenen Prettier-Konfigurationen mit Stylesheet-Verweis integriert; Tailwind IntelliSense empfohlen. Styling-Regeln in docs/FRONTEND_STYLING.md dokumentiert.
+- Geprüft: TypeScript, alle 49 bestehenden Frontend-Tests und Produktionsbuild erfolgreich. Browservergleich mit bisherigem Docker-Stand: Start/Auth/404, alle Wizard-Schritte inklusive Mehrfachauswahl, Ergebnis/Einkaufsliste, gespeicherte Übersicht/Details und Löschdialog bei 320/390/768/1440 ohne Überlaufen oder Laufzeitfehler. Speichern/Neuladen/Häkchen-Wiederherstellung/Löschen mit Mock-API bestätigt, keine echten KI-Aufrufe. Desktop und Mobil visuell geprüft.
+- Abschluss: alle Template-Klassen gegen das Tailwind-Designsystem geprüft (keine unbekannten Utilities); Prettier-Check für geänderte HTML-/Style-Konfiguration bestanden. Finales Frontend-Docker-Image gebaut und healthy, vier HTTP-Integrationstests sowie vollständiger Browserablauf gegen den Produktionsbuild bestanden.

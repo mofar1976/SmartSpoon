@@ -5,19 +5,19 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Kochfaul · Gut essen. Weniger ausgeben.',
+    title: 'SmartSpoon · Gut essen. Weniger ausgeben.',
     loadComponent: () => import('./features/home/home-page/home-page').then((m) => m.HomePage),
   },
   {
     path: 'anmelden',
-    title: 'Anmelden · Kochfaul',
+    title: 'Anmelden · SmartSpoon',
     canActivate: [guestGuard],
     data: { mode: 'login' },
     loadComponent: () => import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
   },
   {
     path: 'registrieren',
-    title: 'Registrieren · Kochfaul',
+    title: 'Registrieren · SmartSpoon',
     canActivate: [guestGuard],
     data: { mode: 'register' },
     loadComponent: () => import('./features/auth/auth-page/auth-page').then((m) => m.AuthPage),
@@ -25,14 +25,14 @@ export const routes: Routes = [
   {
     path: 'rezepte',
     canActivate: [authGuard],
-    title: 'Deine Rezepte · Kochfaul',
+    title: 'Deine Rezepte · SmartSpoon',
     loadComponent: () =>
       import('./features/recipes/recipe-page/recipe-page').then((m) => m.RecipePage),
   },
   {
     path: 'gespeichert',
     canActivate: [authGuard],
-    title: 'Gespeicherte Auswahlen · Kochfaul',
+    title: 'Gespeicherte Auswahlen · SmartSpoon',
     loadComponent: () =>
       import('./features/saved-recipes/saved-recipes-page/saved-recipes-page').then(
         (m) => m.SavedRecipesPage,
@@ -41,7 +41,7 @@ export const routes: Routes = [
   {
     path: 'gespeichert/:id',
     canActivate: [authGuard],
-    title: 'Gespeicherte Auswahl · Kochfaul',
+    title: 'Gespeicherte Auswahl · SmartSpoon',
     loadComponent: () =>
       import('./features/saved-recipes/saved-recipes-page/saved-recipes-page').then(
         (m) => m.SavedRecipesPage,
@@ -49,7 +49,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    title: 'Seite nicht gefunden · Kochfaul',
+    title: 'Seite nicht gefunden · SmartSpoon',
     data: { kind: 'not-found' },
     loadComponent: () => import('./shared/ui/up-coming/upcoming-page').then((m) => m.UpcomingPage),
   },

@@ -3,6 +3,7 @@ import { AppShell } from '../layout/app-shell/app-shell';
 
 @Component({
   selector: 'app-root',
+  host: { class: 'block' },
   imports: [AppShell],
   templateUrl: './app.html',
   styleUrl: './app.scss',

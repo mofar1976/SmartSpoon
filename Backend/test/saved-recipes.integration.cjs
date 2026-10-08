@@ -3,8 +3,8 @@ const assert = require('node:assert/strict');
 const { Test } = require('@nestjs/testing');
 const { getConnectionToken, getModelToken } = require('@nestjs/mongoose');
 const uri = process.env.SAVED_RECIPES_TEST_MONGODB_URI;
-if (!uri || !new URL(uri).pathname.startsWith('/kochfaul_saved_verification_'))
-  throw new Error('Isolierte kochfaul_saved_verification_* Datenbank erforderlich.');
+if (!uri || !new URL(uri).pathname.startsWith('/smartspoon_saved_verification_'))
+  throw new Error('Isolierte smartspoon_saved_verification_* Datenbank erforderlich.');
 process.env.MONGODB_URI = uri;
 process.env.JWT_SECRET = 'saved-tests-only-secret-more-than-32-characters';
 const { AppModule } = require('../dist/app.module');

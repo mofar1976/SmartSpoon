@@ -35,7 +35,7 @@ test('save proof protects prices, text, amounts and owner but permits reordered 
   }
   await assert.rejects(proofs.verify(result, '2'.repeat(24)), status(400));
   await assert.rejects(
-    jwt.verifyAsync(result.saveProof, { audience: 'kochfaul-api', issuer: 'kochfaul' }),
+    jwt.verifyAsync(result.saveProof, { audience: 'smartspoon-api', issuer: 'smartspoon' }),
   );
 });
 test('expired and missing proofs are rejected', async () => {

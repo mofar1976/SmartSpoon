@@ -4,6 +4,7 @@ import { ShoppingList } from '../shopping-list/shopping-list';
 import { RecipeResult } from '../recipe.models';
 @Component({
   selector: 'app-recipe-results',
+  host: { class: 'block' },
   imports: [CurrencyPipe, ShoppingList],
   templateUrl: './recipe-results.html',
   styleUrl: './recipe-results.scss',

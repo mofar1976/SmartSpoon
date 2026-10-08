@@ -14,6 +14,7 @@ import { authErrorMessage } from '../auth-errors';
 import { berlinToday, birthDateValidator, usernameValidator } from '../auth-validation';
 
 @Component({
+  host: { class: 'block' },
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './auth-page.html',
   styleUrl: './auth-page.scss',

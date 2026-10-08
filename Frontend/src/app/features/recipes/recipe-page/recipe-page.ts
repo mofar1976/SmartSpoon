@@ -29,6 +29,7 @@ import { euroToCents, oneOf } from '../recipe-validation';
 import { RecipeResults } from '../recipe-results/recipe-results';
 
 @Component({
+  host: { class: 'block' },
   imports: [CurrencyPipe, ReactiveFormsModule, RecipeResults, MultiSelect, SaveSelection],
   templateUrl: './recipe-page.html',
   styleUrl: './recipe-page.scss',

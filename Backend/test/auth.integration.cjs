@@ -51,9 +51,9 @@ test('registration, login, validation and token protection against real MongoDB'
   const jwt = new JwtService();
   const secret = readFileSync('.env', 'utf8').split('\n').find(line => line.startsWith('JWT_SECRET=')).slice('JWT_SECRET='.length);
   for (const options of [
-    { secret, expiresIn: -1, issuer: 'kochfaul', audience: 'kochfaul-api' },
-    { secret: 'wrong-secret', expiresIn: 60, issuer: 'kochfaul', audience: 'kochfaul-api' },
-    { secret, expiresIn: 60, issuer: 'wrong', audience: 'kochfaul-api' },
+    { secret, expiresIn: -1, issuer: 'smartspoon', audience: 'smartspoon-api' },
+    { secret: 'wrong-secret', expiresIn: 60, issuer: 'smartspoon', audience: 'smartspoon-api' },
+    { secret, expiresIn: 60, issuer: 'wrong', audience: 'smartspoon-api' },
   ]) {
     const token = await jwt.signAsync({ sub: registered.user.id }, options);
     assert.equal((await request('me', undefined, token)).status, 401);

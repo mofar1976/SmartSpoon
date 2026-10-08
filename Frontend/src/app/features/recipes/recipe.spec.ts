@@ -257,7 +257,7 @@ describe('recipe request lifecycle', () => {
     workspace.generate();
     http.expectOne('/api/recipes/generate').flush(result);
     expect(sessionStorage.length).toBe(1);
-    expect(sessionStorage.getItem('kochfaul.accessToken')).toBe(session.token());
+    expect(sessionStorage.getItem('smartspoon.accessToken')).toBe(session.token());
     expect(localStorage.length).toBe(0);
   });
   it('provides helpful errors without exposing backend details', () => {

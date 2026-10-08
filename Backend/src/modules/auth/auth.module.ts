@@ -16,7 +16,7 @@ import { User, UserSchema } from './schemas/user.schema';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { algorithm: 'HS256', expiresIn: '1h', issuer: 'kochfaul', audience: 'kochfaul-api' },
+        signOptions: { algorithm: 'HS256', expiresIn: '1h', issuer: 'smartspoon', audience: 'smartspoon-api' },
       }),
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),

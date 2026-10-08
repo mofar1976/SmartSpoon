@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-shell',
+  host: { class: 'flex flex-col min-h-dvh' },
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',

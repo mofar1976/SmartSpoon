@@ -1,4 +1,4 @@
-# Kochfaul
+# SmartSpoon
 
 Applikation für günstige KI-Rezepte, Wochenpläne und Einkaufslisten.
 
@@ -6,7 +6,6 @@ Applikation für günstige KI-Rezepte, Wochenpläne und Einkaufslisten.
 
 - `Backend/`: NestJS-Backend mit TypeScript; [Startanleitung](Backend/README.md).
 - `Frontend/`: Angular-Oberfläche mit Authentifizierung, Rezeptanfrage und Einkaufsliste; [Startanleitung](Frontend/README.md).
-- `docs/PLAN.md`: [Architektur, Entscheidungen und Fortschritt](docs/PLAN.md).
 
 ## Gesamte Anwendung starten
 

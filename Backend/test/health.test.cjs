@@ -34,7 +34,7 @@ test('failed ping returns 503 without exposing connection details', async () => 
 });
 
 test('configuration accepts a local MongoDB URI and converts the port', () => {
-  const config = validateEnvironment({ MONGODB_URI: 'mongodb://127.0.0.1:27017/kochfaul', PORT: '3001', JWT_SECRET: 'x'.repeat(32) });
+  const config = validateEnvironment({ MONGODB_URI: 'mongodb://127.0.0.1:27017/smartspoon', PORT: '3001', JWT_SECRET: 'x'.repeat(32) });
   assert.equal(config.PORT, 3001);
 });
 
