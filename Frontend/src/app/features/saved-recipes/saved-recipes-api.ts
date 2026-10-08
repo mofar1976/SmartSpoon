@@ -1,0 +1,27 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { timeout } from 'rxjs';
+import { API_BASE_URL } from '../../core/api/api.config';
+import { RecipeResult } from '../recipes/recipe.models';
+import { SavedRecipe, SavedRecipeList } from './saved-recipes.models';
+@Injectable({ providedIn: 'root' })
+export class SavedRecipesApi {
+  private readonly http = inject(HttpClient);
+  private readonly base = inject(API_BASE_URL) + '/saved-recipes';
+  save(result: RecipeResult, title: string, checkedProductIds: string[]) {
+    return this.http
+      .post<SavedRecipe>(this.base, { result, title, checkedProductIds })
+      .pipe(timeout(10000));
+  }
+  list(offset = 0) {
+    return this.http
+      .get<SavedRecipeList>(this.base, { params: { limit: 20, offset } })
+      .pipe(timeout(10000));
+  }
+  detail(id: string) {
+    return this.http.get<SavedRecipe>(`${this.base}/${id}`).pipe(timeout(10000));
+  }
+  remove(id: string) {
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(timeout(10000));
+  }
+}

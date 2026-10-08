@@ -1,0 +1,84 @@
+<section class="shopping-list" aria-labelledby="shopping-title">
+  <div class="shopping-heading">
+    <div>
+      <span class="eyebrow">ALLES FÜR DEINE REZEPTE</span>
+      <h2 id="shopping-title">Deine Einkaufsliste</h2>
+    </div>
+    <p role="status" aria-live="polite">
+      {{ purchasedCount() }} von {{ result().shoppingList.length }} Artikeln gekauft
+    </p>
+  </div>
+  <p class="shopping-description">
+    Die Mengen sind für alle ausgewählten Rezepte zusammengerechnet. Hake ab, was du bereits gekauft
+    hast.
+  </p>
+  <ul class="items">
+    @for (item of result().shoppingList; track item.product.id) {
+      <li class="item" [class.purchased]="checkedProductIds().has(item.product.id)">
+        <label class="product"
+          ><input
+            type="checkbox"
+            [checked]="checkedProductIds().has(item.product.id)"
+            (change)="
+              purchasedChange.emit({
+                productId: item.product.id,
+                purchased: $any($event.target).checked,
+              })
+            "
+          /><span
+            ><strong>{{ item.product.name }}</strong
+            ><span class="pack"
+              >{{ item.packs }} {{ item.packs === 1 ? 'Packung' : 'Packungen' }} à
+              {{ item.product.packageQuantity | number: '1.0-3' }}
+              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}</span
+            ></span
+          ></label
+        >
+        <dl class="quantities">
+          <div>
+            <dt>Benötigt</dt>
+            <dd>
+              {{ item.neededQuantity | number: '1.0-3' }}
+              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+            </dd>
+          </div>
+          <div>
+            <dt>Kaufmenge</dt>
+            <dd>
+              {{ item.purchasedQuantity | number: '1.0-3' }}
+              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+            </dd>
+          </div>
+          <div>
+            <dt>Übrig</dt>
+            <dd>
+              {{ item.leftoverQuantity | number: '1.0-3' }}
+              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+            </dd>
+          </div>
+        </dl>
+        <div class="cost">
+          <strong>{{ item.costCents / 100 | currency: 'EUR' }}</strong
+          ><span>{{ item.product.priceCents / 100 | currency: 'EUR' }} / Packung</span>
+        </div>
+      </li>
+    } @empty {
+      <li class="empty">Für diese Auswahl liegen keine Einkaufsartikel vor.</li>
+    }
+  </ul>
+  <div class="shopping-total">
+    <span>Gesamter Einkauf</span
+    ><strong>{{ result().totalCostCents / 100 | currency: 'EUR' }}</strong>
+  </div>
+  <p class="shopping-description">
+    Häkchen ändern die Einkaufskosten und dein Restbudget nicht.
+    {{
+      stored()
+        ? 'Der gespeicherte Stand wurde geladen; neue Häkchenänderungen gelten nur für diese Ansicht.'
+        : 'Beim Speichern wird der aktuelle Stand übernommen. Weitere Häkchenänderungen bleiben lokal.'
+    }}
+    {{
+      result().priceType === 'test' ? 'Alle Preise sind fiktive Testpreise.' : result().priceNotice
+    }}
+  </p>
+</section>

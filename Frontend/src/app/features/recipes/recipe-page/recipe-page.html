@@ -1,0 +1,407 @@
+<div class="page-container recipes-page" #content>
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">PASSEND ZU DEINEM ALLTAG</span>
+      <h1>Was kommt heute auf den Tisch?</h1>
+      <p>Ein paar Angaben. Passende Rezepte. Ein Einkauf, der ins Budget passt.</p>
+    </div>
+  </header>
+  @if (workspace.result(); as result) {
+    <app-recipe-results
+      [result]="result"
+      [actionsDisabled]="saveState.busy()"
+      [checkedProductIds]="workspace.checkedProductIds()"
+      (purchasedChange)="workspace.setPurchased($event.productId, $event.purchased)"
+      (edit)="edit()"
+      (startNew)="startNew()"
+      ><app-save-selection
+    /></app-recipe-results>
+  } @else {
+    <div class="workspace-grid">
+      <section class="form-card" aria-label="Neue Rezeptanfrage">
+        <ol class="step-nav" aria-label="Schritte der Rezeptanfrage">
+          @for (name of steps; track $index) {
+            <li>
+              <button
+                type="button"
+                [attr.aria-current]="workspace.step() === $index ? 'step' : null"
+                [disabled]="$index > workspace.step() || workspace.busy()"
+                (click)="back($index)"
+              >
+                <span class="step-number" aria-hidden="true">{{
+                  $index < workspace.step() ? '✓' : $index + 1
+                }}</span
+                ><span>{{ name }}</span>
+              </button>
+            </li>
+          }
+        </ol>
+        <form
+          [formGroup]="form"
+          (ngSubmit)="proceed()"
+          [attr.aria-busy]="workspace.busy()"
+          novalidate
+        >
+          <span class="step-caption">SCHRITT {{ workspace.step() + 1 }} VON 3</span>
+          <h2 #stepHeading tabindex="-1">{{ steps[workspace.step()] }}</h2>
+          @if (workspace.step() === 0) {
+            <p class="section-description">Wo kaufst du ein und für wen kochst du?</p>
+            @if (marketsLoading()) {
+              <p class="inline-notice" role="status">Supermärkte werden geladen …</p>
+            }
+            @if (marketError()) {
+              <div class="form-error" role="alert">
+                <p>{{ marketError() }}</p>
+                <button type="button" (click)="loadMarkets()" class="btn btn-text">
+                  Erneut laden
+                </button>
+              </div>
+            }
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label" for="recipe-supermarket">Supermarkt</label
+                ><select
+                  id="recipe-supermarket"
+                  class="field-control"
+                  [attr.aria-invalid]="
+                    form.controls.supermarket.touched && form.controls.supermarket.invalid
+                  "
+                  [attr.aria-describedby]="
+                    '' +
+                    (form.controls.supermarket.touched && form.controls.supermarket.invalid
+                      ? ' recipe-supermarket-error'
+                      : '')
+                  "
+                  formControlName="supermarket"
+                  required
+                >
+                  <option value="" disabled>Bitte wählen</option>
+                  @for (market of markets(); track market.id) {
+                    <option [ngValue]="market.id">{{ market.name }}</option>
+                  }
+                </select>
+                @if (form.controls.supermarket.touched && form.controls.supermarket.invalid) {
+                  <p class="field-error" id="recipe-supermarket-error">
+                    Bitte wähle einen Supermarkt.
+                  </p>
+                }
+              </div>
+              <div class="field has-suffix">
+                <label class="field-label" for="recipe-budgetEuros">Wochenbudget in Euro</label
+                ><input
+                  id="recipe-budgetEuros"
+                  class="field-control"
+                  [attr.aria-invalid]="
+                    form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid
+                  "
+                  [attr.aria-describedby]="
+                    'recipe-budgetEuros-hint' +
+                    (form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid
+                      ? ' recipe-budgetEuros-error'
+                      : '')
+                  "
+                  formControlName="budgetEuros"
+                  type="text"
+                  inputmode="decimal"
+                  placeholder="z. B. 40,00"
+                  maxlength="7"
+                  required
+                /><span class="suffix">€</span>
+                <p class="field-hint" id="recipe-budgetEuros-hint">
+                  Maximal 1.000 € · gilt für diese Rezeptauswahl
+                </p>
+                @if (form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid) {
+                  <p class="field-error" id="recipe-budgetEuros-error">
+                    Bitte gib 0,01–1.000 € mit höchstens zwei Nachkommastellen ein.
+                  </p>
+                }
+              </div>
+              <div class="field">
+                <label class="field-label" for="recipe-persons">Personen</label
+                ><input
+                  id="recipe-persons"
+                  class="field-control"
+                  [attr.aria-invalid]="
+                    form.controls.persons.touched && form.controls.persons.invalid
+                  "
+                  [attr.aria-describedby]="
+                    '' +
+                    (form.controls.persons.touched && form.controls.persons.invalid
+                      ? ' recipe-persons-error'
+                      : '')
+                  "
+                  type="number"
+                  formControlName="persons"
+                  min="1"
+                  max="10"
+                  step="1"
+                  required
+                />
+                @if (form.controls.persons.touched && form.controls.persons.invalid) {
+                  <p class="field-error" id="recipe-persons-error">
+                    Bitte wähle 1–10 Personen als ganze Zahl.
+                  </p>
+                }
+              </div>
+              <div class="field">
+                <label class="field-label" for="recipe-lifeSituation">Lebenssituation</label
+                ><select
+                  id="recipe-lifeSituation"
+                  class="field-control"
+                  [attr.aria-invalid]="
+                    form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid
+                  "
+                  [attr.aria-describedby]="
+                    '' +
+                    (form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid
+                      ? ' recipe-lifeSituation-error'
+                      : '')
+                  "
+                  formControlName="lifeSituation"
+                  required
+                >
+                  <option value="" disabled>Bitte wählen</option>
+                  @for (option of lifeOptions; track option.value) {
+                    <option [ngValue]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+                @if (form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid) {
+                  <p class="field-error" id="recipe-lifeSituation-error">
+                    Bitte wähle deine Lebenssituation.
+                  </p>
+                }
+              </div>
+            </div>
+          } @else if (workspace.step() === 1) {
+            <p class="section-description">
+              Sag uns, was du essen möchtest und wie viel Zeit du hast.
+            </p>
+            <div class="field-grid">
+              <div class="field">
+                <label class="field-label" for="recipe-diet">Ernährungsweise</label
+                ><select
+                  id="recipe-diet"
+                  class="field-control"
+                  [attr.aria-invalid]="form.controls.diet.touched && form.controls.diet.invalid"
+                  [attr.aria-describedby]="
+                    '' +
+                    (form.controls.diet.touched && form.controls.diet.invalid
+                      ? ' recipe-diet-error'
+                      : '')
+                  "
+                  formControlName="diet"
+                >
+                  @for (option of diets; track option.value) {
+                    <option [ngValue]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="field has-suffix">
+                <label class="field-label" for="recipe-maxCookingTimeMinutes"
+                  >Maximale Kochzeit</label
+                ><input
+                  id="recipe-maxCookingTimeMinutes"
+                  class="field-control"
+                  [attr.aria-invalid]="
+                    form.controls.maxCookingTimeMinutes.touched &&
+                    form.controls.maxCookingTimeMinutes.invalid
+                  "
+                  [attr.aria-describedby]="
+                    '' +
+                    (form.controls.maxCookingTimeMinutes.touched &&
+                    form.controls.maxCookingTimeMinutes.invalid
+                      ? ' recipe-maxCookingTimeMinutes-error'
+                      : '')
+                  "
+                  formControlName="maxCookingTimeMinutes"
+                  type="number"
+                  min="5"
+                  max="180"
+                  step="1"
+                  required
+                /><span class="suffix">Min.</span>
+                @if (
+                  form.controls.maxCookingTimeMinutes.touched &&
+                  form.controls.maxCookingTimeMinutes.invalid
+                ) {
+                  <p class="field-error" id="recipe-maxCookingTimeMinutes-error">
+                    Bitte gib 5–180 Minuten als ganze Zahl ein.
+                  </p>
+                }
+              </div>
+              <div class="field">
+                <app-multi-select
+                  formControlName="allergies"
+                  label="Allergien"
+                  controlId="recipe-allergies"
+                  [options]="allergens"
+                  describedBy="recipe-allergies-hint"
+                />
+                <p class="field-hint" id="recipe-allergies-hint">
+                  Optional · mehrere Einträge möglich
+                </p>
+              </div>
+              <div class="field">
+                <app-multi-select
+                  formControlName="excludedIngredients"
+                  label="Zutaten ausschließen"
+                  controlId="recipe-excludedIngredients"
+                  [options]="ingredients"
+                  describedBy="recipe-excludedIngredients-hint"
+                />
+                <p class="field-hint" id="recipe-excludedIngredients-hint">
+                  Optional · Zutaten aus unserem Katalog
+                </p>
+              </div>
+            </div>
+            <p class="inline-notice">
+              Bei Allergien: Prüfe beim Einkauf die Herstellerangaben und Hinweise auf Spuren. Unser
+              Testkatalog enthält diese Angaben noch nicht.
+            </p>
+          } @else {
+            <p class="section-description">
+              Prüfe deine Angaben. Danach stellen wir die Rezepte für dich zusammen.
+            </p>
+            <div class="field recipe-count">
+              <label class="field-label" for="recipe-recipeCount">Anzahl Rezepte</label
+              ><select
+                id="recipe-recipeCount"
+                class="field-control"
+                [attr.aria-invalid]="
+                  form.controls.recipeCount.touched && form.controls.recipeCount.invalid
+                "
+                [attr.aria-describedby]="
+                  '' +
+                  (form.controls.recipeCount.touched && form.controls.recipeCount.invalid
+                    ? ' recipe-recipeCount-error'
+                    : '')
+                "
+                formControlName="recipeCount"
+              >
+                @for (count of counts; track count) {
+                  <option [ngValue]="count">
+                    {{ count }} {{ count === 1 ? 'Rezept' : 'Rezepte' }}
+                  </option>
+                }
+              </select>
+            </div>
+            <dl class="review-list">
+              <div>
+                <dt>Supermarkt</dt>
+                <dd>{{ summary().market }}</dd>
+              </div>
+              <div>
+                <dt>Budget</dt>
+                <dd>{{ (summary().budgetCents ?? 0) / 100 | currency: 'EUR' }}</dd>
+              </div>
+              <div>
+                <dt>Personen</dt>
+                <dd>{{ summary().persons }}</dd>
+              </div>
+              <div>
+                <dt>Lebenssituation</dt>
+                <dd>{{ summary().life }}</dd>
+              </div>
+              <div>
+                <dt>Ernährung</dt>
+                <dd>{{ summary().diet }}</dd>
+              </div>
+              <div>
+                <dt>Kochzeit</dt>
+                <dd>Bis {{ summary().minutes }} Min.</dd>
+              </div>
+              <div>
+                <dt>Allergien</dt>
+                <dd>{{ summary().allergies }}</dd>
+              </div>
+              <div>
+                <dt>Ohne</dt>
+                <dd>{{ summary().exclusions }}</dd>
+              </div>
+            </dl>
+            <p class="inline-notice">
+              Wir erstellen eine Rezeptauswahl, keinen vollständigen Wochenplan. Die Preise stammen
+              derzeit aus einem fiktiven Testkatalog.
+            </p>
+          }
+          @if (workspace.busy()) {
+            <div class="generation-status" role="status">
+              <span class="loading-dot" aria-hidden="true"></span>
+              <div>
+                <strong>Deine Rezepte werden zusammengestellt …</strong>
+                <p>Das kann etwa eine Minute dauern. Wir prüfen auch die Einkaufskosten.</p>
+              </div>
+            </div>
+          }
+          @if (workspace.error()) {
+            <p class="form-error" role="alert">{{ workspace.error() }}</p>
+          }
+          <div class="form-actions">
+            @if (workspace.step() > 0) {
+              <button
+                type="button"
+                (click)="back()"
+                [disabled]="workspace.busy()"
+                class="btn btn-outline"
+              >
+                Zurück
+              </button>
+            }
+            <button
+              type="submit"
+              [disabled]="workspace.busy() || marketsLoading() || !!marketError()"
+              class="btn btn-primary"
+            >
+              {{
+                workspace.busy()
+                  ? 'Rezepte werden erstellt …'
+                  : workspace.step() === 2
+                    ? 'Rezepte erstellen'
+                    : 'Weiter'
+              }}<span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </form>
+      </section>
+      <aside class="plan-note" aria-labelledby="plan-note-title">
+        <span class="eyebrow">DEIN RAHMEN</span>
+        <h2 id="plan-note-title">Gut geplant.<br />Gut gegessen.</h2>
+        <div class="budget-preview">
+          <span>Dein Budget</span
+          ><strong>{{
+            summary().budgetCents === null
+              ? 'Noch offen'
+              : ((summary().budgetCents ?? 0) / 100 | currency: 'EUR')
+          }}</strong>
+        </div>
+        <dl>
+          <div>
+            <dt>Einkauf bei</dt>
+            <dd>{{ summary().market }}</dd>
+          </div>
+          <div>
+            <dt>Am Tisch</dt>
+            <dd>{{ summary().persons }} {{ summary().persons === 1 ? 'Person' : 'Personen' }}</dd>
+          </div>
+          <div>
+            <dt>Auf dem Teller</dt>
+            <dd>{{ summary().diet }}</dd>
+          </div>
+        </dl>
+        <p>Wir berücksichtigen ganze Kaufpackungen und teilen Zutaten zwischen den Rezepten.</p>
+        <div class="memory-note">
+          Deine Angaben werden nicht im Profil gespeichert. Beim Neuladen gehen Entwurf und Ergebnis
+          verloren.
+        </div>
+        <button
+          type="button"
+          (click)="startNew()"
+          [disabled]="workspace.busy()"
+          class="btn btn-text"
+        >
+          Neue Anfrage beginnen
+        </button>
+      </aside>
+    </div>
+  }
+</div>

@@ -1,0 +1,40 @@
+<div class="relative min-w-0">
+  <label class="field-label" [for]="controlId()">{{ label() }}</label>
+  <button
+    #trigger
+    class="field-control flex cursor-pointer items-center justify-between gap-3 text-left"
+    type="button"
+    [id]="controlId()"
+    [disabled]="disabled()"
+    [attr.aria-expanded]="opened()"
+    [attr.aria-controls]="controlId() + '-options'"
+    [attr.aria-describedby]="describedBy()"
+    (click)="toggle()"
+  >
+    <span class="truncate">{{ selectedLabel() }}</span
+    ><span aria-hidden="true">▾</span>
+  </button>
+  @if (opened()) {
+    <fieldset
+      class="absolute top-full left-0 z-20 m-0 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-solid border-outline bg-surface p-2 shadow-lg"
+      [id]="controlId() + '-options'"
+    >
+      <legend class="sr-only">{{ label() }}</legend>
+      @for (option of options(); track option.value) {
+        <label
+          class="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-[#e9edde]"
+        >
+          <input
+            #checkbox
+            class="h-4 w-4 shrink-0 accent-brand"
+            type="checkbox"
+            [checked]="selected().includes(option.value)"
+            [disabled]="disabled()"
+            (change)="select(option.value, checkbox.checked)"
+          />
+          <span>{{ option.label }}</span>
+        </label>
+      }
+    </fieldset>
+  }
+</div>

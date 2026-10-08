@@ -1,0 +1,52 @@
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" routerLink="/" aria-label="Kochfaul – Startseite">
+      <span class="brand-mark" aria-hidden="true"
+        ><svg viewBox="0 0 32 32"><path d="M8 22c-2-9 5-15 17-15 0 12-6 18-14 15M8 26 21 13" /></svg
+      ></span>
+      <span>kochfaul<span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Hauptnavigation">
+      <a
+        class="nav-link"
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        >Start</a
+      >
+      <a
+        class="nav-link"
+        routerLink="/rezepte"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        >Rezepte</a
+      >
+      <a
+        class="nav-link"
+        routerLink="/gespeichert"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        >Gespeichert</a
+      >
+    </nav>
+    @if (auth.session.authenticated()) {
+      <div class="account-actions">
+        <span class="username" [title]="auth.session.user()!.username"
+          >Hallo, {{ auth.session.user()!.username }}</span
+        ><button type="button" (click)="auth.logout()" class="btn btn-outline">Abmelden</button>
+      </div>
+    } @else {
+      <a routerLink="/anmelden" class="btn btn-outline login-link">Anmelden</a>
+    }
+  </div>
+</header>
+<main #main id="inhalt" tabindex="-1"><router-outlet (activate)="focusContent()" /></main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a class="footer-brand" routerLink="/">kochfaul.</a
+    ><span>Einfach kochen. Bewusst einkaufen.</span
+    ><span class="footer-note">Frühe Version · Preise sind Testdaten</span>
+  </div>
+</footer>

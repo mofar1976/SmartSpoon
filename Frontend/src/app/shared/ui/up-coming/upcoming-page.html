@@ -1,0 +1,11 @@
+<section class="page-container upcoming" aria-labelledby="page-title">
+  <span class="page-eyebrow">{{ page.eyebrow }}</span>
+  <h1 id="page-title">{{ page.title }}</h1>
+  <p>{{ page.text }}</p>
+  @if (kind !== 'not-found') {
+    <span class="preview-label">Vorschau · Diese Funktion ist noch in Arbeit</span>
+  }
+  <div class="actions">
+    <a routerLink="/" class="btn btn-primary">Zur Startseite</a>
+  </div>
+</section>

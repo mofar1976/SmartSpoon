@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: Backend
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: HTTP and MongoDB integration
+        run: node --test test/saved-recipes.integration.cjs
+        env:
+          SAVED_RECIPES_TEST_MONGODB_URI: mongodb://127.0.0.1:27017/kochfaul_saved_verification_ci
+          GEMINI_API_KEY: ''
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    name: Docker integration
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_PROJECT_NAME: kochfaul-ci
+      JWT_SECRET: ci-only-test-secret-never-use-in-production
+      GEMINI_API_KEY: ''
+      PORT: '3000'
+      MONGODB_PORT: '27027'
+      FRONTEND_PORT: '8080'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Build and start isolated stack
+        working-directory: Backend
+        run: docker compose --env-file /dev/null up --build --wait --wait-timeout 180
+      - name: Check production frontend and API proxy
+        working-directory: Frontend
+        run: npm run test:docker
+      - name: Show logs on failure
+        if: failure()
+        working-directory: Backend
+        run: docker compose --env-file /dev/null logs --no-color --tail 100
+      - name: Remove CI containers and test volume
+        if: always()
+        working-directory: Backend
+        run: docker compose --env-file /dev/null down --volumes --remove-orphans

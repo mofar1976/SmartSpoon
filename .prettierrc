@@ -1,0 +1,14 @@
+{
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "Frontend/**/*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@source './app';
+
+@theme {
+  --color-brand: #345c3c;
+  --color-ink: #243329;
+  --color-muted: #61695e;
+  --color-surface: #fffdf8;
+  --color-outline: #8d9888;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-2 rounded-xl border border-solid border-transparent px-6 py-2.5 text-sm font-semibold no-underline transition-colors;
+  }
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-[#294b30];
+  }
+  .btn-outline {
+    @apply border-outline bg-transparent text-brand hover:bg-[#e9edde];
+  }
+  .btn-text {
+    @apply bg-transparent px-3 text-brand hover:bg-[#e9edde];
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .field {
+    @apply relative block min-w-0 w-full;
+  }
+  .field-label {
+    @apply absolute -top-2 left-3 z-1 bg-surface px-1 text-xs text-muted;
+  }
+  .field-control {
+    @apply block h-14 w-full min-w-0 rounded border border-solid border-outline bg-transparent px-4 text-base text-ink;
+  }
+  .field-control:focus {
+    @apply border-brand outline-2 outline-brand -outline-offset-2;
+  }
+  .field-control[aria-invalid='true'] {
+    @apply border-[#8c3023];
+  }
+  .field-control:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .field-hint,
+  .field-error {
+    @apply mt-1 mb-0 px-4 text-xs leading-5;
+  }
+  .field-hint {
+    @apply text-muted;
+  }
+  .field-error {
+    @apply text-[#8c3023];
+  }
+  .has-suffix .field-control {
+    @apply pr-14;
+  }
+  .field .suffix {
+    @apply pointer-events-none absolute top-[19px] right-0;
+  }
+  .has-password-toggle .field-control {
+    @apply pr-28;
+  }
+  .field .password-toggle {
+    @apply absolute top-[5px] right-1;
+  }
+}

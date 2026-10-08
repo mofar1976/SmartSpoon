@@ -1,0 +1,89 @@
+<section aria-labelledby="result-title">
+  <div class="result-heading">
+    <div>
+      <span class="eyebrow">DEINE AUSWAHL IST DA</span>
+      <h2 id="result-title" tabindex="-1">Zeit für etwas Gutes.</h2>
+    </div>
+    @if (!stored()) {
+      <button
+        type="button"
+        (click)="edit.emit()"
+        class="btn btn-outline"
+        [disabled]="actionsDisabled()"
+      >
+        Angaben ändern
+      </button>
+    }
+  </div>
+  <div class="budget-strip">
+    <div>
+      <span>Einkaufskosten</span
+      ><strong>{{ result().totalCostCents / 100 | currency: 'EUR' }}</strong>
+    </div>
+    <div>
+      <span>Budget übrig</span
+      ><strong>{{ result().remainingBudgetCents / 100 | currency: 'EUR' }}</strong>
+    </div>
+    <p>Die Kosten umfassen ganze Kaufpackungen für diese Rezeptauswahl.</p>
+  </div>
+  <p class="price-notice">
+    <strong>{{ result().priceType === 'test' ? 'Fiktive Testpreise.' : 'Preishinweis.' }}</strong>
+    {{ result().priceNotice }}
+  </p>
+  <ng-content />
+  <div class="recipe-grid">
+    @for (recipe of result().recipes; track $index) {
+      <article class="recipe-card">
+        <span class="recipe-number">REZEPT {{ $index + 1 }}</span>
+        <h3>{{ recipe.title }}</h3>
+        <p class="recipe-meta">
+          {{ recipe.cookingTimeMinutes }} Min. · {{ recipe.servings }}
+          {{ recipe.servings === 1 ? 'Portion' : 'Portionen' }}
+        </p>
+        <details>
+          <summary>Zutaten & Zubereitung</summary>
+          <h4>Zutaten</h4>
+          <ul>
+            @for (ingredient of recipe.ingredients; track ingredient.productId) {
+              <li>
+                {{ ingredient.quantity }}
+                {{ ingredient.unit === 'piece' ? 'Stück' : ingredient.unit }}
+                {{ ingredient.productName }}
+              </li>
+            }
+          </ul>
+          <h4>So geht’s</h4>
+          <ol>
+            @for (step of recipe.steps; track $index) {
+              <li>{{ step }}</li>
+            }
+          </ol>
+        </details>
+      </article>
+    }
+  </div>
+  <app-shopping-list
+    [result]="result()"
+    [stored]="stored()"
+    [checkedProductIds]="checkedProductIds()"
+    (purchasedChange)="purchasedChange.emit($event)"
+  />
+  <div class="result-footer">
+    <p>
+      Diese Auswahl ist kein vollständiger Wochenplan.
+      {{
+        stored()
+          ? 'Die gespeicherten Preise stammen vom Zeitpunkt der Generierung.'
+          : 'Ohne Speichern gehen Angaben und Ergebnisse beim Neuladen verloren.'
+      }}
+    </p>
+    <button
+      type="button"
+      (click)="startNew.emit()"
+      class="btn btn-primary"
+      [disabled]="actionsDisabled()"
+    >
+      Neue Rezeptanfrage
+    </button>
+  </div>
+</section>

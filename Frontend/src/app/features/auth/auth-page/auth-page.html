@@ -1,0 +1,170 @@
+<div class="page-container auth-layout">
+  <aside class="auth-intro" aria-labelledby="intro-title">
+    <span class="eyebrow">DEIN ALLTAG. DEIN BUDGET.</span>
+    <h2 id="intro-title">Weniger überlegen.<br /><span>Mehr genießen.</span></h2>
+    <p>
+      Ein guter Essensplan beginnt mit dir. Finde Rezepte, die zu deinem Alltag und deinem
+      Geldbeutel passen.
+    </p>
+    <ul class="benefits">
+      <li>Dein Supermarkt und dein Budget</li>
+      <li>Rezepte nach deinen Essenswünschen</li>
+      <li>Eine Einkaufsliste für alles</li>
+    </ul>
+    <div class="privacy-note">
+      <strong>Du entscheidest jedes Mal neu.</strong>
+      <p>Deine Essenswünsche und dein Budget werden nicht in deinem Konto gespeichert.</p>
+    </div>
+  </aside>
+  <section class="auth-card" aria-labelledby="auth-title">
+    <span class="eyebrow">{{ register ? 'SCHÖN, DASS DU DA BIST' : 'WILLKOMMEN ZURÜCK' }}</span>
+    <h1 id="auth-title">{{ register ? 'Dein Konto erstellen' : 'Anmelden' }}</h1>
+    <p class="card-description">
+      {{
+        register
+          ? 'Drei Angaben, und du bist dabei.'
+          : 'Melde dich an und plane deinen nächsten Einkauf.'
+      }}
+    </p>
+    @if (reason === 'expired' || auth.session.expired()) {
+      <p class="session-notice" role="status">
+        Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.
+      </p>
+    }
+    @if (auth.session.status() === 'unavailable') {
+      <div class="session-notice" role="status">
+        <p>Deine bestehende Sitzung konnte gerade nicht geprüft werden.</p>
+        <button type="button" (click)="retrySession()" [disabled]="busy()" class="btn btn-text">
+          Verbindung erneut prüfen
+        </button>
+      </div>
+    }
+    <form
+      #formElement
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      [attr.aria-busy]="busy()"
+      novalidate
+    >
+      <div class="field">
+        <label class="field-label" for="auth-username">Benutzername</label>
+        <input
+          id="auth-username"
+          class="field-control"
+          [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
+          [attr.aria-describedby]="
+            'auth-username-hint' +
+            (form.controls.username.touched && form.controls.username.invalid
+              ? ' auth-username-error'
+              : '')
+          "
+          formControlName="username"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          maxlength="30"
+          [readOnly]="busy()"
+          required
+        />
+        <p class="field-hint" id="auth-username-hint">3–30 Zeichen: a–z, Zahlen, _ oder -</p>
+        @if (form.controls.username.touched && form.controls.username.invalid) {
+          <p class="field-error" id="auth-username-error">
+            Bitte wähle einen Benutzernamen mit 3–30 erlaubten Zeichen.
+          </p>
+        }
+      </div>
+      <div class="field has-password-toggle">
+        <label class="field-label" for="auth-password">Passwort</label>
+        <input
+          id="auth-password"
+          class="field-control"
+          [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+          [attr.aria-describedby]="
+            (register ? 'auth-password-hint' : '') +
+            (form.controls.password.touched && form.controls.password.invalid
+              ? ' auth-password-error'
+              : '')
+          "
+          formControlName="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          [autocomplete]="register ? 'new-password' : 'current-password'"
+          minlength="8"
+          maxlength="128"
+          [readOnly]="busy()"
+          required
+        />
+        <button
+          class="btn btn-text password-toggle"
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-pressed]="showPassword()"
+          [attr.aria-label]="showPassword() ? 'Passwort verbergen' : 'Passwort anzeigen'"
+        >
+          {{ showPassword() ? 'Verbergen' : 'Anzeigen' }}
+        </button>
+        @if (register) {
+          <p class="field-hint" id="auth-password-hint">Mindestens 8 Zeichen</p>
+        }
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <p class="field-error" id="auth-password-error">
+            Das Passwort muss 8–128 Zeichen enthalten.
+          </p>
+        }
+      </div>
+      @if (register) {
+        <div class="field">
+          <label class="field-label" for="auth-birthDate">Geburtsdatum</label>
+          <input
+            id="auth-birthDate"
+            class="field-control"
+            [attr.aria-invalid]="form.controls.birthDate.touched && form.controls.birthDate.invalid"
+            [attr.aria-describedby]="
+              'auth-birthDate-hint' +
+              (form.controls.birthDate.touched && form.controls.birthDate.invalid
+                ? ' auth-birthDate-error'
+                : '')
+            "
+            formControlName="birthDate"
+            type="date"
+            autocomplete="bday"
+            min="0001-01-01"
+            [max]="maxDate"
+            [readOnly]="busy()"
+            required
+          />
+          <p class="field-hint" id="auth-birthDate-hint">
+            Dein Alter hilft bei der Auswahl passender Rezepte.
+          </p>
+          @if (form.controls.birthDate.touched && form.controls.birthDate.invalid) {
+            <p class="field-error" id="auth-birthDate-error">
+              Bitte gib ein gültiges Geburtsdatum ein, das nicht in der Zukunft liegt.
+            </p>
+          }
+        </div>
+      }
+      @if (error()) {
+        <p class="form-error" role="alert">{{ error() }}</p>
+      }
+      <button type="submit" class="btn btn-primary submit-button" [disabled]="busy()">
+        {{
+          busy()
+            ? register
+              ? 'Konto wird erstellt …'
+              : 'Du wirst angemeldet …'
+            : register
+              ? 'Konto erstellen'
+              : 'Anmelden'
+        }}<span aria-hidden="true">↗</span>
+      </button>
+    </form>
+    <p class="switch-link">
+      {{ register ? 'Schon ein Konto?' : 'Neu bei Kochfaul?' }}
+      <a
+        [routerLink]="register ? '/anmelden' : '/registrieren'"
+        [queryParams]="{ returnUrl: returnUrl }"
+        >{{ register ? 'Jetzt anmelden' : 'Konto erstellen' }}</a
+      >
+    </p>
+    <p class="session-footnote">Deine Anmeldung bleibt in diesem Tab erhalten.</p>
+  </section>
+</div>

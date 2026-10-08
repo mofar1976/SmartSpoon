@@ -1,0 +1,99 @@
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { HydratedDocument, Model, Types } from 'mongoose';
+import { SavedRecipe } from './schemas/saved-recipe.schema';
+import { SaveRecipesDto } from './dto/save-recipes.dto';
+import { ListSavedRecipesDto } from './dto/list-saved-recipes.dto';
+import { SnapshotProofService } from './snapshot-proof.service';
+
+@Injectable()
+export class SavedRecipesService {
+  constructor(
+    @InjectModel(SavedRecipe.name) private readonly selections: Model<SavedRecipe>,
+    private readonly proofs: SnapshotProofService,
+  ) {}
+  async save(input: SaveRecipesDto, owner: string) {
+    const { snapshot, sourceId, generatedAt } = await this.proofs.verify(input.result, owner);
+    const known = new Set(snapshot.shoppingList.map((item) => item.product.id));
+    if (input.checkedProductIds.some((id) => !known.has(id)))
+      throw new BadRequestException('Abgehakte Artikel müssen zu dieser Einkaufsliste gehören.');
+    const filter = { ownerId: new Types.ObjectId(owner), sourceId };
+    const data = {
+      ...filter,
+      title: input.title ?? snapshot.recipes[0].title,
+      result: snapshot,
+      checkedProductIds: input.checkedProductIds,
+      generatedAt,
+    };
+    let document;
+    try {
+      document = await this.selections
+        .findOneAndUpdate(
+          filter,
+          { $setOnInsert: data },
+          { upsert: true, new: true, runValidators: true },
+        )
+        .exec();
+    } catch (error) {
+      // Concurrent save clicks share the same unique source ID.
+      if ((error as { code?: number }).code !== 11000) throw error;
+      document = await this.selections.findOne(filter).exec();
+      if (!document) throw error;
+    }
+    return this.detail(document!);
+  }
+  async list(query: ListSavedRecipesDto, owner: string) {
+    const filter = { ownerId: new Types.ObjectId(owner) };
+    const [items, total] = await Promise.all([
+      this.selections
+        .find(filter)
+        .select(
+          'title generatedAt createdAt result.totalCostCents result.currency result.priceType result.recipes.title',
+        )
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(query.offset)
+        .limit(query.limit)
+        .exec(),
+      this.selections.countDocuments(filter).exec(),
+    ]);
+    return {
+      items: items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        generatedAt: item.generatedAt.toISOString(),
+        createdAt: item.createdAt.toISOString(),
+        totalCostCents: item.result.totalCostCents,
+        currency: item.result.currency,
+        priceType: item.result.priceType,
+        recipeTitles: item.result.recipes.map((recipe) => recipe.title),
+      })),
+      total,
+      limit: query.limit,
+      offset: query.offset,
+    };
+  }
+  async findOne(id: string, owner: string) {
+    const document = await this.selections
+      .findOne({ _id: new Types.ObjectId(id), ownerId: new Types.ObjectId(owner) })
+      .exec();
+    if (!document) throw new NotFoundException('Gespeicherte Rezeptauswahl nicht gefunden.');
+    return this.detail(document);
+  }
+  async remove(id: string, owner: string): Promise<void> {
+    const result = await this.selections
+      .deleteOne({ _id: new Types.ObjectId(id), ownerId: new Types.ObjectId(owner) })
+      .exec();
+    if (!result.deletedCount)
+      throw new NotFoundException('Gespeicherte Rezeptauswahl nicht gefunden.');
+  }
+  private detail(document: HydratedDocument<SavedRecipe>) {
+    return {
+      id: document.id as string,
+      title: document.title,
+      generatedAt: document.generatedAt.toISOString(),
+      createdAt: document.createdAt.toISOString(),
+      result: document.result,
+      checkedProductIds: document.checkedProductIds,
+    };
+  }
+}

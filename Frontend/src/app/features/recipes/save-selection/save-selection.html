@@ -1,0 +1,53 @@
+<section class="save-panel" aria-labelledby="save-title" [attr.aria-busy]="state.busy()">
+  <div>
+    <span class="text-xs font-bold tracking-widest text-brand">FÜR SPÄTER AUFHEBEN</span>
+    <h3 id="save-title">Gute Ideen bleiben.</h3>
+    <p>
+      Speichere diese Rezepte und die komplette Einkaufsliste in deinem Konto. Deine Eingaben werden
+      nicht im Profil gespeichert.
+    </p>
+  </div>
+  @if (state.savedId(); as id) {
+    <div role="status">
+      <p class="font-semibold text-brand">Rezepte und Einkaufsliste gespeichert.</p>
+      <a class="btn btn-outline" [routerLink]="['/gespeichert', id]">Gespeicherte Auswahl öffnen</a>
+      <p class="text-xs text-muted">Spätere Änderungen an den Häkchen bleiben lokal.</p>
+    </div>
+  } @else if (!workspace.result()?.saveProof) {
+    <p class="text-sm text-muted">
+      Diese ältere Auswahl hat keinen Speichernachweis. Bitte erstelle eine neue Auswahl, um sie zu
+      speichern.
+    </p>
+  } @else {
+    <form (submit)="$event.preventDefault(); state.save()" novalidate>
+      <div class="field">
+        <label class="field-label" for="selection-title">Name der Auswahl</label
+        ><input
+          id="selection-title"
+          class="field-control"
+          [formControl]="state.title"
+          maxlength="120"
+          required
+          [readOnly]="state.busy()"
+          [attr.aria-invalid]="state.title.touched && state.title.invalid"
+          aria-describedby="selection-title-hint"
+        />
+        <p id="selection-title-hint" class="field-hint">
+          1–120 Zeichen · mit den aktuellen Häkchen speichern
+        </p>
+        @if (state.title.touched && state.title.invalid) {
+          <p class="field-error" role="alert">Bitte gib einen Namen mit 1–120 Zeichen ein.</p>
+        }
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="state.busy()">
+        {{ state.busy() ? 'Wird gespeichert …' : 'Rezepte & Einkaufsliste speichern' }}
+      </button>
+      @if (state.busy()) {
+        <p role="status" class="text-sm text-muted">Deine Auswahl wird gespeichert …</p>
+      }
+      @if (state.error()) {
+        <p class="save-error" role="alert">{{ state.error() }}</p>
+      }
+    </form>
+  }
+</section>
