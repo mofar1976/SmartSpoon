@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, computed, signal } from '@angular/core';
 import { User } from '../../shared/models';
 
-export const SESSION_KEY = 'kochfaul.accessToken';
+export const SESSION_KEY = 'smartspoon.accessToken';
 export type SessionStatus = 'anonymous' | 'checking' | 'authenticated' | 'unavailable';
 
 // Decoding is only for local expiry handling; /auth/me authenticates the token.
@@ -35,6 +35,7 @@ export class SessionStore implements OnDestroy {
   constructor() {
     let saved: string | null = null;
     try {
+      sessionStorage.removeItem('kochfaul.accessToken');
       saved = sessionStorage.getItem(SESSION_KEY);
     } catch {
       /* Memory-only session if storage is blocked. */

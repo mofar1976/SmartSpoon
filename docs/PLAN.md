@@ -1,4 +1,4 @@
-# Kochfaul – vereinbarte Planung
+# SmartSpoon – vereinbarte Planung
 
 Stand: 8. Oktober 2026.
 
@@ -55,7 +55,7 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - Schritt 2 abgeschlossen: Dockerfile mit getrennten Build-/Runtime-Stufen, Compose mit MongoDB 8.0 und persistentem Volume, Mongoose-Anbindung, validierte Umgebungsvariablen und automatisch geladene .env.
 - Datenbankbereitschaft: `/api/health/ready` liefert bei erfolgreichem Ping 200 und bei Ausfall 503; `/api/health` bleibt eine reine HTTP-Erreichbarkeitsprüfung.
 - Geprüft für Schritt 2: TypeScript und Build, fünf automatisierte Tests, Compose-Konfiguration, Docker-Image-Build und gesunde Container. Integrationstest bestätigt Bereitschaft 200, Ausfall 503 bei weiterhin erreichbarer Anwendung, automatische Wiederverbindung, persistierte Daten nach MongoDB-Neustart sowie Swagger/OpenAPI.
-- Docker-Test erfolgte im separaten Projekt `kochfaul-verification` mit Ports 3107 und 27027, da 27017 bereits belegt ist. Testcontainer und Testnetzwerk anschließend entfernt; das separate Testvolume bleibt erhalten.
+- Docker-Test erfolgte im separaten Projekt `smartspoon-verification` mit Ports 3107 und 27027, da 27017 bereits belegt ist. Testcontainer und Testnetzwerk anschließend entfernt; das separate Testvolume bleibt erhalten.
 - npm meldet nach Installation keine bekannten Schwachstellen.
 - Anfragevalidierung, Produkte, KI-Anbindung und Wochenplanung: siehe aktuellen Fortschritt unten. Benutzerkonten aus Schritt 7 auf Nutzerwunsch vorgezogen und implementiert; weitere Account-Funktionen bleiben außerhalb der aktuellen Version.
 
@@ -73,7 +73,7 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - Globale DTO-Validierung weist zusätzliche Felder ab. Registrierung und Login jeweils auf 20 Anfragen pro Minute/IP/Backend-Instanz begrenzt (429).
 - Zufälliges JWT_SECRET in vorhandener lokaler .env ergänzt, ohne vorhandene Einstellungen zu überschreiben oder den Schlüssel auszugeben. Startvalidierung verlangt mindestens 32 Zeichen; Compose reicht den Schlüssel weiter.
 - Geprüft: TypeScript, Build, sieben automatisierte Tests, Compose-Konfiguration, Docker-Build und Integrationstest gegen echte MongoDB. Integration bestätigt Eingabevalidierung, parallele Registrierung (201/409), Login, geschützten Benutzer, einheitliche Fehler bei falschem Passwort/unbekanntem Benutzer, ungültige/abgelaufene/falsch signierte Tokens und falschen Issuer sowie Login-Limit. Hash-Speicherung und eindeutiger Datenbankindex zusätzlich geprüft.
-- Auth-Teststack `kochfaul-auth-verification` samt eigenem Testvolume vollständig entfernt; bestehende Anwendungsdaten unverändert.
+- Auth-Teststack `smartspoon-auth-verification` samt eigenem Testvolume vollständig entfernt; bestehende Anwendungsdaten unverändert.
 - Kein Refresh-Token, Passwort-Reset oder serverseitiger Token-Widerruf in dieser Version. Weitere private Endpunkte sollen den AuthGuard nutzen und Nutzerdaten dem authentifizierten Benutzer zuordnen.
 
 ## Geburtsdatum – implementiert
@@ -93,7 +93,7 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - Geschützte Endpunkte: GET `/api/products`, optional mit supermarket, limit (1–100) und offset (0–100000); GET `/api/products/supermarkets`; GET `/api/products/:id`. Listenantwort enthält Daten, Gesamtanzahl, Seiteneinteilung und Testpreis-Hinweis. Keine öffentliche Schreib-API.
 - Seed bewusst nur per ausdrücklichem Befehl: lokal `npm run seed:products`; im laufenden Docker-Backend `node dist/scripts/seed-products.js`. Legt fehlende Testprodukte an, überschreibt keine bestehenden Produkte oder Nutzer und läuft nicht automatisch beim Start.
 - Geprüft: TypeScript, Build, 13 automatisierte Tests, Compose-Konfiguration, Docker-Build und HTTP-Integration mit echter MongoDB. Seed zuerst 36 neue Produkte, bei Wiederholung 0 neue/36 bestehende. HTTP-Test bestätigt Authentifizierung, Supermarktfilter, Seiteneinteilung, Detailabfrage, fehlende/ungültige IDs, ungültige oder zusätzliche Query-Parameter, Testpreis-Markierung und Swagger-Schemas.
-- Separaten Teststack `kochfaul-products-verification` mit Ports 3109/27029 samt Testvolume entfernt. Testprodukte nicht in die normale Anwendungsdatenbank eingespielt; Start- und Seed-Befehle stehen in Backend/README.md.
+- Separaten Teststack `smartspoon-products-verification` mit Ports 3109/27029 samt Testvolume entfernt. Testprodukte nicht in die normale Anwendungsdatenbank eingespielt; Start- und Seed-Befehle stehen in Backend/README.md.
 - Anfrage-DTO, Gemini-Anbindung, Rezeptauswahl, Einkaufsliste und Budgetprüfung sind inzwischen implementiert (siehe unten). Vollständige Wochenplanung ist noch offen.
 
 ## Rezeptanfrage und Gemini – implementiert
@@ -109,7 +109,7 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - GEMINI_MODEL in bestehender .env ergänzt. Nutzer hat inzwischen GEMINI_API_KEY gesetzt; der laufende Container lädt denselben Schlüssel. Compose gibt beide Werte weiter. Übriges Backend startet ohne Schlüssel, Rezeptgenerierung liefert bei vorhandenem Katalog ohne Schlüssel 503.
 - Geprüft: TypeScript, Build, 27 automatisierte Tests, Compose-Konfiguration, Docker-Image und gesunde Testcontainer. Integration gegen echte MongoDB und tatsächliches Gemini-SDK mit lokalem Mockserver bestätigt HTTP-Validierung, Authentifizierung, Ernährungs-/Allergen-/Zutatenfilter, Paketaggregation und Budget, eine Korrektur, ungültige Antwort (502), Provider-Kontingent (503), fehlenden Schlüssel (503), lokale Begrenzung (429) sowie Swagger-Antwortschemas. Nutzerdokument nach Anfrage unverändert.
 - Integration prüft Seed-Metadatenmigration: 35 neue Produkte plus drei ergänzte Metadatenfelder an einem alten Testprodukt, dessen geänderter Preis unverändert bleibt. Erneuter Seed erzeugt weder Duplikate noch erneute Metadatenänderungen.
-- Teststack `kochfaul-recipes-verification` (Ports 3110/27030) samt Testvolume entfernt; normale Anwendungsdatenbank unverändert. Keine externen KI-Aufrufe im Test.
+- Teststack `smartspoon-recipes-verification` (Ports 3110/27030) samt Testvolume entfernt; normale Anwendungsdatenbank unverändert. Keine externen KI-Aufrufe im Test.
 - Live-Prüfung mit eigenem Schlüssel: Datenbank bereit, zwölf REWE-Testprodukte mit Metadaten vorhanden. Modellliste erfolgreich; gemini-3.5-flash-lite verfügbar. Minimale Textgenerierung antwortet erfolgreich mit OK. Echte POST-Rezeptanfrage liefert jedoch 502; direkter Schema-Test liefert upstream 400 INVALID_ARGUMENT, auch mit reduziertem Schema. Weitere Minimaltests liefern 503 (hohe Nachfrage) bzw. 504 (Zeitlimit). Schlüssel funktioniert, vollständige Rezeptgenerierung ist noch nicht erfolgreich bestätigt; Ursache der Schema-Ablehnung bleibt offen. Temporären Testnutzer wieder gelöscht; keine Geheimnisse ausgegeben.
 - Schema-Kompatibilität behoben: responseJsonSchema durch responseSchema mit Gemini-Typen und Pflichtfeldern ersetzt. Vollständiges Schema mit Grenzen wurde auch dort mit 400 abgelehnt; strukturelles Schema ohne Werte-/Längengrenzen funktioniert. Grenzen, unbekannte Felder, Produkt-IDs und fachliche Vorgaben bleiben unverändert lokal durch Zod und BudgetService abgesichert. Keine automatische Ausweichanfrage und keine zusätzlichen SDK-Wiederholungen.
 - Geprüft nach Korrektur: Build und alle 27 automatisierten Tests erfolgreich; HTTP-Integration mit echter MongoDB und tatsächlichem SDK gegen lokalen Mock erfolgreich. Isolierte Testdatenbank anschließend gelöscht. Docker-Backend neu gebaut und gestartet.
@@ -215,3 +215,19 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - CD vorerst nur in docs/CI_CD.md festgelegt: versionierte Release-Images, später manuelle Freigabe und Deployment unveränderlicher Images; Hosting noch offen. Kein aktiver CD-Workflow.
 - Beim Start dieses Schritts existieren weder lokales Git-Repository noch Remote. GitHub-URL angefragt; Push und erster GitHub-Lauf noch ausstehend.
 - Lokal geprüft: Workflow-YAML lesbar, beide TypeScript-Prüfungen und Builds erfolgreich, 31 Backend- und 49 Frontend-Tests sowie MongoDB-HTTP-Integration bestanden. Isolierter CI-Docker-Stack healthy; vier HTTP-Prüfungen bestanden. Testdatenbank und Teststack samt Testvolume entfernt. Git auf main initialisiert; Ignore-Regeln bestätigt und einfache Prüfung auf Schlüssel-/Token-/Private-Key-Muster ohne Treffer.
+
+## Projektname SmartSpoon – 9. Oktober 2026
+
+- Projekt und App auf Nutzerwunsch in SmartSpoon umbenannt: Oberfläche/SEO/Seitentitel, API/Health, npm-Pakete und Lockfiles, Angular-Projekt/Buildpfad, Nginx und CI-/Testnamen.
+- JWT-Issuer/Audiences und Session-Key ebenfalls umbenannt; erneute Anmeldung erforderlich. Alte ungespeicherte Generierungen benötigen einen neuen Speichernachweis. Bereits gespeicherte Auswahlen bleiben erhalten.
+- Physische MongoDB-Datenbank kochfaul und vorhandenes Volume kochfaul_mongodb_data aus Kompatibilitätsgründen erhalten. CI erhält explizit ein eigenes Volume, damit Cleanup niemals Anwendungsdaten entfernt.
+- Geprüft: beide TypeScript-Prüfungen und Builds, 31 Backend- und 49 Frontend-Tests, MongoDB-HTTP-Integration sowie vier Docker-HTTP-Tests bestanden. Neue Images gebaut und alle SmartSpoon-Dienste healthy; HTML, Health und Swagger tragen den neuen Namen. Vorhandenes Datenvolume per Container-Mount bestätigt. Projektordner ebenfalls in SmartSpoon umbenannt; GitHub-Remote weiterhin nicht gesetzt.
+
+## Frontend-Refactoring – konsequente Tailwind-Nutzung, 9. Oktober 2026
+
+- 1.406 Zeilen Komponenten-SCSS durch Tailwind-Utilities ersetzt; eigene Komponentenordner und separate Dateien beibehalten. Layout, Abstände, responsive Anpassungen und Zustände direkt in Templates; Host-Layout über statische Tailwind-Klassen. Keine Backend- oder Produktänderungen.
+- Tailwind-Preflight aktiviert. Zentrales @theme mit Farben, Typografie inklusive fluiden Überschriften, Radien, Content-Breite und bisherigen Layout-Breakpoints. Gemeinsame Buttons/Formularfelder als begrenzte @apply-Komponenten; page-container als wiederverwendbare Utility. Keine doppelte CSS-Variablenpalette.
+- Aktive Navigation über ARIA-Varianten, Wizard-Schritte über group-aria, Einkaufsartikel über has-checked/group-has-checked. Fokus/Fehler/disabled/Backdrop und reduzierte Animation als Tailwind-Varianten. Dialog nach Preflight explizit zentriert.
+- prettier-plugin-tailwindcss in beiden vorhandenen Prettier-Konfigurationen mit Stylesheet-Verweis integriert; Tailwind IntelliSense empfohlen. Styling-Regeln in docs/FRONTEND_STYLING.md dokumentiert.
+- Geprüft: TypeScript, alle 49 bestehenden Frontend-Tests und Produktionsbuild erfolgreich. Browservergleich mit bisherigem Docker-Stand: Start/Auth/404, alle Wizard-Schritte inklusive Mehrfachauswahl, Ergebnis/Einkaufsliste, gespeicherte Übersicht/Details und Löschdialog bei 320/390/768/1440 ohne Überlaufen oder Laufzeitfehler. Speichern/Neuladen/Häkchen-Wiederherstellung/Löschen mit Mock-API bestätigt, keine echten KI-Aufrufe. Desktop und Mobil visuell geprüft.
+- Abschluss: alle Template-Klassen gegen das Tailwind-Designsystem geprüft (keine unbekannten Utilities); Prettier-Check für geänderte HTML-/Style-Konfiguration bestanden. Finales Frontend-Docker-Image gebaut und healthy, vier HTTP-Integrationstests sowie vollständiger Browserablauf gegen den Produktionsbuild bestanden.

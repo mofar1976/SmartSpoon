@@ -1,8 +1,16 @@
 <section aria-labelledby="result-title">
-  <div class="result-heading">
+  <div
+    class="flex items-center justify-between gap-5 max-sm:mb-6 max-sm:flex-col max-sm:items-start"
+  >
     <div>
-      <span class="eyebrow">DEINE AUSWAHL IST DA</span>
-      <h2 id="result-title" tabindex="-1">Zeit für etwas Gutes.</h2>
+      <span class="text-label font-bold tracking-[1px] text-brand">DEINE AUSWAHL IST DA</span>
+      <h2
+        class="mt-3.5 mb-6.5 text-heading font-bold tracking-[-1px] outline-none max-sm:mb-0 max-sm:text-title-lg"
+        id="result-title"
+        tabindex="-1"
+      >
+        Zeit für etwas Gutes.
+      </h2>
     </div>
     @if (!stored()) {
       <button
@@ -15,47 +23,59 @@
       </button>
     }
   </div>
-  <div class="budget-strip">
+  <div
+    class="flex items-center gap-9 rounded-card bg-brand-soft p-6.5 max-lg:flex-wrap max-lg:gap-6 max-sm:p-5.5"
+  >
     <div>
-      <span>Einkaufskosten</span
-      ><strong>{{ result().totalCostCents / 100 | currency: 'EUR' }}</strong>
+      <span class="block text-xs text-muted">Einkaufskosten</span
+      ><strong class="mt-2 block text-3xl whitespace-nowrap text-brand max-sm:text-title">{{
+        result().totalCostCents / 100 | currency: 'EUR'
+      }}</strong>
     </div>
     <div>
-      <span>Budget übrig</span
-      ><strong>{{ result().remainingBudgetCents / 100 | currency: 'EUR' }}</strong>
+      <span class="block text-xs text-muted">Budget übrig</span
+      ><strong class="mt-2 block text-3xl whitespace-nowrap text-brand max-sm:text-title">{{
+        result().remainingBudgetCents / 100 | currency: 'EUR'
+      }}</strong>
     </div>
-    <p>Die Kosten umfassen ganze Kaufpackungen für diese Rezeptauswahl.</p>
+    <p
+      class="my-[1em] ml-auto max-w-70 text-caption leading-[1.7] text-muted max-lg:m-0 max-lg:max-w-none"
+    >
+      Die Kosten umfassen ganze Kaufpackungen für diese Rezeptauswahl.
+    </p>
   </div>
-  <p class="price-notice">
+  <p class="mt-5 mb-7 text-xs leading-[1.7] text-muted">
     <strong>{{ result().priceType === 'test' ? 'Fiktive Testpreise.' : 'Preishinweis.' }}</strong>
     {{ result().priceNotice }}
   </p>
   <ng-content />
-  <div class="recipe-grid">
+  <div class="grid grid-cols-3 gap-5 max-lg:grid-cols-1">
     @for (recipe of result().recipes; track $index) {
-      <article class="recipe-card">
-        <span class="recipe-number">REZEPT {{ $index + 1 }}</span>
-        <h3>{{ recipe.title }}</h3>
-        <p class="recipe-meta">
+      <article class="min-w-0 rounded-card border border-border bg-surface p-6.5 wrap-anywhere">
+        <span class="text-label font-bold tracking-[1px] text-brand">REZEPT {{ $index + 1 }}</span>
+        <h3 class="mt-4 mb-3 text-title-sm leading-tight font-bold tracking-[-0.6px]">
+          {{ recipe.title }}
+        </h3>
+        <p class="my-[1em] text-caption text-muted">
           {{ recipe.cookingTimeMinutes }} Min. · {{ recipe.servings }}
           {{ recipe.servings === 1 ? 'Portion' : 'Portionen' }}
         </p>
-        <details>
-          <summary>Zutaten & Zubereitung</summary>
-          <h4>Zutaten</h4>
-          <ul>
+        <details class="mt-6 border-t border-t-border pt-4.5 text-caption leading-[1.8]">
+          <summary class="cursor-pointer font-semibold text-brand">Zutaten & Zubereitung</summary>
+          <h4 class="mt-4.5 mb-2 text-caption font-bold">Zutaten</h4>
+          <ul class="m-0 list-disc pl-5">
             @for (ingredient of recipe.ingredients; track ingredient.productId) {
-              <li>
+              <li class="mb-2">
                 {{ ingredient.quantity }}
                 {{ ingredient.unit === 'piece' ? 'Stück' : ingredient.unit }}
                 {{ ingredient.productName }}
               </li>
             }
           </ul>
-          <h4>So geht’s</h4>
-          <ol>
+          <h4 class="mt-4.5 mb-2 text-caption font-bold">So geht’s</h4>
+          <ol class="m-0 list-decimal pl-5">
             @for (step of recipe.steps; track $index) {
-              <li>{{ step }}</li>
+              <li class="mb-2">{{ step }}</li>
             }
           </ol>
         </details>
@@ -68,8 +88,8 @@
     [checkedProductIds]="checkedProductIds()"
     (purchasedChange)="purchasedChange.emit($event)"
   />
-  <div class="result-footer">
-    <p>
+  <div class="mt-7 flex items-center justify-between gap-6 max-sm:flex-col max-sm:items-start">
+    <p class="my-[1em] max-w-150 text-xs leading-[1.7] text-muted">
       Diese Auswahl ist kein vollständiger Wochenplan.
       {{
         stored()

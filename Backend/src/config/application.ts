@@ -6,7 +6,7 @@ export function configureApplication(app: INestApplication): void {
   app.enableShutdownHooks();
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }));
   const config = new DocumentBuilder()
-    .setTitle('Kochfaul API')
+    .setTitle('SmartSpoon API')
     .setDescription('Backend für günstige Rezepte und Wochenpläne.')
     .setVersion('0.1.0')
     .addBearerAuth()

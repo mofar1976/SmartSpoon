@@ -21,7 +21,7 @@ function canonical(value: unknown): string {
   return JSON.stringify(value) ?? 'null';
 }
 const digest = (value: unknown) => createHash('sha256').update(canonical(value)).digest('hex');
-const audience = 'kochfaul-save-recipes';
+const audience = 'smartspoon-save-recipes';
 
 @Injectable()
 export class SnapshotProofService {
@@ -29,7 +29,7 @@ export class SnapshotProofService {
   async issue(result: RecipeSnapshot, ownerId: string): Promise<string> {
     return this.jwt.signAsync(
       { sub: ownerId, digest: digest(result) },
-      { audience, issuer: 'kochfaul', algorithm: 'HS256', expiresIn: '24h', jwtid: randomUUID() },
+      { audience, issuer: 'smartspoon', algorithm: 'HS256', expiresIn: '24h', jwtid: randomUUID() },
     );
   }
   async verify(response: RecipeGenerationResponseDto, ownerId: string) {
@@ -41,7 +41,7 @@ export class SnapshotProofService {
         digest: string;
         jti: string;
         iat: number;
-      }>(saveProof, { algorithms: ['HS256'], issuer: 'kochfaul', audience });
+      }>(saveProof, { algorithms: ['HS256'], issuer: 'smartspoon', audience });
       if (
         claims.sub !== ownerId ||
         typeof claims.jti !== 'string' ||

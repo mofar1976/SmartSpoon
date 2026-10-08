@@ -13,6 +13,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-multi-select',
+  host: { class: 'block min-w-0' },
   templateUrl: './multi-select.html',
   styleUrl: './multi-select.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

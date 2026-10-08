@@ -15,7 +15,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
     request.url.startsWith('//')
   )
     return next(request);
-  const path = new URL(request.url, 'http://kochfaul.local').pathname;
+  const path = new URL(request.url, 'http://smartspoon.local').pathname;
   if (!path.startsWith(base + '/')) return next(request);
   if (path === base + '/auth/login' || path === base + '/auth/register') return next(request);
   const session = inject(SessionStore);

@@ -45,7 +45,7 @@ jobs:
       - name: HTTP and MongoDB integration
         run: node --test test/saved-recipes.integration.cjs
         env:
-          SAVED_RECIPES_TEST_MONGODB_URI: mongodb://127.0.0.1:27017/kochfaul_saved_verification_ci
+          SAVED_RECIPES_TEST_MONGODB_URI: mongodb://127.0.0.1:27017/smartspoon_saved_verification_ci
           GEMINI_API_KEY: ''
 
   frontend:
@@ -75,7 +75,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      COMPOSE_PROJECT_NAME: kochfaul-ci
+      COMPOSE_PROJECT_NAME: smartspoon-ci
+      MONGODB_VOLUME_NAME: smartspoon-ci-mongodb-data
       JWT_SECRET: ci-only-test-secret-never-use-in-production
       GEMINI_API_KEY: ''
       PORT: '3000'

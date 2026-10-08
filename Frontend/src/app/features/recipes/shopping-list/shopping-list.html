@@ -1,22 +1,29 @@
-<section class="shopping-list" aria-labelledby="shopping-title">
-  <div class="shopping-heading">
+<section class="mt-10" aria-labelledby="shopping-title">
+  <div class="flex flex-wrap items-center justify-between gap-4">
     <div>
-      <span class="eyebrow">ALLES FÜR DEINE REZEPTE</span>
-      <h2 id="shopping-title">Deine Einkaufsliste</h2>
+      <span class="text-label font-bold tracking-[0.12em] text-brand">ALLES FÜR DEINE REZEPTE</span>
+      <h2 class="my-[0.45rem] text-shopping-title font-bold" id="shopping-title">
+        Deine Einkaufsliste
+      </h2>
     </div>
-    <p role="status" aria-live="polite">
+    <p class="my-[1em] font-semibold text-brand" role="status" aria-live="polite">
       {{ purchasedCount() }} von {{ result().shoppingList.length }} Artikeln gekauft
     </p>
   </div>
-  <p class="shopping-description">
+  <p class="my-[1em] text-sm leading-[1.6] text-muted">
     Die Mengen sind für alle ausgewählten Rezepte zusammengerechnet. Hake ab, was du bereits gekauft
     hast.
   </p>
-  <ul class="items">
+  <ul
+    class="mt-[1.4rem] mb-0 list-none overflow-hidden rounded-2xl border border-border bg-white p-0"
+  >
     @for (item of result().shoppingList; track item.product.id) {
-      <li class="item" [class.purchased]="checkedProductIds().has(item.product.id)">
-        <label class="product"
+      <li
+        class="group/item grid grid-cols-[minmax(0,_1.3fr)_minmax(0,_1fr)_minmax(120px,_0.6fr)] items-center gap-6 p-[1.35rem] not-first:border-t not-first:border-t-border has-checked:bg-purchased max-[1001px]:grid-cols-[minmax(0,_1fr)_auto] max-[481px]:gap-4 max-[481px]:p-4"
+      >
+        <label class="flex min-w-0 cursor-pointer items-center gap-[0.9rem] wrap-anywhere"
           ><input
+            class="h-[1.4rem] w-[1.4rem] flex-none cursor-pointer accent-brand focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand"
             type="checkbox"
             [checked]="checkedProductIds().has(item.product.id)"
             (change)="
@@ -26,51 +33,59 @@
               })
             "
           /><span
-            ><strong>{{ item.product.name }}</strong
-            ><span class="pack"
+            ><strong class="block group-has-checked/item:line-through">{{
+              item.product.name
+            }}</strong
+            ><span class="mt-[0.4rem] block text-caption leading-normal text-muted"
               >{{ item.packs }} {{ item.packs === 1 ? 'Packung' : 'Packungen' }} à
               {{ item.product.packageQuantity | number: '1.0-3' }}
               {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}</span
             ></span
           ></label
         >
-        <dl class="quantities">
+        <dl
+          class="m-0 flex justify-between gap-4 text-caption max-[1001px]:col-span-full max-[1001px]:row-start-2 max-[1001px]:justify-start max-[1001px]:gap-8 max-[481px]:flex-wrap max-[481px]:gap-4"
+        >
           <div>
-            <dt>Benötigt</dt>
-            <dd>
+            <dt class="mb-[0.35rem] text-muted">Benötigt</dt>
+            <dd class="m-0 font-semibold whitespace-nowrap">
               {{ item.neededQuantity | number: '1.0-3' }}
               {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
             </dd>
           </div>
           <div>
-            <dt>Kaufmenge</dt>
-            <dd>
+            <dt class="mb-[0.35rem] text-muted">Kaufmenge</dt>
+            <dd class="m-0 font-semibold whitespace-nowrap">
               {{ item.purchasedQuantity | number: '1.0-3' }}
               {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
             </dd>
           </div>
           <div>
-            <dt>Übrig</dt>
-            <dd>
+            <dt class="mb-[0.35rem] text-muted">Übrig</dt>
+            <dd class="m-0 font-semibold whitespace-nowrap">
               {{ item.leftoverQuantity | number: '1.0-3' }}
               {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
             </dd>
           </div>
         </dl>
-        <div class="cost">
-          <strong>{{ item.costCents / 100 | currency: 'EUR' }}</strong
-          ><span>{{ item.product.priceCents / 100 | currency: 'EUR' }} / Packung</span>
+        <div
+          class="text-right max-[481px]:col-span-full max-[481px]:flex max-[481px]:items-baseline max-[481px]:justify-between max-[481px]:gap-2 max-[481px]:text-left"
+        >
+          <strong class="text-lg">{{ item.costCents / 100 | currency: 'EUR' }}</strong
+          ><span class="mt-[0.4rem] block text-caption leading-normal text-muted"
+            >{{ item.product.priceCents / 100 | currency: 'EUR' }} / Packung</span
+          >
         </div>
       </li>
     } @empty {
-      <li class="empty">Für diese Auswahl liegen keine Einkaufsartikel vor.</li>
+      <li class="p-[1.35rem]">Für diese Auswahl liegen keine Einkaufsartikel vor.</li>
     }
   </ul>
-  <div class="shopping-total">
+  <div class="mt-4 flex justify-between gap-4 rounded-xl bg-brand-soft px-[1.35rem] py-4 font-bold">
     <span>Gesamter Einkauf</span
     ><strong>{{ result().totalCostCents / 100 | currency: 'EUR' }}</strong>
   </div>
-  <p class="shopping-description">
+  <p class="my-[1em] text-sm leading-[1.6] text-muted">
     Häkchen ändern die Einkaufskosten und dein Restbudget nicht.
     {{
       stored()

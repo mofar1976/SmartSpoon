@@ -1,4 +1,4 @@
-<div class="relative min-w-0">
+<div class="field relative">
   <label class="field-label" [for]="controlId()">{{ label() }}</label>
   <button
     #trigger
@@ -16,17 +16,17 @@
   </button>
   @if (opened()) {
     <fieldset
-      class="absolute top-full left-0 z-20 m-0 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-solid border-outline bg-surface p-2 shadow-lg"
+      class="absolute top-full left-0 z-20 m-0 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-outline bg-surface p-2 shadow-lg"
       [id]="controlId() + '-options'"
     >
       <legend class="sr-only">{{ label() }}</legend>
       @for (option of options(); track option.value) {
         <label
-          class="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-[#e9edde]"
+          class="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-brand-soft"
         >
           <input
             #checkbox
-            class="h-4 w-4 shrink-0 accent-brand"
+            class="size-4 shrink-0 accent-brand"
             type="checkbox"
             [checked]="selected().includes(option.value)"
             [disabled]="disabled()"

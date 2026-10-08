@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
     if (!match) throw new UnauthorizedException('Anmeldung erforderlich.');
     let payload: { sub?: unknown };
     try {
-      payload = await this.jwt.verifyAsync(match[1], { algorithms: ['HS256'], issuer: 'kochfaul', audience: 'kochfaul-api' });
+      payload = await this.jwt.verifyAsync(match[1], { algorithms: ['HS256'], issuer: 'smartspoon', audience: 'smartspoon-api' });
     } catch {
       throw new UnauthorizedException('Token ist ungültig oder abgelaufen.');
     }

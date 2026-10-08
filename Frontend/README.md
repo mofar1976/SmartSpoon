@@ -1,6 +1,6 @@
-# Kochfaul Frontend
+# SmartSpoon Frontend
 
-Angular 22.2, TypeScript 6, Standalone-Komponenten, Tailwind CSS 4.3 mit PostCSS und SCSS für die bestehenden Seitenlayouts. Node.js 24.15 oder neuer innerhalb der 24er-Reihe wird empfohlen; weitere unterstützte Versionen stehen in package.json.
+Angular 22.2, TypeScript 6, Standalone-Komponenten, Tailwind CSS 4.3 mit PostCSS, Utility-Layouts und zentralem Design-Theme. Node.js 24.15 oder neuer innerhalb der 24er-Reihe wird empfohlen; weitere unterstützte Versionen stehen in package.json.
 
 ## Lokal starten
 
@@ -46,7 +46,7 @@ npm test
 npm run build
 ```
 
-Produktionsdateien: `dist/kochfaul-frontend/browser/`. Produktionshosting muss für Frontend-Routen auf `index.html` zurückfallen und `/api` an NestJS weiterleiten. Der Entwicklungsproxy gehört nicht zum Produktionsbuild. Docker-Einbindung ist eingerichtet (siehe unten).
+Produktionsdateien: `dist/smartspoon-frontend/browser/`. Produktionshosting muss für Frontend-Routen auf `index.html` zurückfallen und `/api` an NestJS weiterleiten. Der Entwicklungsproxy gehört nicht zum Produktionsbuild. Docker-Einbindung ist eingerichtet (siehe unten).
 
 Build, TypeScript, Navigation inklusive direktem Neuladen, unbekannte URLs, Sprunglink, Fokusführung und Breiten 320/390/768/1440 wurden geprüft. Backend-Bereitschaft über den Entwicklungsproxy bestätigt. 49 gezielte Tests prüfen Auth-Sitzung, Ablauf, Logout, API-Token-Grenzen, verspätete Antworten, Guard, Fehlerbehandlung, Formularvalidierung, exakte Cent-Umrechnung, Doppelklickschutz, Anfrageabbruch und temporäre Rezeptdaten. Browserprüfung gegen das reale Backend bestätigt Registrierung, Login, Neuladen und Logout; Fehlerzustände zusätzlich mit gezielten Mock-Antworten geprüft. Die Tests rufen Gemini nicht auf.
 
@@ -112,11 +112,11 @@ Für VS Code die empfohlene Erweiterung `esbenp.prettier-vscode` installieren/ak
 
 ## Gestaltung mit Tailwind
 
-Angular Material und CDK wurden durch Tailwind ersetzt. `.postcssrc.json` integriert `@tailwindcss/postcss`; `src/tailwind.css` definiert die Designfarben und gemeinsamen Buttons/Formularfelder. Bestehende Seitenlayouts und besondere Gestaltung bleiben in den separaten Komponenten-SCSS-Dateien erhalten. Tailwinds Preflight-Reset ist deaktiviert, damit die bestehende Typografie und Abstände erhalten bleiben.
+Angular Material und CDK wurden durch Tailwind ersetzt. `.postcssrc.json` integriert `@tailwindcss/postcss`; `src/tailwind.css` definiert die Designfarben und gemeinsamen Buttons/Formularfelder. Layouts, Abstände, Typografie, responsive Anpassungen und Zustände stehen als Tailwind-Utilities in den Templates. Preflight ist aktiviert; Design-Tokens für Farben, Typografie, Radien und Breakpoints stehen zentral im @theme. Komponenten-SCSS enthält keine Layout-Regeln mehr.
 
 Einfache Auswahlfelder sind native Selects. `shared/ui/multi-select/` stellt eine Mehrfachauswahl über Angular ControlValueAccessor bereit: sichtbare Beschriftung, Checkboxen, Escape, Fokus-Rückgabe, Schließen bei Fokuswechsel/Klick außerhalb und gesperrter Zustand. Eigener Ordner mit TS/HTML/SCSS; kein Material nötig. Eingaben und Fehler verwenden explizite Labels und ARIA-Zuordnungen.
 
-Die Integration folgt der offiziellen [Tailwind-Anleitung für Angular](https://tailwindcss.com/docs/installation/framework-guides/angular); der optionale Reset wird gemäß [Preflight-Dokumentation](https://tailwindcss.com/docs/preflight) ausgelassen. Docker kopiert die PostCSS-Konfiguration in den Build.
+Die Integration folgt der offiziellen [Tailwind-Anleitung für Angular](https://tailwindcss.com/docs/installation/framework-guides/angular); die Basis verwendet [Preflight](https://tailwindcss.com/docs/preflight). Docker kopiert die PostCSS-Konfiguration in den Build.
 
 ## Gespeicherte Rezeptauswahlen
 
@@ -129,3 +129,5 @@ Löschen erfordert eine Bestätigung im nativen Dialog; Abbrechen/Escape lässt 
 API-Aufrufe für Speicherung/Liste/Detail/Löschen haben zehn Sekunden Zeitlimit und keine automatischen Wiederholungen. Doppelte Speicher-/Löschklicks werden gesperrt. Nicht gespeicherte Daten bleiben im Arbeitsspeicher; Sitzungs-/Auswahlwechsel verwerfen alte Antworten und löschen lokalen Speicherstatus. Logout löscht keine dauerhaft gespeicherten Auswahlen auf dem Server. Auth-Rückkehr ist nur zu bekannten internen Rezept-/Speicherrouten möglich.
 
 Geprüft: 49 Tests, TypeScript und Produktionsbuild. Live-Browserablauf mit temporärem Nutzer: echte Gemini-Generierung, Speichern, Öffnen/Neuladen, Häkchen-Wiederherstellung, Übersicht, Löschbestätigung und Schutz ohne Anmeldung. Speicher-/Löschfehler mit Mock-Antworten und manueller Wiederholung geprüft; mobile Breiten 320–1440 ohne Überlaufen. Testnutzer und gespeicherte Testdaten anschließend entfernt.
+
+Das offizielle prettier-plugin-tailwindcss sortiert Klassen beim Formatieren und Speichern anhand unseres Themes. Die Prettier-Konfigurationen im Stamm und Frontend verweisen auf src/tailwind.css. Tailwind IntelliSense ist als VS-Code-Erweiterung empfohlen. Regeln und Beispiele: [FRONTEND_STYLING.md](../docs/FRONTEND_STYLING.md).

@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "kochfaul-frontend": {
+    "smartspoon-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -85,10 +85,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "kochfaul-frontend:build:production"
+              "buildTarget": "smartspoon-frontend:build:production"
             },
             "development": {
-              "buildTarget": "kochfaul-frontend:build:development"
+              "buildTarget": "smartspoon-frontend:build:development"
             }
           },
           "defaultConfiguration": "development",

@@ -1,4 +1,4 @@
-# Kochfaul Backend
+# SmartSpoon Backend
 
 NestJS-Backend für günstige KI-Rezepte und Wochenpläne. Architektur und Fortschritt: [docs/PLAN.md](../docs/PLAN.md).
 
@@ -189,7 +189,7 @@ Fehler: 400 bei ungültigen Eingaben, 401 ohne gültigen Login, 422 ohne passend
 Der Test nutzt echte MongoDB und das echte Gemini-SDK gegen einen lokalen Mockserver. Es werden keine Google-Anfragen gesendet und keine echten API-Schlüssel benötigt. Er muss gegen eine isolierte Testdatenbank laufen und legt dort Testprodukte und ein Testkonto an:
 
 ```sh
-RECIPES_TEST_MONGODB_URI=mongodb://127.0.0.1:27030/kochfaul node --test test/recipes.integration.cjs
+RECIPES_TEST_MONGODB_URI=mongodb://127.0.0.1:27030/smartspoon node --test test/recipes.integration.cjs
 ```
 
 ## Rezeptauswahl und Einkaufsliste speichern
@@ -215,7 +215,11 @@ Gezielte Integration mit isolierter MongoDB und Mock-KI:
 
 ```sh
 npm run build
-SAVED_RECIPES_TEST_MONGODB_URI=mongodb://127.0.0.1:27027/kochfaul_saved_verification_local node --test test/saved-recipes.integration.cjs
+SAVED_RECIPES_TEST_MONGODB_URI=mongodb://127.0.0.1:27027/smartspoon_saved_verification_local node --test test/saved-recipes.integration.cjs
 ```
 
 Port passend zur lokalen MongoDB wählen. Das Script verlangt den reservierten Datenbanknamenspräfix und löscht diese Testdatenbank am Ende. Es sendet keine echten Gemini-Anfragen.
+
+## Bestehende Daten nach Umbenennung
+
+Die App heißt SmartSpoon. Die physische Datenbank `kochfaul` und das Volume `kochfaul_mongodb_data` behalten ihre Namen, damit vorhandene Konten und gespeicherte Rezepte erhalten bleiben. `MONGODB_VOLUME_NAME` kann für isolierte Teststacks ein eigenes Volume wählen; nicht für den regulären Start ändern. Nach der Umbenennung erneut anmelden.

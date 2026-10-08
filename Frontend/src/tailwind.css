@@ -1,49 +1,75 @@
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tailwindcss';
 @source './app';
+@source './index.html';
 
 @theme {
+  --breakpoint-sm: 37.5625rem;
+  --breakpoint-md: 40.6875rem;
+  --breakpoint-lg: 53.1875rem;
+  --breakpoint-xl: 56.3125rem;
+  --breakpoint-2xl: 65.6875rem;
+  --font-sans: Arial, Helvetica, sans-serif;
   --color-brand: #345c3c;
+  --color-brand-hover: #294b30;
+  --color-brand-soft: #e9edde;
+  --color-brand-muted: #526448;
+  --color-brand-outline: #ccd5bf;
   --color-ink: #243329;
   --color-muted: #61695e;
   --color-surface: #fffdf8;
+  --color-canvas: #f8f7f1;
+  --color-canvas-muted: #f0eee5;
+  --color-border: #e2e4d9;
   --color-outline: #8d9888;
+  --color-danger: #8c3023;
+  --color-danger-soft: #fae9e3;
+  --color-purchased: #f2f6ee;
+  --color-focus: #8b6421;
+  --container-content: 72.5rem;
+  --radius-art: 4rem;
+  --radius-card: 1.125rem;
+  --radius-panel: 1.375rem;
+  --shadow-art: 0 12px 28px #20371c0a;
+  --text-micro: 0.5625rem;
+  --text-tiny: 0.625rem;
+  --text-label: 0.6875rem;
+  --text-caption: 0.8125rem;
+  --text-body-lg: 1.0625rem;
+  --text-title-sm: 1.375rem;
+  --text-title: 1.625rem;
+  --text-title-lg: 1.75rem;
+  --text-heading: 2rem;
+  --text-hero: clamp(2.5rem, 4.8vw, 3.875rem);
+  --text-page-title: clamp(1.875rem, 3.5vw, 2.625rem);
+  --text-auth-title: clamp(2rem, 3.5vw, 2.875rem);
+  --text-section-title: clamp(1.5rem, 2.5vw, 1.875rem);
+  --text-saved-title: clamp(2rem, 4vw, 2.7rem);
+  --text-shopping-title: clamp(1.5rem, 4vw, 2rem);
+  --text-upcoming-title: clamp(2rem, 4vw, 3rem);
 }
 
+/* Shared controls are the only component classes; layouts live in templates. */
 @layer components {
   .btn {
-    @apply inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-2 rounded-xl border border-solid border-transparent px-6 py-2.5 text-sm font-semibold no-underline transition-colors;
+    @apply inline-flex min-h-11.5 cursor-pointer items-center justify-center gap-2 rounded-xl border border-transparent px-6 py-2.5 text-sm font-semibold no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none;
   }
   .btn-primary {
-    @apply bg-brand text-white hover:bg-[#294b30];
+    @apply bg-brand text-white hover:bg-brand-hover;
   }
   .btn-outline {
-    @apply border-outline bg-transparent text-brand hover:bg-[#e9edde];
+    @apply border-outline bg-transparent text-brand hover:bg-brand-soft;
   }
   .btn-text {
-    @apply bg-transparent px-3 text-brand hover:bg-[#e9edde];
-  }
-  .btn:disabled {
-    @apply cursor-not-allowed opacity-50;
+    @apply bg-transparent px-3 text-brand hover:bg-brand-soft;
   }
   .field {
-    @apply relative block min-w-0 w-full;
+    @apply relative block w-full min-w-0;
   }
   .field-label {
     @apply absolute -top-2 left-3 z-1 bg-surface px-1 text-xs text-muted;
   }
   .field-control {
-    @apply block h-14 w-full min-w-0 rounded border border-solid border-outline bg-transparent px-4 text-base text-ink;
-  }
-  .field-control:focus {
-    @apply border-brand outline-2 outline-brand -outline-offset-2;
-  }
-  .field-control[aria-invalid='true'] {
-    @apply border-[#8c3023];
-  }
-  .field-control:disabled {
-    @apply cursor-not-allowed opacity-50;
+    @apply block h-14 w-full min-w-0 rounded border border-outline bg-transparent px-4 text-base text-ink focus:border-brand focus:outline-2 focus:-outline-offset-2 focus:outline-brand disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger;
   }
   .field-hint,
   .field-error {
@@ -53,18 +79,25 @@
     @apply text-muted;
   }
   .field-error {
-    @apply text-[#8c3023];
+    @apply text-danger;
   }
-  .has-suffix .field-control {
-    @apply pr-14;
+}
+
+@utility page-container {
+  @apply mx-auto max-w-content px-5 sm:px-8;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
   }
-  .field .suffix {
-    @apply pointer-events-none absolute top-[19px] right-0;
+  body {
+    @apply bg-canvas font-sans leading-[normal] text-ink antialiased;
   }
-  .has-password-toggle .field-control {
-    @apply pr-28;
+  a {
+    @apply text-brand;
   }
-  .field .password-toggle {
-    @apply absolute top-[5px] right-1;
+  :focus-visible {
+    @apply outline-3 outline-offset-4 outline-focus;
   }
 }

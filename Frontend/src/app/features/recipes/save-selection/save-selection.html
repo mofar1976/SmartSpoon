@@ -1,25 +1,37 @@
-<section class="save-panel" aria-labelledby="save-title" [attr.aria-busy]="state.busy()">
+<section
+  class="my-6 grid grid-cols-2 gap-8 rounded-2xl border border-border bg-surface p-6 max-[751px]:grid-cols-1 max-[751px]:gap-2"
+  aria-labelledby="save-title"
+  [attr.aria-busy]="state.busy()"
+>
   <div>
     <span class="text-xs font-bold tracking-widest text-brand">FÜR SPÄTER AUFHEBEN</span>
-    <h3 id="save-title">Gute Ideen bleiben.</h3>
-    <p>
+    <h3 class="my-[0.7rem] text-title-sm font-bold" id="save-title">Gute Ideen bleiben.</h3>
+    <p class="my-[1em] text-caption leading-[1.6] text-muted">
       Speichere diese Rezepte und die komplette Einkaufsliste in deinem Konto. Deine Eingaben werden
       nicht im Profil gespeichert.
     </p>
   </div>
   @if (state.savedId(); as id) {
     <div role="status">
-      <p class="font-semibold text-brand">Rezepte und Einkaufsliste gespeichert.</p>
+      <p class="my-[1em] text-caption leading-[1.6] font-semibold text-brand">
+        Rezepte und Einkaufsliste gespeichert.
+      </p>
       <a class="btn btn-outline" [routerLink]="['/gespeichert', id]">Gespeicherte Auswahl öffnen</a>
-      <p class="text-xs text-muted">Spätere Änderungen an den Häkchen bleiben lokal.</p>
+      <p class="my-[1em] text-xs leading-[1.6] text-muted">
+        Spätere Änderungen an den Häkchen bleiben lokal.
+      </p>
     </div>
   } @else if (!workspace.result()?.saveProof) {
-    <p class="text-sm text-muted">
+    <p class="my-[1em] text-sm leading-[1.6] text-muted">
       Diese ältere Auswahl hat keinen Speichernachweis. Bitte erstelle eine neue Auswahl, um sie zu
       speichern.
     </p>
   } @else {
-    <form (submit)="$event.preventDefault(); state.save()" novalidate>
+    <form
+      class="flex min-w-0 flex-col gap-4 pt-2"
+      (submit)="$event.preventDefault(); state.save()"
+      novalidate
+    >
       <div class="field">
         <label class="field-label" for="selection-title">Name der Auswahl</label
         ><input
@@ -43,10 +55,17 @@
         {{ state.busy() ? 'Wird gespeichert …' : 'Rezepte & Einkaufsliste speichern' }}
       </button>
       @if (state.busy()) {
-        <p role="status" class="text-sm text-muted">Deine Auswahl wird gespeichert …</p>
+        <p role="status" class="my-[1em] text-sm leading-[1.6] text-muted">
+          Deine Auswahl wird gespeichert …
+        </p>
       }
       @if (state.error()) {
-        <p class="save-error" role="alert">{{ state.error() }}</p>
+        <p
+          class="m-0 rounded-xl bg-danger-soft p-4 text-caption leading-[1.6] text-danger"
+          role="alert"
+        >
+          {{ state.error() }}
+        </p>
       }
     </form>
   }
