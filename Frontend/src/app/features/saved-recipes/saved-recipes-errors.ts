@@ -1,18 +1,17 @@
+import type { TranslationKey } from '../../core/i18n/translation-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TimeoutError } from 'rxjs';
-export function savedRecipesError(error: unknown, action: 'save' | 'load' | 'delete'): string {
+export function savedRecipesErrorKey(
+  error: unknown,
+  action: 'save' | 'load' | 'delete',
+): TranslationKey {
   if (error instanceof HttpErrorResponse) {
-    if (error.status === 401) return 'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.';
-    if (error.status === 404) return 'Diese gespeicherte Auswahl ist nicht mehr verfügbar.';
-    if (error.status === 400 && action === 'save')
-      return 'Diese Auswahl kann nicht gespeichert werden. Der Speichernachweis kann nach 24 Stunden ablaufen. Bitte erstelle bei Bedarf neue Rezepte.';
-    if (error.status === 429) return 'Zu viele Anfragen. Bitte versuche es in einer Minute erneut.';
+    if (error.status === 401) return 'errors.sessionExpired';
+    if (error.status === 404) return 'errors.savedNotFound';
+    if (error.status === 400 && action === 'save') return 'errors.savedProof';
+    if (error.status === 429) return 'errors.savedRateLimit';
   }
-  if (action === 'save')
-    return 'Das Speichern konnte nicht bestätigt werden. Deine Auswahl bleibt erhalten. Du kannst erneut speichern; dieselbe Auswahl wird nicht doppelt angelegt.';
-  if (error instanceof TimeoutError)
-    return 'Die Anfrage dauert zu lange. Bitte versuche es erneut.';
-  return action === 'delete'
-    ? 'Das Löschen konnte nicht bestätigt werden. Bitte versuche es erneut.'
-    : 'Deine gespeicherten Auswahlen konnten nicht geladen werden. Bitte versuche es erneut.';
+  if (action === 'save') return 'errors.savedUnconfirmed';
+  if (error instanceof TimeoutError) return 'errors.savedTimeout';
+  return action === 'delete' ? 'errors.savedDelete' : 'errors.savedLoad';
 }

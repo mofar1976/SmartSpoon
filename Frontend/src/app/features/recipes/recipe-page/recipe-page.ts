@@ -1,23 +1,24 @@
+import { RecipesFacade } from '../../../shared/store/recipes/recipes.facade';
+import { filter } from 'rxjs';
+import { combineLatest, defer, map, startWith } from 'rxjs';
+import { SupermarketsFacade } from '../../../shared/store/supermarkets/supermarkets.facade';
+import { TranslatePipe } from '@ngx-translate/core';
+import { I18nService } from '../../../core/i18n/i18n-service';
 import { SaveSelection } from '../save-selection/save-selection';
-import { RecipeSaveState } from '../recipe-save-state';
+import { SavedRecipesFacade } from '../../../shared/store/saved-recipes/saved-recipes.facade';
 import { MultiSelect } from '../../../shared/ui/multi-select/multi-select';
-import { CurrencyPipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   OnDestroy,
   computed,
-  effect,
   inject,
-  signal,
   viewChild,
 } from '@angular/core';
 import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { RecipeApi } from '../recipe-api';
-import { Market } from '../recipe.models';
 import {
   ALLERGEN_OPTIONS,
   DIET_OPTIONS,
@@ -30,26 +31,44 @@ import { RecipeResults } from '../recipe-results/recipe-results';
 
 @Component({
   host: { class: 'block' },
-  imports: [CurrencyPipe, ReactiveFormsModule, RecipeResults, MultiSelect, SaveSelection],
+  imports: [
+    AsyncPipe,
+    TranslatePipe,
+    CurrencyPipe,
+    ReactiveFormsModule,
+    RecipeResults,
+    MultiSelect,
+    SaveSelection,
+  ],
   templateUrl: './recipe-page.html',
   styleUrl: './recipe-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipePage implements OnDestroy {
-  protected readonly saveState = inject(RecipeSaveState);
+  protected readonly i18n = inject(I18nService);
+  protected readonly saved = inject(SavedRecipesFacade);
   protected readonly workspace = inject(RecipeWorkspace);
-  private readonly api = inject(RecipeApi);
-  private readonly destroyRef = inject(DestroyRef);
+  protected readonly recipes = inject(RecipesFacade);
+  protected readonly markets = inject(SupermarketsFacade);
   protected readonly form = this.workspace.form;
-  protected readonly markets = signal<Market[]>([]);
-  protected readonly marketsLoading = signal(false);
-  protected readonly marketError = signal('');
+  protected readonly marketName$ = combineLatest([
+    this.markets.items$,
+    defer(() =>
+      this.form.controls.supermarket.valueChanges.pipe(
+        startWith(this.form.controls.supermarket.value),
+      ),
+    ),
+  ]).pipe(map(([items, id]) => items.find((market) => market.id === id)?.name ?? null));
   protected readonly lifeOptions = LIFE_OPTIONS;
   protected readonly diets = DIET_OPTIONS;
-  protected readonly allergens = ALLERGEN_OPTIONS;
-  protected readonly ingredients = INGREDIENT_OPTIONS;
+  protected readonly allergens = computed(() =>
+    ALLERGEN_OPTIONS.map((o) => ({ ...o, label: this.i18n.t(o.label) })),
+  );
+  protected readonly ingredients = computed(() =>
+    INGREDIENT_OPTIONS.map((o) => ({ ...o, label: this.i18n.t(o.label) })),
+  );
   protected readonly counts = [1, 2, 3, 4, 5, 6, 7];
-  protected readonly steps = ['Dein Einkauf', 'Dein Essen', 'Deine Auswahl'];
+  protected readonly steps = ['recipes.step1', 'recipes.step2', 'recipes.step3'];
   private readonly changes = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
@@ -60,62 +79,45 @@ export class RecipePage implements OnDestroy {
       budgetCents: euroToCents(v.budgetEuros),
       persons: v.persons,
       minutes: v.maxCookingTimeMinutes,
-      market: this.markets().find((m) => m.id === v.supermarket)?.name ?? 'Noch offen',
-      life: LIFE_OPTIONS.find((o) => o.value === v.lifeSituation)?.label ?? 'Noch offen',
-      diet: DIET_OPTIONS.find((o) => o.value === v.diet)?.label ?? '',
+      life: this.i18n.t(
+        LIFE_OPTIONS.find((o) => o.value === v.lifeSituation)?.label ?? 'common.pending',
+      ),
+      diet: this.i18n.t(DIET_OPTIONS.find((o) => o.value === v.diet)?.label ?? 'common.pending'),
       allergies:
         ALLERGEN_OPTIONS.filter((o) => v.allergies.includes(o.value))
-          .map((o) => o.label)
-          .join(', ') || 'Keine angegeben',
+          .map((o) => this.i18n.t(o.label))
+          .join(', ') || this.i18n.t('common.noneSpecified'),
       exclusions:
         INGREDIENT_OPTIONS.filter((o) => v.excludedIngredients.includes(o.value))
-          .map((o) => o.label)
-          .join(', ') || 'Keine',
+          .map((o) => this.i18n.t(o.label))
+          .join(', ') || this.i18n.t('common.none'),
     };
   });
   private readonly content = viewChild<ElementRef<HTMLElement>>('content');
   private readonly heading = viewChild<ElementRef<HTMLElement>>('stepHeading');
 
   constructor() {
-    this.loadMarkets();
-    effect(() => {
-      if (this.workspace.result())
+    this.markets.items$.pipe(takeUntilDestroyed()).subscribe((items) => {
+      this.form.controls.supermarket.setValidators([
+        Validators.required,
+        oneOf(items.map((market) => market.id)),
+      ]);
+      this.form.controls.supermarket.updateValueAndValidity({ emitEvent: false });
+    });
+    this.markets.load();
+    this.recipes.result$
+      .pipe(
+        filter((result) => result !== null),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
         requestAnimationFrame(() =>
           this.content()?.nativeElement.querySelector<HTMLElement>('#result-title')?.focus(),
         );
-    });
-  }
-  protected loadMarkets(): void {
-    if (this.marketsLoading()) return;
-    this.marketsLoading.set(true);
-    this.marketError.set('');
-    this.api
-      .supermarkets()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (markets) => {
-          this.markets.set(markets);
-          this.form.controls.supermarket.setValidators([
-            Validators.required,
-            oneOf(markets.map((m) => m.id)),
-          ]);
-          this.form.controls.supermarket.updateValueAndValidity();
-          this.marketsLoading.set(false);
-          if (!markets.length)
-            this.marketError.set(
-              'Zurzeit sind keine Supermärkte verfügbar. Bitte versuche es später erneut.',
-            );
-        },
-        error: () => {
-          this.marketsLoading.set(false);
-          this.marketError.set(
-            'Die Supermärkte konnten nicht geladen werden. Bitte prüfe die Verbindung und versuche es erneut.',
-          );
-        },
       });
   }
-  protected proceed(): void {
-    if (this.workspace.busy() || this.marketError() || this.marketsLoading()) return;
+  protected proceed(marketsUnavailable: boolean): void {
+    if (this.recipes.snapshot().requestId !== null || marketsUnavailable) return;
     if (this.workspace.step() < 2) {
       if (this.workspace.next()) this.focusHeading();
       else this.focusInvalid();
@@ -149,6 +151,6 @@ export class RecipePage implements OnDestroy {
     );
   }
   ngOnDestroy(): void {
-    if (this.workspace.busy()) this.workspace.cancel();
+    if (this.recipes.snapshot().requestId !== null) this.recipes.cancel();
   }
 }

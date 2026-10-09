@@ -3,13 +3,15 @@
     class="flex items-center justify-between gap-5 max-sm:mb-6 max-sm:flex-col max-sm:items-start"
   >
     <div>
-      <span class="text-label font-bold tracking-[1px] text-brand">DEINE AUSWAHL IST DA</span>
+      <span class="text-label font-bold tracking-[1px] text-brand">{{
+        'results.eyebrow' | translate
+      }}</span>
       <h2
         class="mt-3.5 mb-6.5 text-heading font-bold tracking-[-1px] outline-none max-sm:mb-0 max-sm:text-title-lg"
         id="result-title"
         tabindex="-1"
       >
-        Zeit für etwas Gutes.
+        {{ 'results.title' | translate }}
       </h2>
     </div>
     @if (!stored()) {
@@ -19,7 +21,7 @@
         class="btn btn-outline"
         [disabled]="actionsDisabled()"
       >
-        Angaben ändern
+        {{ 'results.edit' | translate }}
       </button>
     }
   </div>
@@ -27,52 +29,66 @@
     class="flex items-center gap-9 rounded-card bg-brand-soft p-6.5 max-lg:flex-wrap max-lg:gap-6 max-sm:p-5.5"
   >
     <div>
-      <span class="block text-xs text-muted">Einkaufskosten</span
+      <span class="block text-xs text-muted">{{ 'results.shoppingCost' | translate }}</span
       ><strong class="mt-2 block text-3xl whitespace-nowrap text-brand max-sm:text-title">{{
-        result().totalCostCents / 100 | currency: 'EUR'
+        result().totalCostCents / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
       }}</strong>
     </div>
     <div>
-      <span class="block text-xs text-muted">Budget übrig</span
+      <span class="block text-xs text-muted">{{ 'results.remainingBudget' | translate }}</span
       ><strong class="mt-2 block text-3xl whitespace-nowrap text-brand max-sm:text-title">{{
-        result().remainingBudgetCents / 100 | currency: 'EUR'
+        result().remainingBudgetCents / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
       }}</strong>
     </div>
     <p
       class="my-[1em] ml-auto max-w-70 text-caption leading-[1.7] text-muted max-lg:m-0 max-lg:max-w-none"
     >
-      Die Kosten umfassen ganze Kaufpackungen für diese Rezeptauswahl.
+      {{ 'results.costNotice' | translate }}
     </p>
   </div>
   <p class="mt-5 mb-7 text-xs leading-[1.7] text-muted">
-    <strong>{{ result().priceType === 'test' ? 'Fiktive Testpreise.' : 'Preishinweis.' }}</strong>
-    {{ result().priceNotice }}
+    <strong>{{
+      result().priceType === 'test'
+        ? i18n.t('results.testPriceLabel')
+        : i18n.t('results.priceLabel')
+    }}</strong>
+    {{ result().priceType === 'test' ? i18n.t('results.testNotice') : result().priceNotice }}
   </p>
   <ng-content />
   <div class="grid grid-cols-3 gap-5 max-lg:grid-cols-1">
     @for (recipe of result().recipes; track $index) {
       <article class="min-w-0 rounded-card border border-border bg-surface p-6.5 wrap-anywhere">
-        <span class="text-label font-bold tracking-[1px] text-brand">REZEPT {{ $index + 1 }}</span>
+        <span class="text-label font-bold tracking-[1px] text-brand">{{
+          'results.recipeNumber' | translate: { number: $index + 1 }
+        }}</span>
         <h3 class="mt-4 mb-3 text-title-sm leading-tight font-bold tracking-[-0.6px]">
           {{ recipe.title }}
         </h3>
         <p class="my-[1em] text-caption text-muted">
-          {{ recipe.cookingTimeMinutes }} Min. · {{ recipe.servings }}
-          {{ recipe.servings === 1 ? 'Portion' : 'Portionen' }}
+          {{
+            (recipe.servings === 1 ? 'results.meta.one' : 'results.meta.other')
+              | translate: { minutes: recipe.cookingTimeMinutes, servings: recipe.servings }
+          }}
         </p>
         <details class="mt-6 border-t border-t-border pt-4.5 text-caption leading-[1.8]">
-          <summary class="cursor-pointer font-semibold text-brand">Zutaten & Zubereitung</summary>
-          <h4 class="mt-4.5 mb-2 text-caption font-bold">Zutaten</h4>
+          <summary class="cursor-pointer font-semibold text-brand">
+            {{ 'results.ingredientsAndSteps' | translate }}
+          </summary>
+          <h4 class="mt-4.5 mb-2 text-caption font-bold">
+            {{ 'results.ingredients' | translate }}
+          </h4>
           <ul class="m-0 list-disc pl-5">
             @for (ingredient of recipe.ingredients; track ingredient.productId) {
               <li class="mb-2">
-                {{ ingredient.quantity }}
-                {{ ingredient.unit === 'piece' ? 'Stück' : ingredient.unit }}
+                {{ ingredient.quantity | number: '1.0-3' : i18n.locale() }}
+                {{ ingredient.unit === 'piece' ? i18n.t('common.piece') : ingredient.unit }}
                 {{ ingredient.productName }}
               </li>
             }
           </ul>
-          <h4 class="mt-4.5 mb-2 text-caption font-bold">So geht’s</h4>
+          <h4 class="mt-4.5 mb-2 text-caption font-bold">
+            {{ 'results.preparation' | translate }}
+          </h4>
           <ol class="m-0 list-decimal pl-5">
             @for (step of recipe.steps; track $index) {
               <li class="mb-2">{{ step }}</li>
@@ -90,12 +106,8 @@
   />
   <div class="mt-7 flex items-center justify-between gap-6 max-sm:flex-col max-sm:items-start">
     <p class="my-[1em] max-w-150 text-xs leading-[1.7] text-muted">
-      Diese Auswahl ist kein vollständiger Wochenplan.
-      {{
-        stored()
-          ? 'Die gespeicherten Preise stammen vom Zeitpunkt der Generierung.'
-          : 'Ohne Speichern gehen Angaben und Ergebnisse beim Neuladen verloren.'
-      }}
+      {{ 'results.noWeeklyPlan' | translate }}
+      {{ (stored() ? 'results.savedPriceNotice' : 'results.unsavedNotice') | translate }}
     </p>
     <button
       type="button"
@@ -103,7 +115,7 @@
       class="btn btn-primary"
       [disabled]="actionsDisabled()"
     >
-      Neue Rezeptanfrage
+      {{ 'recipes.newRequest' | translate }}
     </button>
   </div>
 </section>

@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { timeout } from 'rxjs';
-import { API_BASE_URL } from '../../core/api/api.config';
-import { RecipeResult } from '../recipes/recipe.models';
-import { SavedRecipe, SavedRecipeList } from './saved-recipes.models';
+import { API_BASE_URL } from '../../../core/api/api.config';
+import { RecipeResult } from '../../../features/recipes/recipe.models';
+import { SavedRecipe, SavedRecipeList } from '../../../features/saved-recipes/saved-recipes.models';
 @Injectable({ providedIn: 'root' })
-export class SavedRecipesApi {
+export class SavedRecipesService {
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL) + '/saved-recipes';
   save(result: RecipeResult, title: string, checkedProductIds: string[]) {

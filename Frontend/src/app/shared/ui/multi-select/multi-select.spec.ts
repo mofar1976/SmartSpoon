@@ -1,9 +1,11 @@
+import { provideTranslations } from '../../../core/i18n/i18n-service';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MultiSelect } from './multi-select';
 
 afterEach(() => TestBed.resetTestingModule());
 function setup() {
+  TestBed.configureTestingModule({ providers: [provideTranslations('de')] });
   const fixture = TestBed.createComponent(MultiSelect);
   fixture.componentRef.setInput('label', 'Allergien');
   fixture.componentRef.setInput('controlId', 'allergies-test');
