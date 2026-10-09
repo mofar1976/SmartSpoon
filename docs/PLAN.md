@@ -238,3 +238,9 @@ Geld wird in ganzen Centbeträgen verarbeitet. Tatsächlich benötigte ganze Pac
 - Auth: Einführung, Sitzungshinweise, Formular sowie Benutzername, Passwort und Geburtsdatum. Rezepte: Einkauf, Ernährung, Prüfung und Zusammenfassung; bestehende Ergebnis-, Speicher- und Einkaufslistenkomponenten verschoben. Gespeicherte Rezepte: Liste, Karte, Detail und Löschdialog.
 - Seiten behalten Formular- und NgRx-Orchestrierung; Kinder erhalten Inputs und melden Aktionen über Outputs. Tailwind-Gestaltung und DE/EN-Übersetzungen beibehalten.
 - Prüfungen: Produktionsbuild, Anwendungstypprüfung, Spec-Typprüfung und 16 bestehende Tests erfolgreich. Lokale Browserprüfung mit gemockter API: DE/EN-Rezeptablauf, Speichern/Öffnen/Neuladen/Löschen, Sprachenwechsel, Auth-Fehler, Registrierung, Validierungsanzeigen, Fokus und Passwortanzeige. Kein horizontaler Überlauf bei 320/390/768/1440 Pixeln. Keine neuen Store-Tests.
+
+## Gemeinsame UI-Controls (9. Oktober 2026)
+
+- Button-, Input- und Select-Komponenten unter `Frontend/src/app/shared/ui/`, jeweils eigene TS-/HTML-/SCSS-Dateien. Attributselektoren auf nativen Elementen erhalten Formular- und ARIA-Verhalten ohne zusätzliche Wrapper oder ControlValueAccessor.
+- Button mit primary/outline/text-Varianten und sicherem Standardtyp button; Submit explizit über type. Bestehende Standardbuttons und Text-/Zahlen-/Datums-/Passworteingaben sowie Selects in Auth, Rezepten, gespeicherten Rezepten und Shell migriert. Spezialcontrols und Navigationslinks bleiben eigene Elemente.
+- Produktionsbuild, Typecheck, Spec-Typecheck, Prettier und 16 bestehende Tests bestanden. Browser mit Mock-API bestätigt DE/EN-Generierung/Speichern/Öffnen/Neuladen/Löschen, Auth-Validierung/Fokus/Passwortanzeige und responsive Ansichten bei 320/390/768/1440 ohne Überlauf oder Laufzeitfehler.

@@ -1,3 +1,4 @@
+import { Button } from '../../../shared/ui/button/button';
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -34,6 +35,7 @@ import { RecipeWorkspace } from '../recipe-workspace';
 @Component({
   host: { class: 'block' },
   imports: [
+    Button,
     AsyncPipe,
     TranslatePipe,
     ReactiveFormsModule,

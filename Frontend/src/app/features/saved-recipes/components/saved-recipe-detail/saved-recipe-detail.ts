@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -9,7 +10,7 @@ import { SavedRecipe } from '../../saved-recipes.models';
 @Component({
   selector: 'app-saved-recipe-detail',
   host: { class: 'block' },
-  imports: [TranslatePipe, DatePipe, RouterLink, RecipeResults],
+  imports: [Button, TranslatePipe, DatePipe, RouterLink, RecipeResults],
   templateUrl: './saved-recipe-detail.html',
   styleUrl: './saved-recipe-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

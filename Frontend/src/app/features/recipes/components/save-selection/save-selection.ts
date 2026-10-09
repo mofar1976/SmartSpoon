@@ -1,3 +1,5 @@
+import { Input } from '../../../../shared/ui/input/input';
+import { Button } from '../../../../shared/ui/button/button';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +12,7 @@ import { RecipeSaveForm } from '../../recipe-save-form.service';
 
 @Component({
   selector: 'app-save-selection',
-  imports: [AsyncPipe, TranslatePipe, ReactiveFormsModule, RouterLink],
+  imports: [Button, Input, AsyncPipe, TranslatePipe, ReactiveFormsModule, RouterLink],
   templateUrl: './save-selection.html',
   styleUrl: './save-selection.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

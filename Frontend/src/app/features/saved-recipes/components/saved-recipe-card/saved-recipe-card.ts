@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -8,7 +9,7 @@ import { SavedRecipeSummary } from '../../saved-recipes.models';
 @Component({
   selector: 'app-saved-recipe-card',
   host: { class: 'contents' },
-  imports: [TranslatePipe, CurrencyPipe, DatePipe, RouterLink],
+  imports: [Button, TranslatePipe, CurrencyPipe, DatePipe, RouterLink],
   templateUrl: './saved-recipe-card.html',
   styleUrl: './saved-recipe-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

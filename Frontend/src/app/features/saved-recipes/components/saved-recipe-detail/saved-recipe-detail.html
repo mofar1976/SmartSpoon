@@ -1,8 +1,9 @@
 @let selection = savedSelection();
 <div class="flex flex-wrap items-center justify-between gap-4">
-  <a class="btn btn-text" routerLink="/gespeichert">{{ 'saved.all' | translate }}</a
+  <a appButton variant="text" routerLink="/gespeichert">{{ 'saved.all' | translate }}</a
   ><button
-    class="btn btn-text"
+    appButton
+    variant="text"
     type="button"
     (click)="deleteRequested.emit({ id: selection.id, title: selection.title })"
     [disabled]="deleting()"

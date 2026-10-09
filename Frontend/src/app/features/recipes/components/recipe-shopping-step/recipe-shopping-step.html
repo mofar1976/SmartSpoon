@@ -16,7 +16,7 @@
       role="alert"
     >
       <p class="m-0">{{ markets().errorKey | translate }}</p>
-      <button type="button" (click)="reload.emit()" class="btn btn-text">
+      <button appButton variant="text" type="button" (click)="reload.emit()">
         {{ 'common.retryLoad' | translate }}
       </button>
     </div>
@@ -27,8 +27,8 @@
         'recipes.supermarket' | translate
       }}</label
       ><select
+        appSelect
         id="recipe-supermarket"
-        class="field-control"
         [attr.aria-invalid]="
           form().controls.supermarket.touched && form().controls.supermarket.invalid
         "
@@ -57,8 +57,9 @@
         'recipes.budgetLabel' | translate
       }}</label
       ><input
+        appInput
         id="recipe-budgetEuros"
-        class="field-control pr-14"
+        class="pr-14"
         [attr.aria-invalid]="
           form().controls.budgetEuros.touched && form().controls.budgetEuros.invalid
         "
@@ -89,8 +90,8 @@
     <div class="field">
       <label class="field-label" for="recipe-persons">{{ 'recipes.people' | translate }}</label
       ><input
+        appInput
         id="recipe-persons"
-        class="field-control"
         [attr.aria-invalid]="form().controls.persons.touched && form().controls.persons.invalid"
         [attr.aria-describedby]="
           '' +
@@ -116,8 +117,8 @@
         'recipes.lifeSituation' | translate
       }}</label
       ><select
+        appSelect
         id="recipe-lifeSituation"
-        class="field-control"
         [attr.aria-invalid]="
           form().controls.lifeSituation.touched && form().controls.lifeSituation.invalid
         "

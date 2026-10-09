@@ -1,3 +1,5 @@
+import { Select } from '../../../../shared/ui/select/select';
+import { Input } from '../../../../shared/ui/input/input';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -9,7 +11,7 @@ import { RecipeForm } from '../../recipe-view.models';
 @Component({
   selector: 'app-recipe-food-step',
   host: { class: 'block' },
-  imports: [TranslatePipe, ReactiveFormsModule, MultiSelect],
+  imports: [Input, Select, TranslatePipe, ReactiveFormsModule, MultiSelect],
   templateUrl: './recipe-food-step.html',
   styleUrl: './recipe-food-step.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

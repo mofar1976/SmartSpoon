@@ -1,3 +1,4 @@
+import { Select } from '../../../../shared/ui/select/select';
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -8,7 +9,7 @@ import { RecipeForm, RecipeSummary } from '../../recipe-view.models';
 @Component({
   selector: 'app-recipe-review-step',
   host: { class: 'block' },
-  imports: [TranslatePipe, ReactiveFormsModule, CurrencyPipe],
+  imports: [Select, TranslatePipe, ReactiveFormsModule, CurrencyPipe],
   templateUrl: './recipe-review-step.html',
   styleUrl: './recipe-review-step.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

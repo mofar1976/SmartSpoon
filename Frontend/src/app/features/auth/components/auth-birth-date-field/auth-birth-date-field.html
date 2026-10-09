@@ -1,8 +1,8 @@
 <div class="field">
   <label class="field-label" for="auth-birthDate">{{ 'auth.birthDate' | translate }}</label>
   <input
+    appInput
     id="auth-birthDate"
-    class="field-control"
     [attr.aria-invalid]="control().touched && control().invalid"
     [attr.aria-describedby]="
       'auth-birthDate-hint' +

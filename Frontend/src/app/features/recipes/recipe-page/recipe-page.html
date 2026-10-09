@@ -114,18 +114,22 @@
               <div class="mt-8 flex flex-wrap justify-end gap-3">
                 @if (workspace.step() > 0) {
                   <button
+                    appButton
+                    variant="outline"
                     type="button"
                     (click)="back()"
                     [disabled]="recipeVm.busy"
-                    class="btn btn-outline max-sm:flex-1"
+                    class="max-sm:flex-1"
                   >
                     {{ 'common.back' | translate }}
                   </button>
                 }
                 <button
+                  appButton
+                  variant="primary"
                   type="submit"
                   [disabled]="recipeVm.busy || marketVm.loading || !!marketVm.errorKey"
-                  class="btn btn-primary max-sm:flex-1"
+                  class="max-sm:flex-1"
                 >
                   {{
                     recipeVm.busy

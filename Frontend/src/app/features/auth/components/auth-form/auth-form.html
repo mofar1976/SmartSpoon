@@ -27,7 +27,7 @@
       {{ errorKey() | translate }}
     </p>
   }
-  <button type="submit" class="btn btn-primary mt-1 w-full" [disabled]="busy()">
+  <button appButton variant="primary" type="submit" class="mt-1 w-full" [disabled]="busy()">
     {{
       busy()
         ? register()

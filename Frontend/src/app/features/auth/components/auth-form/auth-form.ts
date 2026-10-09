@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,6 +20,7 @@ import { AuthUsernameField } from '../auth-username-field/auth-username-field';
   selector: 'app-auth-form',
   host: { class: 'block' },
   imports: [
+    Button,
     TranslatePipe,
     ReactiveFormsModule,
     AuthUsernameField,

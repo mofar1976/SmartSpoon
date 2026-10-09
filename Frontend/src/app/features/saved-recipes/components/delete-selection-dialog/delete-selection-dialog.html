@@ -26,14 +26,21 @@
   }
   <div class="mt-6 flex flex-wrap justify-end gap-3">
     <button
+      appButton
+      variant="outline"
       autofocus
-      class="btn btn-outline"
       type="button"
       (click)="cancelled.emit()"
       [disabled]="busy()"
     >
       {{ 'common.cancel' | translate }}</button
-    ><button class="btn btn-primary" type="button" (click)="confirmed.emit()" [disabled]="busy()">
+    ><button
+      appButton
+      variant="primary"
+      type="button"
+      (click)="confirmed.emit()"
+      [disabled]="busy()"
+    >
       {{ busy() ? i18n.t('saved.deletingButton') : i18n.t('saved.confirmDelete') }}
     </button>
   </div>

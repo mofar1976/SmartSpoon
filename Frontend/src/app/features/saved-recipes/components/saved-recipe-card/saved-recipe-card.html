@@ -25,11 +25,13 @@
     }}</span>
   </div>
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <a class="btn btn-outline px-4" [routerLink]="['/gespeichert', item().id]">{{
+    <a appButton variant="outline" class="px-4" [routerLink]="['/gespeichert', item().id]">{{
       'saved.open' | translate
     }}</a
     ><button
-      class="btn btn-text px-4"
+      appButton
+      variant="text"
+      class="px-4"
       type="button"
       (click)="deleteRequested.emit({ id: item().id, title: item().title })"
       [disabled]="deleting()"

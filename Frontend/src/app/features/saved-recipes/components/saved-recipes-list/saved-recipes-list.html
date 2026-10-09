@@ -6,7 +6,7 @@
     <p class="mx-auto mt-4 mb-6 max-w-112.5 leading-[1.7] text-muted">
       {{ 'saved.emptyDescription' | translate }}
     </p>
-    <a class="btn btn-primary" routerLink="/rezepte">{{ 'saved.createFirst' | translate }}</a>
+    <a appButton variant="primary" routerLink="/rezepte">{{ 'saved.createFirst' | translate }}</a>
   </section>
 } @else {
   <p class="my-[1em] text-sm text-muted" role="status">
@@ -29,7 +29,8 @@
     [attr.aria-label]="'saved.paginationLabel' | translate"
   >
     <button
-      class="btn btn-outline"
+      appButton
+      variant="outline"
       type="button"
       [disabled]="list.offset === 0 || deleting()"
       (click)="pageRequested.emit(list.offset - list.limit)"
@@ -45,7 +46,8 @@
             }
     }}</span
     ><button
-      class="btn btn-outline"
+      appButton
+      variant="outline"
       type="button"
       [disabled]="list.offset + list.items.length >= list.total || deleting()"
       (click)="pageRequested.emit(list.offset + list.limit)"

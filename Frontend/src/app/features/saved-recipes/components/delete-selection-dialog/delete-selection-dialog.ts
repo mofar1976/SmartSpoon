@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +16,7 @@ import { TranslationKey } from '../../../../core/i18n/translation-key';
 @Component({
   selector: 'app-delete-selection-dialog',
   host: { class: 'block' },
-  imports: [TranslatePipe],
+  imports: [Button, TranslatePipe],
   templateUrl: './delete-selection-dialog.html',
   styleUrl: './delete-selection-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

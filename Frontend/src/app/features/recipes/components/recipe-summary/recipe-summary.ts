@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -7,7 +8,7 @@ import { RecipeSummary } from '../../recipe-view.models';
 @Component({
   selector: 'app-recipe-summary',
   host: { class: 'contents' },
-  imports: [TranslatePipe, CurrencyPipe],
+  imports: [Button, TranslatePipe, CurrencyPipe],
   templateUrl: './recipe-summary.html',
   styleUrl: './recipe-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

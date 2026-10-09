@@ -1,3 +1,4 @@
+import { Button } from '../../shared/ui/button/button';
 import { AsyncPipe } from '@angular/common';
 import { LanguageSwitcher } from '../../shared/ui/language-switcher/language-switcher';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -9,7 +10,15 @@ import { AuthFacade } from '../../shared/store/auth/auth.facade';
 @Component({
   selector: 'app-shell',
   host: { class: 'flex flex-col min-h-dvh' },
-  imports: [AsyncPipe, LanguageSwitcher, TranslatePipe, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [
+    Button,
+    AsyncPipe,
+    LanguageSwitcher,
+    TranslatePipe,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+  ],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

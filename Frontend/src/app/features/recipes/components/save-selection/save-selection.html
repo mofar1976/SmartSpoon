@@ -20,7 +20,7 @@
         <p class="my-[1em] text-caption leading-[1.6] font-semibold text-brand">
           {{ 'save.success' | translate }}
         </p>
-        <a class="btn btn-outline" [routerLink]="['/gespeichert', id]">{{
+        <a appButton variant="outline" [routerLink]="['/gespeichert', id]">{{
           'save.open' | translate
         }}</a>
         <p class="my-[1em] text-xs leading-[1.6] text-muted">
@@ -40,8 +40,8 @@
         <div class="field">
           <label class="field-label" for="selection-title">{{ 'save.name' | translate }}</label
           ><input
+            appInput
             id="selection-title"
-            class="field-control"
             [formControl]="form.title"
             maxlength="120"
             required
@@ -56,7 +56,7 @@
             <p class="field-error" role="alert">{{ 'save.nameInvalid' | translate }}</p>
           }
         </div>
-        <button class="btn btn-primary" type="submit" [disabled]="vm.busy">
+        <button appButton variant="primary" type="submit" [disabled]="vm.busy">
           {{ vm.busy ? i18n.t('save.savingButton') : i18n.t('save.button') }}
         </button>
         @if (vm.busy) {

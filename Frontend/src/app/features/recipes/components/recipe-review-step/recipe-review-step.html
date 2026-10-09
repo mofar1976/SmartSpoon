@@ -7,8 +7,8 @@
       'recipes.recipeCount' | translate
     }}</label
     ><select
+      appSelect
       id="recipe-recipeCount"
-      class="field-control"
       [attr.aria-invalid]="
         form().controls.recipeCount.touched && form().controls.recipeCount.invalid
       "

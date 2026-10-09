@@ -6,8 +6,8 @@
     <div class="field">
       <label class="field-label" for="recipe-diet">{{ 'recipes.dietLabel' | translate }}</label
       ><select
+        appSelect
         id="recipe-diet"
-        class="field-control"
         [attr.aria-invalid]="form().controls.diet.touched && form().controls.diet.invalid"
         [attr.aria-describedby]="
           '' +
@@ -25,8 +25,9 @@
         'recipes.cookingTimeMax' | translate
       }}</label
       ><input
+        appInput
         id="recipe-maxCookingTimeMinutes"
-        class="field-control pr-14"
+        class="pr-14"
         [attr.aria-invalid]="
           form().controls.maxCookingTimeMinutes.touched &&
           form().controls.maxCookingTimeMinutes.invalid

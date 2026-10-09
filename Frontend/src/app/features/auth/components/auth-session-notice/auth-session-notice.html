@@ -12,7 +12,7 @@
     role="status"
   >
     <p class="m-0">{{ 'auth.sessionUnavailable' | translate }}</p>
-    <button type="button" (click)="retry.emit()" [disabled]="busy()" class="btn btn-text">
+    <button appButton variant="text" type="button" (click)="retry.emit()" [disabled]="busy()">
       {{ 'auth.retrySession' | translate }}
     </button>
   </div>

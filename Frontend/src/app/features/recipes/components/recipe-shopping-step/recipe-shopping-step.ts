@@ -1,3 +1,6 @@
+import { Select } from '../../../../shared/ui/select/select';
+import { Input } from '../../../../shared/ui/input/input';
+import { Button } from '../../../../shared/ui/button/button';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -9,7 +12,7 @@ import { Market } from '../../recipe.models';
 @Component({
   selector: 'app-recipe-shopping-step',
   host: { class: 'block' },
-  imports: [TranslatePipe, ReactiveFormsModule],
+  imports: [Button, Input, Select, TranslatePipe, ReactiveFormsModule],
   templateUrl: './recipe-shopping-step.html',
   styleUrl: './recipe-shopping-step.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

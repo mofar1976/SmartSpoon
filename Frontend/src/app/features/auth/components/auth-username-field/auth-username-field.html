@@ -1,8 +1,8 @@
 <div class="field">
   <label class="field-label" for="auth-username">{{ 'auth.username' | translate }}</label>
   <input
+    appInput
     id="auth-username"
-    class="field-control"
     [attr.aria-invalid]="control().touched && control().invalid"
     [attr.aria-describedby]="
       'auth-username-hint' + (control().touched && control().invalid ? ' auth-username-error' : '')

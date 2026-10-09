@@ -16,9 +16,10 @@
     </div>
     @if (!stored()) {
       <button
+        appButton
+        variant="outline"
         type="button"
         (click)="edit.emit()"
-        class="btn btn-outline"
         [disabled]="actionsDisabled()"
       >
         {{ 'results.edit' | translate }}
@@ -110,9 +111,10 @@
       {{ (stored() ? 'results.savedPriceNotice' : 'results.unsavedNotice') | translate }}
     </p>
     <button
+      appButton
+      variant="primary"
       type="button"
       (click)="startNew.emit()"
-      class="btn btn-primary"
       [disabled]="actionsDisabled()"
     >
       {{ 'recipes.newRequest' | translate }}

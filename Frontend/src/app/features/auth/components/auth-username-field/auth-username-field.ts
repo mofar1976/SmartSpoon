@@ -1,3 +1,4 @@
+import { Input } from '../../../../shared/ui/input/input';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -5,7 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-auth-username-field',
   host: { class: 'block' },
-  imports: [TranslatePipe, ReactiveFormsModule],
+  imports: [Input, TranslatePipe, ReactiveFormsModule],
   templateUrl: './auth-username-field.html',
   styleUrl: './auth-username-field.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,3 +1,4 @@
+import { Button } from '../button/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { I18nService } from '../../../core/i18n/i18n-service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
@@ -18,7 +19,7 @@ const pages = {
 };
 
 @Component({
-  imports: [TranslatePipe, RouterLink],
+  imports: [Button, TranslatePipe, RouterLink],
   templateUrl: './upcoming-page.html',
   styleUrl: './upcoming-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -47,7 +47,7 @@
   <div class="mt-5 mb-3 border-t border-t-brand-outline pt-5 text-xs leading-[1.7] text-muted">
     {{ 'recipes.draftNotice' | translate }}
   </div>
-  <button type="button" (click)="startNew.emit()" [disabled]="busy()" class="btn btn-text">
+  <button appButton variant="text" type="button" (click)="startNew.emit()" [disabled]="busy()">
     {{ 'recipes.startNew' | translate }}
   </button>
 </aside>

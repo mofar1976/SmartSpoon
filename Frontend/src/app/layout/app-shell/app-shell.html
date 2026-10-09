@@ -56,12 +56,12 @@
             class="max-w-42.5 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-muted max-md:hidden"
             [title]="vm.user!.username"
             >{{ 'nav.greeting' | translate: { username: vm.user!.username } }}</span
-          ><button type="button" (click)="auth.logout()" class="btn btn-outline">
+          ><button appButton variant="outline" type="button" (click)="auth.logout()">
             {{ 'nav.logout' | translate }}
           </button>
         </div>
       } @else {
-        <a routerLink="/anmelden" class="btn btn-outline max-sm:ml-auto">{{
+        <a appButton variant="outline" routerLink="/anmelden" class="max-sm:ml-auto">{{
           'common.login' | translate
         }}</a>
       }

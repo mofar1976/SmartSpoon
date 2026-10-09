@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -7,7 +8,7 @@ import { SavedRecipeCard } from '../saved-recipe-card/saved-recipe-card';
 @Component({
   selector: 'app-saved-recipes-list',
   host: { class: 'block' },
-  imports: [TranslatePipe, RouterLink, SavedRecipeCard],
+  imports: [Button, TranslatePipe, RouterLink, SavedRecipeCard],
   templateUrl: './saved-recipes-list.html',
   styleUrl: './saved-recipes-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

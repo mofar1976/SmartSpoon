@@ -12,7 +12,7 @@
           {{ 'saved.description' | translate }}
         </p>
       </div>
-      <a class="btn btn-outline" routerLink="/rezepte">{{ 'recipes.generate' | translate }}</a>
+      <a appButton variant="outline" routerLink="/rezepte">{{ 'recipes.generate' | translate }}</a>
     </header>
     @if (vm.loading) {
       <p
@@ -25,9 +25,9 @@
     @if (vm.errorKey) {
       <div class="rounded-xl bg-danger-soft p-4 leading-[1.6] text-danger" role="alert">
         <p class="my-[1em]">{{ vm.errorKey | translate }}</p>
-        <button class="btn btn-outline" type="button" (click)="reload()">
+        <button appButton variant="outline" type="button" (click)="reload()">
           {{ 'common.retryLoad' | translate }}</button
-        ><a class="btn btn-text" routerLink="/gespeichert">{{
+        ><a appButton variant="text" routerLink="/gespeichert">{{
           'saved.backOverview' | translate
         }}</a>
       </div>

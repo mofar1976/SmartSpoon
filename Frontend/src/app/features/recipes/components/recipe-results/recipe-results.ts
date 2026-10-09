@@ -1,3 +1,4 @@
+import { Button } from '../../../../shared/ui/button/button';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,7 +9,7 @@ import { ShoppingList } from '../shopping-list/shopping-list';
 @Component({
   selector: 'app-recipe-results',
   host: { class: 'block' },
-  imports: [TranslatePipe, CurrencyPipe, DecimalPipe, ShoppingList],
+  imports: [Button, TranslatePipe, CurrencyPipe, DecimalPipe, ShoppingList],
   templateUrl: './recipe-results.html',
   styleUrl: './recipe-results.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

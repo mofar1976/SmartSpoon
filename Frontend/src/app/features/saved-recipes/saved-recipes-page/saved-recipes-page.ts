@@ -1,3 +1,4 @@
+import { Button } from '../../../shared/ui/button/button';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,6 +14,7 @@ import { SavedRecipesList } from '../components/saved-recipes-list/saved-recipes
 
 @Component({
   imports: [
+    Button,
     AsyncPipe,
     TranslatePipe,
     RouterLink,
