@@ -1,14 +1,12 @@
-import { TranslatePipe } from '@ngx-translate/core';
-import { I18nService } from '../../../core/i18n/i18n-service';
-import { inject, ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { HomeHero } from '../components/home-hero/home-hero';
+import { HomeHowItWorks } from '../components/home-how-it-works/home-how-it-works';
+import { HomePriceNotice } from '../components/home-price-notice/home-price-notice';
 
 @Component({
-  imports: [TranslatePipe, RouterLink],
+  imports: [HomeHero, HomeHowItWorks, HomePriceNotice],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {
-  protected readonly i18n = inject(I18nService);
-}
+export class HomePage {}

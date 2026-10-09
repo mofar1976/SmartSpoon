@@ -1,13 +1,4 @@
-import { RecipesFacade } from '../../../shared/store/recipes/recipes.facade';
-import { filter } from 'rxjs';
-import { combineLatest, defer, map, startWith } from 'rxjs';
-import { SupermarketsFacade } from '../../../shared/store/supermarkets/supermarkets.facade';
-import { TranslatePipe } from '@ngx-translate/core';
-import { I18nService } from '../../../core/i18n/i18n-service';
-import { SaveSelection } from '../save-selection/save-selection';
-import { SavedRecipesFacade } from '../../../shared/store/saved-recipes/saved-recipes.facade';
-import { MultiSelect } from '../../../shared/ui/multi-select/multi-select';
-import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,27 +8,40 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { combineLatest, defer, filter, map, startWith } from 'rxjs';
+import { I18nService } from '../../../core/i18n/i18n-service';
+import { RecipesFacade } from '../../../shared/store/recipes/recipes.facade';
+import { SavedRecipesFacade } from '../../../shared/store/saved-recipes/saved-recipes.facade';
+import { SupermarketsFacade } from '../../../shared/store/supermarkets/supermarkets.facade';
+import { RecipeFoodStep } from '../components/recipe-food-step/recipe-food-step';
+import { RecipeResults } from '../components/recipe-results/recipe-results';
+import { RecipeReviewStep } from '../components/recipe-review-step/recipe-review-step';
+import { RecipeShoppingStep } from '../components/recipe-shopping-step/recipe-shopping-step';
+import { RecipeSummaryPanel } from '../components/recipe-summary/recipe-summary';
+import { SaveSelection } from '../components/save-selection/save-selection';
 import {
   ALLERGEN_OPTIONS,
   DIET_OPTIONS,
   INGREDIENT_OPTIONS,
   LIFE_OPTIONS,
 } from '../recipe-options';
-import { RecipeWorkspace } from '../recipe-workspace';
 import { euroToCents, oneOf } from '../recipe-validation';
-import { RecipeResults } from '../recipe-results/recipe-results';
+import { RecipeWorkspace } from '../recipe-workspace';
 
 @Component({
   host: { class: 'block' },
   imports: [
     AsyncPipe,
     TranslatePipe,
-    CurrencyPipe,
     ReactiveFormsModule,
     RecipeResults,
-    MultiSelect,
+    RecipeShoppingStep,
+    RecipeFoodStep,
+    RecipeReviewStep,
+    RecipeSummaryPanel,
     SaveSelection,
   ],
   templateUrl: './recipe-page.html',
@@ -59,15 +63,6 @@ export class RecipePage implements OnDestroy {
       ),
     ),
   ]).pipe(map(([items, id]) => items.find((market) => market.id === id)?.name ?? null));
-  protected readonly lifeOptions = LIFE_OPTIONS;
-  protected readonly diets = DIET_OPTIONS;
-  protected readonly allergens = computed(() =>
-    ALLERGEN_OPTIONS.map((o) => ({ ...o, label: this.i18n.t(o.label) })),
-  );
-  protected readonly ingredients = computed(() =>
-    INGREDIENT_OPTIONS.map((o) => ({ ...o, label: this.i18n.t(o.label) })),
-  );
-  protected readonly counts = [1, 2, 3, 4, 5, 6, 7];
   protected readonly steps = ['recipes.step1', 'recipes.step2', 'recipes.step3'];
   private readonly changes = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),

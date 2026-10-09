@@ -2,47 +2,7 @@
   <div
     class="page-container grid grid-cols-2 items-start gap-20 pt-16 pb-18 max-lg:gap-8 max-md:grid-cols-1 max-md:pt-8 max-md:pb-12"
   >
-    <aside class="min-w-0 pt-8 max-md:pt-0" aria-labelledby="intro-title">
-      <span class="text-label font-bold tracking-[1.3px] text-brand">{{
-        'auth.tagline' | translate
-      }}</span>
-      <h2
-        class="my-5.5 text-auth-title leading-[1.15] font-bold tracking-[-1.8px]"
-        id="intro-title"
-      >
-        {{ 'auth.lessThinking' | translate }}<br /><span class="text-brand">{{
-          'auth.moreEnjoying' | translate
-        }}</span>
-      </h2>
-      <p class="my-[1em] max-w-100 leading-[1.8] text-muted">
-        {{ 'auth.intro' | translate }}
-      </p>
-      <ul class="my-7 list-none p-0">
-        <li
-          class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-        >
-          {{ 'auth.marketBenefit' | translate }}
-        </li>
-        <li
-          class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-        >
-          {{ 'auth.foodBenefit' | translate }}
-        </li>
-        <li
-          class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-        >
-          {{ 'auth.listBenefit' | translate }}
-        </li>
-      </ul>
-      <div
-        class="mt-9.5 max-w-102.5 rounded-2xl bg-brand-soft px-5.5 py-5 max-md:mt-6 max-md:max-w-none"
-      >
-        <strong class="text-caption">{{ 'auth.everyTime' | translate }}</strong>
-        <p class="mt-[1em] mb-0 text-xs leading-[1.7] text-muted">
-          {{ 'auth.privacy' | translate }}
-        </p>
-      </div>
-    </aside>
+    <app-auth-intro />
     <section
       class="min-w-0 rounded-3xl border border-border bg-surface p-9 max-lg:p-7 max-md:row-start-1 max-md:px-5 max-md:py-6"
       aria-labelledby="auth-title"
@@ -56,155 +16,20 @@
       <p class="mt-[1em] mb-7 text-sm leading-[1.7] text-muted">
         {{ register ? i18n.t('auth.registerDescription') : i18n.t('auth.loginDescription') }}
       </p>
-      @if (reason === 'expired' || vm.expired) {
-        <p
-          class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
-          role="status"
-        >
-          {{ 'errors.sessionExpired' | translate }}
-        </p>
-      }
-      @if (vm.status === 'unavailable') {
-        <div
-          class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
-          role="status"
-        >
-          <p class="m-0">{{ 'auth.sessionUnavailable' | translate }}</p>
-          <button type="button" (click)="retrySession()" [disabled]="vm.busy" class="btn btn-text">
-            {{ 'auth.retrySession' | translate }}
-          </button>
-        </div>
-      }
-      <form
-        class="flex flex-col gap-5.5"
-        #formElement
-        [formGroup]="form"
-        (ngSubmit)="submit()"
-        [attr.aria-busy]="vm.busy"
-        novalidate
-      >
-        <div class="field">
-          <label class="field-label" for="auth-username">{{ 'auth.username' | translate }}</label>
-          <input
-            id="auth-username"
-            class="field-control"
-            [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
-            [attr.aria-describedby]="
-              'auth-username-hint' +
-              (form.controls.username.touched && form.controls.username.invalid
-                ? ' auth-username-error'
-                : '')
-            "
-            formControlName="username"
-            autocomplete="username"
-            autocapitalize="none"
-            spellcheck="false"
-            maxlength="30"
-            [readOnly]="vm.busy"
-            required
-          />
-          <p class="field-hint" id="auth-username-hint">{{ 'auth.usernameHint' | translate }}</p>
-          @if (form.controls.username.touched && form.controls.username.invalid) {
-            <p class="field-error" id="auth-username-error">
-              {{ 'auth.usernameInvalid' | translate }}
-            </p>
-          }
-        </div>
-        <div class="field">
-          <label class="field-label" for="auth-password">{{ 'auth.password' | translate }}</label>
-          <input
-            id="auth-password"
-            class="field-control pr-28"
-            [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
-            [attr.aria-describedby]="
-              (register ? 'auth-password-hint' : '') +
-              (form.controls.password.touched && form.controls.password.invalid
-                ? ' auth-password-error'
-                : '')
-            "
-            formControlName="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            [autocomplete]="register ? 'new-password' : 'current-password'"
-            minlength="8"
-            maxlength="128"
-            [readOnly]="vm.busy"
-            required
-          />
-          <button
-            class="btn btn-text absolute top-1.25 right-1 min-w-17.5 px-2 text-label"
-            type="button"
-            (click)="showPassword.set(!showPassword())"
-            [attr.aria-pressed]="showPassword()"
-            [attr.aria-label]="
-              (showPassword() ? 'auth.hidePasswordLabel' : 'auth.showPasswordLabel') | translate
-            "
-          >
-            {{ showPassword() ? i18n.t('auth.hidePassword') : i18n.t('auth.showPassword') }}
-          </button>
-          @if (register) {
-            <p class="field-hint" id="auth-password-hint">{{ 'auth.passwordHint' | translate }}</p>
-          }
-          @if (form.controls.password.touched && form.controls.password.invalid) {
-            <p class="field-error" id="auth-password-error">
-              {{ 'auth.passwordInvalid' | translate }}
-            </p>
-          }
-        </div>
-        @if (register) {
-          <div class="field">
-            <label class="field-label" for="auth-birthDate">{{
-              'auth.birthDate' | translate
-            }}</label>
-            <input
-              id="auth-birthDate"
-              class="field-control"
-              [attr.aria-invalid]="
-                form.controls.birthDate.touched && form.controls.birthDate.invalid
-              "
-              [attr.aria-describedby]="
-                'auth-birthDate-hint' +
-                (form.controls.birthDate.touched && form.controls.birthDate.invalid
-                  ? ' auth-birthDate-error'
-                  : '')
-              "
-              formControlName="birthDate"
-              type="date"
-              autocomplete="bday"
-              min="0001-01-01"
-              [max]="maxDate"
-              [readOnly]="vm.busy"
-              required
-            />
-            <p class="field-hint" id="auth-birthDate-hint">
-              {{ 'auth.birthDateHint' | translate }}
-            </p>
-            @if (form.controls.birthDate.touched && form.controls.birthDate.invalid) {
-              <p class="field-error" id="auth-birthDate-error">
-                {{ 'auth.birthDateInvalid' | translate }}
-              </p>
-            }
-          </div>
-        }
-        @if (vm.errorKey) {
-          <p
-            class="m-0 rounded-xl bg-danger-soft px-4 py-3.5 text-caption leading-[1.6] text-danger"
-            role="alert"
-          >
-            {{ vm.errorKey | translate }}
-          </p>
-        }
-        <button type="submit" class="btn btn-primary mt-1 w-full" [disabled]="vm.busy">
-          {{
-            vm.busy
-              ? register
-                ? i18n.t('auth.creatingAccount')
-                : i18n.t('auth.loggingIn')
-              : register
-                ? i18n.t('auth.createAccount')
-                : i18n.t('common.login')
-          }}<span class="ml-3.5" aria-hidden="true">↗</span>
-        </button>
-      </form>
+      <app-auth-session-notice
+        [expired]="reason === 'expired' || vm.expired"
+        [status]="vm.status"
+        [busy]="vm.busy"
+        (retry)="retrySession()"
+      />
+      <app-auth-form
+        [form]="form"
+        [register]="register"
+        [busy]="vm.busy"
+        [errorKey]="vm.errorKey"
+        [maxDate]="maxDate"
+        (submitted)="submit()"
+      />
       <p class="mt-6 mb-[1em] text-center text-caption leading-[1.7]">
         {{ register ? i18n.t('auth.alreadyAccount') : i18n.t('auth.newHere') }}
         <a

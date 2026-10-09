@@ -1,0 +1,78 @@
+<div class="contents" [formGroup]="form()">
+  <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
+    {{ 'recipes.reviewDescription' | translate }}
+  </p>
+  <div class="field max-w-65">
+    <label class="field-label" for="recipe-recipeCount">{{
+      'recipes.recipeCount' | translate
+    }}</label
+    ><select
+      id="recipe-recipeCount"
+      class="field-control"
+      [attr.aria-invalid]="
+        form().controls.recipeCount.touched && form().controls.recipeCount.invalid
+      "
+      [attr.aria-describedby]="
+        '' +
+        (form().controls.recipeCount.touched && form().controls.recipeCount.invalid
+          ? ' recipe-recipeCount-error'
+          : '')
+      "
+      formControlName="recipeCount"
+    >
+      @for (count of counts; track count) {
+        <option [ngValue]="count">
+          {{
+            (count === 1 ? 'recipes.count.one' : 'recipes.count.other')
+              | translate: { count: count }
+          }}
+        </option>
+      }
+    </select>
+  </div>
+  <dl class="my-7 grid grid-cols-2 gap-5 max-sm:grid-cols-1">
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.supermarket' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">
+        {{ marketName() ?? i18n.t('common.pending') }}
+      </dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.budget' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">
+        {{
+          (summary().budgetCents ?? 0) / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
+        }}
+      </dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.people' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().persons }}</dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.lifeSituation' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().life }}</dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.diet' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().diet }}</dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.cookingTime' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">
+        {{ 'recipes.timeSummary' | translate: { minutes: summary().minutes } }}
+      </dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.allergies' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().allergies }}</dd>
+    </div>
+    <div class="min-w-0">
+      <dt class="text-xs text-muted">{{ 'recipes.without' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().exclusions }}</dd>
+    </div>
+  </dl>
+  <p class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted">
+    {{ 'recipes.planNotice' | translate }}
+  </p>
+</div>

@@ -1,0 +1,145 @@
+<div class="contents" [formGroup]="form()">
+  <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
+    {{ 'recipes.shoppingDescription' | translate }}
+  </p>
+  @if (markets().loading) {
+    <p
+      class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted"
+      role="status"
+    >
+      {{ 'recipes.marketsLoading' | translate }}
+    </p>
+  }
+  @if (markets().errorKey) {
+    <div
+      class="mt-6 rounded-xl bg-danger-soft px-4.5 py-4 text-caption leading-[1.7] text-danger"
+      role="alert"
+    >
+      <p class="m-0">{{ markets().errorKey | translate }}</p>
+      <button type="button" (click)="reload.emit()" class="btn btn-text">
+        {{ 'common.retryLoad' | translate }}
+      </button>
+    </div>
+  }
+  <div class="grid grid-cols-2 gap-x-5 gap-y-6 max-sm:grid-cols-1">
+    <div class="field">
+      <label class="field-label" for="recipe-supermarket">{{
+        'recipes.supermarket' | translate
+      }}</label
+      ><select
+        id="recipe-supermarket"
+        class="field-control"
+        [attr.aria-invalid]="
+          form().controls.supermarket.touched && form().controls.supermarket.invalid
+        "
+        [attr.aria-describedby]="
+          '' +
+          (form().controls.supermarket.touched && form().controls.supermarket.invalid
+            ? ' recipe-supermarket-error'
+            : '')
+        "
+        formControlName="supermarket"
+        required
+      >
+        <option value="" disabled>{{ 'common.choose' | translate }}</option>
+        @for (market of markets().items; track market.id) {
+          <option [ngValue]="market.id">{{ market.name }}</option>
+        }
+      </select>
+      @if (form().controls.supermarket.touched && form().controls.supermarket.invalid) {
+        <p class="field-error" id="recipe-supermarket-error">
+          {{ 'recipes.marketInvalid' | translate }}
+        </p>
+      }
+    </div>
+    <div class="field">
+      <label class="field-label" for="recipe-budgetEuros">{{
+        'recipes.budgetLabel' | translate
+      }}</label
+      ><input
+        id="recipe-budgetEuros"
+        class="field-control pr-14"
+        [attr.aria-invalid]="
+          form().controls.budgetEuros.touched && form().controls.budgetEuros.invalid
+        "
+        [attr.aria-describedby]="
+          'recipe-budgetEuros-hint' +
+          (form().controls.budgetEuros.touched && form().controls.budgetEuros.invalid
+            ? ' recipe-budgetEuros-error'
+            : '')
+        "
+        formControlName="budgetEuros"
+        type="text"
+        inputmode="decimal"
+        [placeholder]="'recipes.budgetPlaceholder' | translate"
+        maxlength="7"
+        required
+      /><span class="pointer-events-none absolute top-[19px] right-0 pr-4 text-caption text-muted"
+        >€</span
+      >
+      <p class="field-hint" id="recipe-budgetEuros-hint">
+        {{ 'recipes.budgetHint' | translate }}
+      </p>
+      @if (form().controls.budgetEuros.touched && form().controls.budgetEuros.invalid) {
+        <p class="field-error" id="recipe-budgetEuros-error">
+          {{ 'recipes.budgetInvalid' | translate }}
+        </p>
+      }
+    </div>
+    <div class="field">
+      <label class="field-label" for="recipe-persons">{{ 'recipes.people' | translate }}</label
+      ><input
+        id="recipe-persons"
+        class="field-control"
+        [attr.aria-invalid]="form().controls.persons.touched && form().controls.persons.invalid"
+        [attr.aria-describedby]="
+          '' +
+          (form().controls.persons.touched && form().controls.persons.invalid
+            ? ' recipe-persons-error'
+            : '')
+        "
+        type="number"
+        formControlName="persons"
+        min="1"
+        max="10"
+        step="1"
+        required
+      />
+      @if (form().controls.persons.touched && form().controls.persons.invalid) {
+        <p class="field-error" id="recipe-persons-error">
+          {{ 'recipes.peopleInvalid' | translate }}
+        </p>
+      }
+    </div>
+    <div class="field">
+      <label class="field-label" for="recipe-lifeSituation">{{
+        'recipes.lifeSituation' | translate
+      }}</label
+      ><select
+        id="recipe-lifeSituation"
+        class="field-control"
+        [attr.aria-invalid]="
+          form().controls.lifeSituation.touched && form().controls.lifeSituation.invalid
+        "
+        [attr.aria-describedby]="
+          '' +
+          (form().controls.lifeSituation.touched && form().controls.lifeSituation.invalid
+            ? ' recipe-lifeSituation-error'
+            : '')
+        "
+        formControlName="lifeSituation"
+        required
+      >
+        <option value="" disabled>{{ 'common.choose' | translate }}</option>
+        @for (option of lifeOptions; track option.value) {
+          <option [ngValue]="option.value">{{ option.label | translate }}</option>
+        }
+      </select>
+      @if (form().controls.lifeSituation.touched && form().controls.lifeSituation.invalid) {
+        <p class="field-error" id="recipe-lifeSituation-error">
+          {{ 'recipes.lifeInvalid' | translate }}
+        </p>
+      }
+    </div>
+  </div>
+</div>

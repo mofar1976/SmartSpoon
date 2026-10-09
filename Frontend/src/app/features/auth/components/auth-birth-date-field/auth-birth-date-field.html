@@ -1,0 +1,27 @@
+<div class="field">
+  <label class="field-label" for="auth-birthDate">{{ 'auth.birthDate' | translate }}</label>
+  <input
+    id="auth-birthDate"
+    class="field-control"
+    [attr.aria-invalid]="control().touched && control().invalid"
+    [attr.aria-describedby]="
+      'auth-birthDate-hint' +
+      (control().touched && control().invalid ? ' auth-birthDate-error' : '')
+    "
+    [formControl]="control()"
+    type="date"
+    autocomplete="bday"
+    min="0001-01-01"
+    [max]="maxDate()"
+    [readOnly]="busy()"
+    required
+  />
+  <p class="field-hint" id="auth-birthDate-hint">
+    {{ 'auth.birthDateHint' | translate }}
+  </p>
+  @if (control().touched && control().invalid) {
+    <p class="field-error" id="auth-birthDate-error">
+      {{ 'auth.birthDateInvalid' | translate }}
+    </p>
+  }
+</div>

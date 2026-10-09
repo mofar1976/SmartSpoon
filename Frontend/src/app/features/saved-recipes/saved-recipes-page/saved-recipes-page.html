@@ -33,187 +33,29 @@
       </div>
     }
     @if (vm.list; as list) {
-      @if (list.total === 0) {
-        <section class="my-8 rounded-3xl border border-border bg-surface px-6 py-12 text-center">
-          <span aria-hidden="true" class="text-5xl text-brand">♡</span>
-          <h2 class="my-[0.83em] text-[1.5em] font-bold">{{ 'saved.emptyTitle' | translate }}</h2>
-          <p class="mx-auto mt-4 mb-6 max-w-112.5 leading-[1.7] text-muted">
-            {{ 'saved.emptyDescription' | translate }}
-          </p>
-          <a class="btn btn-primary" routerLink="/rezepte">{{ 'saved.createFirst' | translate }}</a>
-        </section>
-      } @else {
-        <p class="my-[1em] text-sm text-muted" role="status">
-          {{
-            (list.total === 1 ? 'saved.count.one' : 'saved.count.other')
-              | translate: { count: list.total }
-          }}
-        </p>
-        <div class="my-6 grid grid-cols-3 gap-5 max-2xl:grid-cols-2 max-md:grid-cols-1">
-          @for (item of list.items; track item.id) {
-            <article class="flex min-w-0 flex-col rounded-2xl border border-border bg-surface p-6">
-              <span class="text-xs text-muted">{{
-                'saved.savedOn'
-                  | translate
-                    : {
-                        date:
-                          (item.createdAt | date: i18n.dateFormat() : undefined : i18n.locale()),
-                      }
-              }}</span>
-              <h2 class="my-[0.83em] text-xl font-bold wrap-anywhere">
-                <a
-                  class="text-ink no-underline hover:underline"
-                  [routerLink]="['/gespeichert', item.id]"
-                  >{{ item.title }}</a
-                >
-              </h2>
-              <ul
-                class="my-[1em] flex-1 list-disc pl-[1.2rem] text-caption leading-[1.7] text-muted"
-              >
-                @for (title of item.recipeTitles; track $index) {
-                  <li>{{ title }}</li>
-                }
-              </ul>
-              <div
-                class="flex flex-wrap items-center justify-between gap-3 border-t border-t-border py-4"
-              >
-                <strong class="text-title-sm text-brand">{{
-                  item.totalCostCents / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
-                }}</strong
-                ><span class="text-xs text-muted">{{
-                  item.priceType === 'test'
-                    ? i18n.t('saved.testPrices')
-                    : i18n.t('saved.generationPrices')
-                }}</span>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-3">
-                <a class="btn btn-outline px-4" [routerLink]="['/gespeichert', item.id]">{{
-                  'saved.open' | translate
-                }}</a
-                ><button
-                  class="btn btn-text px-4"
-                  type="button"
-                  (click)="askDelete(item.id, item.title)"
-                  [disabled]="vm.deleting"
-                  [attr.aria-label]="'saved.deleteLabel' | translate: { title: item.title }"
-                >
-                  {{ 'common.delete' | translate }}
-                </button>
-              </div>
-            </article>
-          }
-        </div>
-        <nav
-          class="flex flex-wrap items-center justify-center gap-4 text-caption"
-          [attr.aria-label]="'saved.paginationLabel' | translate"
-        >
-          <button
-            class="btn btn-outline"
-            type="button"
-            [disabled]="list.offset === 0 || vm.deleting"
-            (click)="page(list.offset - list.limit)"
-          >
-            {{ 'common.previous' | translate }}</button
-          ><span>{{
-            'saved.pageRange'
-              | translate
-                : {
-                    start: list.offset + 1,
-                    end: list.offset + list.items.length,
-                    total: list.total,
-                  }
-          }}</span
-          ><button
-            class="btn btn-outline"
-            type="button"
-            [disabled]="list.offset + list.items.length >= list.total || vm.deleting"
-            (click)="page(list.offset + list.limit)"
-          >
-            {{ 'common.more' | translate }}
-          </button>
-        </nav>
-      }
+      <app-saved-recipes-list
+        [selectionList]="list"
+        [deleting]="vm.deleting"
+        (deleteRequested)="askDelete($event.id, $event.title)"
+        (pageRequested)="page($event)"
+      />
     }
     @if (vm.detail; as selection) {
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <a class="btn btn-text" routerLink="/gespeichert">{{ 'saved.all' | translate }}</a
-        ><button
-          class="btn btn-text"
-          type="button"
-          (click)="askDelete(selection.id, selection.title)"
-          [disabled]="vm.deleting"
-        >
-          {{ 'saved.delete' | translate }}
-        </button>
-      </div>
-      <h2 class="my-[0.83em] text-heading font-bold wrap-anywhere">{{ selection.title }}</h2>
-      <p class="my-[1em] text-sm text-muted">
-        {{
-          'saved.dates'
-            | translate
-              : {
-                  saved:
-                    (selection.createdAt | date: i18n.dateTimeFormat() : undefined : i18n.locale()),
-                  generated:
-                    (selection.generatedAt | date: i18n.dateFormat() : undefined : i18n.locale()),
-                }
-        }}
-      </p>
-      <p class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]">
-        {{ 'saved.snapshotNotice' | translate }}
-      </p>
-      <app-recipe-results
-        [result]="selection.result"
-        [stored]="true"
+      <app-saved-recipe-detail
+        [savedSelection]="selection"
         [checkedProductIds]="vm.checkedProductIds"
-        (purchasedChange)="store.setPurchased($event.productId, $event.purchased)"
+        [deleting]="vm.deleting"
+        (deleteRequested)="askDelete($event.id, $event.title)"
+        (purchasedChanged)="store.setPurchased($event.productId, $event.purchased)"
         (startNew)="newRequest()"
       />
     }
   </div>
-  <dialog
-    #deleteDialog
-    class="m-auto w-[calc(100%_-_2rem)] max-w-120 rounded-2xl border border-border bg-surface p-6 text-ink backdrop:bg-ink/55"
-    aria-labelledby="delete-title"
-    aria-describedby="delete-description"
-    (cancel)="cancelDelete($event)"
-  >
-    <h2 class="my-[0.83em] text-[1.5em] font-bold" id="delete-title">
-      {{ 'saved.deleteTitle' | translate }}
-    </h2>
-    <p class="my-[1em] leading-[1.7] wrap-anywhere" id="delete-description">
-      {{ 'saved.deleteDescription' | translate: { title: target()?.title } }}
-    </p>
-    @if (vm.deleteErrorKey) {
-      <p
-        class="my-[1em] rounded-xl bg-danger-soft p-4 leading-[1.7] wrap-anywhere text-danger"
-        role="alert"
-      >
-        {{ vm.deleteErrorKey | translate }}
-      </p>
-    }
-    @if (vm.deleting) {
-      <p class="my-[1em] leading-[1.7] wrap-anywhere" role="status">
-        {{ 'saved.deletingStatus' | translate }}
-      </p>
-    }
-    <div class="mt-6 flex flex-wrap justify-end gap-3">
-      <button
-        autofocus
-        class="btn btn-outline"
-        type="button"
-        (click)="closeDelete()"
-        [disabled]="vm.deleting"
-      >
-        {{ 'common.cancel' | translate }}</button
-      ><button
-        class="btn btn-primary"
-        type="button"
-        (click)="confirmDelete()"
-        [disabled]="vm.deleting"
-      >
-        {{ vm.deleting ? i18n.t('saved.deletingButton') : i18n.t('saved.confirmDelete') }}
-      </button>
-    </div>
-  </dialog>
+  <app-delete-selection-dialog
+    [target]="target()"
+    [busy]="vm.deleting"
+    [errorKey]="vm.deleteErrorKey"
+    (cancelled)="closeDelete()"
+    (confirmed)="confirmDelete()"
+  />
 }
