@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
+    branches: [develop, preview, main]
   pull_request:
+    branches: [develop, preview, main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -13,8 +16,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  branch-flow:
+    name: Branch flow
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Test branch routing
+        run: node --test .github/scripts/check-branch-flow.test.cjs
+      - name: Validate PR target and source
+        run: node .github/scripts/check-branch-flow.cjs
+
   backend:
     name: Backend
+    needs: branch-flow
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -50,6 +71,7 @@ jobs:
 
   frontend:
     name: Frontend
+    needs: branch-flow
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
