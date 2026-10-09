@@ -1,9 +1,10 @@
-import { TranslatePipe } from '@ngx-translate/core';
-import { I18nService } from '../../../core/i18n/i18n-service';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
-import { inject, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
+import { I18nService } from '../../../../core/i18n/i18n-service';
+import { RecipeResult } from '../../recipe.models';
 import { ShoppingList } from '../shopping-list/shopping-list';
-import { RecipeResult } from '../recipe.models';
+
 @Component({
   selector: 'app-recipe-results',
   host: { class: 'block' },

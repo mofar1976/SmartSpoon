@@ -1,0 +1,40 @@
+<dialog
+  #deleteDialog
+  class="m-auto w-[calc(100%_-_2rem)] max-w-120 rounded-2xl border border-border bg-surface p-6 text-ink backdrop:bg-ink/55"
+  aria-labelledby="delete-title"
+  aria-describedby="delete-description"
+  (cancel)="onCancel($event)"
+>
+  <h2 class="my-[0.83em] text-[1.5em] font-bold" id="delete-title">
+    {{ 'saved.deleteTitle' | translate }}
+  </h2>
+  <p class="my-[1em] leading-[1.7] wrap-anywhere" id="delete-description">
+    {{ 'saved.deleteDescription' | translate: { title: target()?.title } }}
+  </p>
+  @if (errorKey()) {
+    <p
+      class="my-[1em] rounded-xl bg-danger-soft p-4 leading-[1.7] wrap-anywhere text-danger"
+      role="alert"
+    >
+      {{ errorKey() | translate }}
+    </p>
+  }
+  @if (busy()) {
+    <p class="my-[1em] leading-[1.7] wrap-anywhere" role="status">
+      {{ 'saved.deletingStatus' | translate }}
+    </p>
+  }
+  <div class="mt-6 flex flex-wrap justify-end gap-3">
+    <button
+      autofocus
+      class="btn btn-outline"
+      type="button"
+      (click)="cancelled.emit()"
+      [disabled]="busy()"
+    >
+      {{ 'common.cancel' | translate }}</button
+    ><button class="btn btn-primary" type="button" (click)="confirmed.emit()" [disabled]="busy()">
+      {{ busy() ? i18n.t('saved.deletingButton') : i18n.t('saved.confirmDelete') }}
+    </button>
+  </div>
+</dialog>

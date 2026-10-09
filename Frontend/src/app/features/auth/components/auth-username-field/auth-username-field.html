@@ -1,0 +1,24 @@
+<div class="field">
+  <label class="field-label" for="auth-username">{{ 'auth.username' | translate }}</label>
+  <input
+    id="auth-username"
+    class="field-control"
+    [attr.aria-invalid]="control().touched && control().invalid"
+    [attr.aria-describedby]="
+      'auth-username-hint' + (control().touched && control().invalid ? ' auth-username-error' : '')
+    "
+    [formControl]="control()"
+    autocomplete="username"
+    autocapitalize="none"
+    spellcheck="false"
+    maxlength="30"
+    [readOnly]="busy()"
+    required
+  />
+  <p class="field-hint" id="auth-username-hint">{{ 'auth.usernameHint' | translate }}</p>
+  @if (control().touched && control().invalid) {
+    <p class="field-error" id="auth-username-error">
+      {{ 'auth.usernameInvalid' | translate }}
+    </p>
+  }
+</div>

@@ -1,0 +1,19 @@
+@if (expired()) {
+  <p
+    class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
+    role="status"
+  >
+    {{ 'errors.sessionExpired' | translate }}
+  </p>
+}
+@if (status() === 'unavailable') {
+  <div
+    class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
+    role="status"
+  >
+    <p class="m-0">{{ 'auth.sessionUnavailable' | translate }}</p>
+    <button type="button" (click)="retry.emit()" [disabled]="busy()" class="btn btn-text">
+      {{ 'auth.retrySession' | translate }}
+    </button>
+  </div>
+}

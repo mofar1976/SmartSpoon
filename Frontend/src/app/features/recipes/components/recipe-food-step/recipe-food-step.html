@@ -1,0 +1,88 @@
+<div class="contents" [formGroup]="form()">
+  <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
+    {{ 'recipes.foodDescription' | translate }}
+  </p>
+  <div class="grid grid-cols-2 gap-x-5 gap-y-6 max-sm:grid-cols-1">
+    <div class="field">
+      <label class="field-label" for="recipe-diet">{{ 'recipes.dietLabel' | translate }}</label
+      ><select
+        id="recipe-diet"
+        class="field-control"
+        [attr.aria-invalid]="form().controls.diet.touched && form().controls.diet.invalid"
+        [attr.aria-describedby]="
+          '' +
+          (form().controls.diet.touched && form().controls.diet.invalid ? ' recipe-diet-error' : '')
+        "
+        formControlName="diet"
+      >
+        @for (option of diets; track option.value) {
+          <option [ngValue]="option.value">{{ option.label | translate }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="recipe-maxCookingTimeMinutes">{{
+        'recipes.cookingTimeMax' | translate
+      }}</label
+      ><input
+        id="recipe-maxCookingTimeMinutes"
+        class="field-control pr-14"
+        [attr.aria-invalid]="
+          form().controls.maxCookingTimeMinutes.touched &&
+          form().controls.maxCookingTimeMinutes.invalid
+        "
+        [attr.aria-describedby]="
+          '' +
+          (form().controls.maxCookingTimeMinutes.touched &&
+          form().controls.maxCookingTimeMinutes.invalid
+            ? ' recipe-maxCookingTimeMinutes-error'
+            : '')
+        "
+        formControlName="maxCookingTimeMinutes"
+        type="number"
+        min="5"
+        max="180"
+        step="1"
+        required
+      /><span
+        class="pointer-events-none absolute top-[19px] right-0 pr-4 text-caption text-muted"
+        >{{ 'common.minutes' | translate }}</span
+      >
+      @if (
+        form().controls.maxCookingTimeMinutes.touched &&
+        form().controls.maxCookingTimeMinutes.invalid
+      ) {
+        <p class="field-error" id="recipe-maxCookingTimeMinutes-error">
+          {{ 'recipes.timeInvalid' | translate }}
+        </p>
+      }
+    </div>
+    <div class="field w-full min-w-0">
+      <app-multi-select
+        formControlName="allergies"
+        [label]="'recipes.allergies' | translate"
+        controlId="recipe-allergies"
+        [options]="allergens()"
+        describedBy="recipe-allergies-hint"
+      />
+      <p class="field-hint" id="recipe-allergies-hint">
+        {{ 'recipes.allergiesHint' | translate }}
+      </p>
+    </div>
+    <div class="field w-full min-w-0">
+      <app-multi-select
+        formControlName="excludedIngredients"
+        [label]="'recipes.excludeIngredients' | translate"
+        controlId="recipe-excludedIngredients"
+        [options]="ingredients()"
+        describedBy="recipe-excludedIngredients-hint"
+      />
+      <p class="field-hint" id="recipe-excludedIngredients-hint">
+        {{ 'recipes.exclusionsHint' | translate }}
+      </p>
+    </div>
+  </div>
+  <p class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted">
+    {{ 'recipes.allergyNotice' | translate }}
+  </p>
+</div>
