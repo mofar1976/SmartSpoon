@@ -1,18 +1,22 @@
 <section class="mt-10" aria-labelledby="shopping-title">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div>
-      <span class="text-label font-bold tracking-[0.12em] text-brand">ALLES FÜR DEINE REZEPTE</span>
+      <span class="text-label font-bold tracking-[0.12em] text-brand">{{
+        'shopping.eyebrow' | translate
+      }}</span>
       <h2 class="my-[0.45rem] text-shopping-title font-bold" id="shopping-title">
-        Deine Einkaufsliste
+        {{ 'shopping.title' | translate }}
       </h2>
     </div>
     <p class="my-[1em] font-semibold text-brand" role="status" aria-live="polite">
-      {{ purchasedCount() }} von {{ result().shoppingList.length }} Artikeln gekauft
+      {{
+        'shopping.purchasedCount'
+          | translate: { count: purchasedCount(), total: result().shoppingList.length }
+      }}
     </p>
   </div>
   <p class="my-[1em] text-sm leading-[1.6] text-muted">
-    Die Mengen sind für alle ausgewählten Rezepte zusammengerechnet. Hake ab, was du bereits gekauft
-    hast.
+    {{ 'shopping.description' | translate }}
   </p>
   <ul
     class="mt-[1.4rem] mb-0 list-none overflow-hidden rounded-2xl border border-border bg-white p-0"
@@ -25,7 +29,7 @@
           ><input
             class="h-[1.4rem] w-[1.4rem] flex-none cursor-pointer accent-brand focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand"
             type="checkbox"
-            [checked]="checkedProductIds().has(item.product.id)"
+            [checked]="checkedProductIds().includes(item.product.id)"
             (change)="
               purchasedChange.emit({
                 productId: item.product.id,
@@ -36,64 +40,87 @@
             ><strong class="block group-has-checked/item:line-through">{{
               item.product.name
             }}</strong
-            ><span class="mt-[0.4rem] block text-caption leading-normal text-muted"
-              >{{ item.packs }} {{ item.packs === 1 ? 'Packung' : 'Packungen' }} à
-              {{ item.product.packageQuantity | number: '1.0-3' }}
-              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}</span
-            ></span
+            ><span class="mt-[0.4rem] block text-caption leading-normal text-muted">{{
+              (item.packs === 1 ? 'shopping.pack.one' : 'shopping.pack.other')
+                | translate
+                  : {
+                      count: item.packs,
+                      quantity: (item.product.packageQuantity | number: '1.0-3' : i18n.locale()),
+                      unit:
+                        item.product.packageUnit === 'piece'
+                          ? i18n.t('common.piece')
+                          : item.product.packageUnit,
+                    }
+            }}</span></span
           ></label
         >
         <dl
           class="m-0 flex justify-between gap-4 text-caption max-[1001px]:col-span-full max-[1001px]:row-start-2 max-[1001px]:justify-start max-[1001px]:gap-8 max-[481px]:flex-wrap max-[481px]:gap-4"
         >
           <div>
-            <dt class="mb-[0.35rem] text-muted">Benötigt</dt>
+            <dt class="mb-[0.35rem] text-muted">{{ 'shopping.needed' | translate }}</dt>
             <dd class="m-0 font-semibold whitespace-nowrap">
-              {{ item.neededQuantity | number: '1.0-3' }}
-              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+              {{ item.neededQuantity | number: '1.0-3' : i18n.locale() }}
+              {{
+                item.product.packageUnit === 'piece'
+                  ? i18n.t('common.piece')
+                  : item.product.packageUnit
+              }}
             </dd>
           </div>
           <div>
-            <dt class="mb-[0.35rem] text-muted">Kaufmenge</dt>
+            <dt class="mb-[0.35rem] text-muted">{{ 'shopping.purchaseQuantity' | translate }}</dt>
             <dd class="m-0 font-semibold whitespace-nowrap">
-              {{ item.purchasedQuantity | number: '1.0-3' }}
-              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+              {{ item.purchasedQuantity | number: '1.0-3' : i18n.locale() }}
+              {{
+                item.product.packageUnit === 'piece'
+                  ? i18n.t('common.piece')
+                  : item.product.packageUnit
+              }}
             </dd>
           </div>
           <div>
-            <dt class="mb-[0.35rem] text-muted">Übrig</dt>
+            <dt class="mb-[0.35rem] text-muted">{{ 'shopping.leftover' | translate }}</dt>
             <dd class="m-0 font-semibold whitespace-nowrap">
-              {{ item.leftoverQuantity | number: '1.0-3' }}
-              {{ item.product.packageUnit === 'piece' ? 'Stück' : item.product.packageUnit }}
+              {{ item.leftoverQuantity | number: '1.0-3' : i18n.locale() }}
+              {{
+                item.product.packageUnit === 'piece'
+                  ? i18n.t('common.piece')
+                  : item.product.packageUnit
+              }}
             </dd>
           </div>
         </dl>
         <div
           class="text-right max-[481px]:col-span-full max-[481px]:flex max-[481px]:items-baseline max-[481px]:justify-between max-[481px]:gap-2 max-[481px]:text-left"
         >
-          <strong class="text-lg">{{ item.costCents / 100 | currency: 'EUR' }}</strong
-          ><span class="mt-[0.4rem] block text-caption leading-normal text-muted"
-            >{{ item.product.priceCents / 100 | currency: 'EUR' }} / Packung</span
-          >
+          <strong class="text-lg">{{
+            item.costCents / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
+          }}</strong
+          ><span class="mt-[0.4rem] block text-caption leading-normal text-muted">{{
+            'shopping.perPack'
+              | translate
+                : {
+                    price:
+                      (item.product.priceCents / 100
+                      | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()),
+                  }
+          }}</span>
         </div>
       </li>
     } @empty {
-      <li class="p-[1.35rem]">Für diese Auswahl liegen keine Einkaufsartikel vor.</li>
+      <li class="p-[1.35rem]">{{ 'shopping.empty' | translate }}</li>
     }
   </ul>
   <div class="mt-4 flex justify-between gap-4 rounded-xl bg-brand-soft px-[1.35rem] py-4 font-bold">
-    <span>Gesamter Einkauf</span
-    ><strong>{{ result().totalCostCents / 100 | currency: 'EUR' }}</strong>
+    <span>{{ 'shopping.total' | translate }}</span
+    ><strong>{{
+      result().totalCostCents / 100 | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale()
+    }}</strong>
   </div>
   <p class="my-[1em] text-sm leading-[1.6] text-muted">
-    Häkchen ändern die Einkaufskosten und dein Restbudget nicht.
-    {{
-      stored()
-        ? 'Der gespeicherte Stand wurde geladen; neue Häkchenänderungen gelten nur für diese Ansicht.'
-        : 'Beim Speichern wird der aktuelle Stand übernommen. Weitere Häkchenänderungen bleiben lokal.'
-    }}
-    {{
-      result().priceType === 'test' ? 'Alle Preise sind fiktive Testpreise.' : result().priceNotice
-    }}
+    {{ 'shopping.costNotice' | translate }}
+    {{ (stored() ? 'shopping.savedChecks' : 'shopping.unsavedChecks') | translate }}
+    {{ result().priceType === 'test' ? i18n.t('shopping.testPrices') : result().priceNotice }}
   </p>
 </section>

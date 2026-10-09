@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { timeout } from 'rxjs';
-import { API_BASE_URL } from '../../core/api/api.config';
-import { AuthResponse, Credentials, Registration, User } from '../../shared/models';
+import { API_BASE_URL } from '../../../core/api/api.config';
+import { AuthResponse, Credentials, Registration, User } from '../../../shared/models';
 
 @Injectable({ providedIn: 'root' })
-export class AuthApi {
+export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL);
   login(credentials: Credentials) {

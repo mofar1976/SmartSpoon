@@ -1,16 +1,16 @@
 <a
   class="fixed top-2 left-2 z-10 -translate-y-[160%] rounded-lg bg-brand px-5 py-3 text-white underline focus:translate-y-0"
   href="#inhalt"
-  >Zum Inhalt springen</a
+  >{{ 'nav.skip' | translate }}</a
 >
 <header class="border-b border-b-border bg-surface">
   <div
-    class="m-auto flex max-w-content items-center gap-9 px-8 py-6 max-sm:flex-wrap max-sm:gap-4 max-sm:px-5 max-sm:py-4.5"
+    class="m-auto flex max-w-content items-center gap-5 px-8 py-6 max-xl:flex-wrap max-sm:gap-4 max-sm:px-5 max-sm:py-4.5"
   >
     <a
       class="inline-flex items-center gap-2.5 text-[27px] font-extrabold tracking-[-1.2px] text-ink no-underline max-sm:text-2xl"
       routerLink="/"
-      aria-label="SmartSpoon – Startseite"
+      [attr.aria-label]="'nav.homeLabel' | translate"
     >
       <span class="grid size-9.5 place-items-center rounded-xl bg-brand" aria-hidden="true"
         ><svg
@@ -22,8 +22,8 @@
       <span>SmartSpoon<span class="text-brand">.</span></span>
     </a>
     <nav
-      class="ml-auto flex gap-7 max-sm:order-3 max-sm:ml-0 max-sm:w-full max-sm:gap-6"
-      aria-label="Hauptnavigation"
+      class="ml-auto flex gap-7 max-xl:order-3 max-xl:ml-0 max-xl:w-full max-sm:gap-6"
+      [attr.aria-label]="'nav.label' | translate"
     >
       <a
         class="border-b-2 border-b-transparent py-2 text-sm font-semibold text-muted no-underline hover:border-b-brand hover:text-brand aria-[current=page]:border-b-brand aria-[current=page]:text-brand"
@@ -31,33 +31,40 @@
         routerLinkActive=""
         [routerLinkActiveOptions]="{ exact: true }"
         ariaCurrentWhenActive="page"
-        >Start</a
+        >{{ 'nav.home' | translate }}</a
       >
       <a
         class="border-b-2 border-b-transparent py-2 text-sm font-semibold text-muted no-underline hover:border-b-brand hover:text-brand aria-[current=page]:border-b-brand aria-[current=page]:text-brand"
         routerLink="/rezepte"
         routerLinkActive=""
         ariaCurrentWhenActive="page"
-        >Rezepte</a
+        >{{ 'nav.recipes' | translate }}</a
       >
       <a
         class="border-b-2 border-b-transparent py-2 text-sm font-semibold text-muted no-underline hover:border-b-brand hover:text-brand aria-[current=page]:border-b-brand aria-[current=page]:text-brand"
         routerLink="/gespeichert"
         routerLinkActive=""
         ariaCurrentWhenActive="page"
-        >Gespeichert</a
+        >{{ 'nav.saved' | translate }}</a
       >
     </nav>
-    @if (auth.session.authenticated()) {
-      <div class="flex items-center gap-3.5 max-md:ml-auto">
-        <span
-          class="max-w-42.5 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-muted max-md:hidden"
-          [title]="auth.session.user()!.username"
-          >Hallo, {{ auth.session.user()!.username }}</span
-        ><button type="button" (click)="auth.logout()" class="btn btn-outline">Abmelden</button>
-      </div>
-    } @else {
-      <a routerLink="/anmelden" class="btn btn-outline max-sm:ml-auto">Anmelden</a>
+    <app-language-switcher class="max-xl:ml-auto" />
+    @if (auth.vm$ | async; as vm) {
+      @if (vm.authenticated) {
+        <div class="flex items-center gap-3.5 max-md:ml-auto">
+          <span
+            class="max-w-42.5 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-muted max-md:hidden"
+            [title]="vm.user!.username"
+            >{{ 'nav.greeting' | translate: { username: vm.user!.username } }}</span
+          ><button type="button" (click)="auth.logout()" class="btn btn-outline">
+            {{ 'nav.logout' | translate }}
+          </button>
+        </div>
+      } @else {
+        <a routerLink="/anmelden" class="btn btn-outline max-sm:ml-auto">{{
+          'common.login' | translate
+        }}</a>
+      }
     }
   </div>
 </header>
@@ -69,7 +76,7 @@
     class="m-auto flex max-w-content items-center gap-5 px-8 py-6.5 text-xs text-muted max-sm:flex-wrap max-sm:gap-3 max-sm:px-5 max-sm:py-6"
   >
     <a class="text-lg font-extrabold text-ink no-underline" routerLink="/">SmartSpoon.</a
-    ><span>Einfach kochen. Bewusst einkaufen.</span
-    ><span class="ml-auto max-sm:ml-0 max-sm:w-full">Frühe Version · Preise sind Testdaten</span>
+    ><span>{{ 'nav.footer' | translate }}</span
+    ><span class="ml-auto max-sm:ml-0 max-sm:w-full">{{ 'nav.earlyNotice' | translate }}</span>
   </div>
 </footer>

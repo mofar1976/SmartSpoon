@@ -1,3 +1,4 @@
+import { I18nService } from '../../../core/i18n/i18n-service';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,6 +23,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ],
 })
 export class MultiSelect implements ControlValueAccessor {
+  private readonly i18n = inject(I18nService);
   readonly label = input.required<string>();
   readonly controlId = input.required<string>();
   readonly describedBy = input('');
@@ -39,7 +41,7 @@ export class MultiSelect implements ControlValueAccessor {
       this.options()
         .filter((option) => this.selected().includes(option.value))
         .map((option) => option.label)
-        .join(', ') || 'Keine ausgewählt'
+        .join(', ') || this.i18n.t('common.noneSelected')
     );
   }
   writeValue(value: string[] | null): void {
