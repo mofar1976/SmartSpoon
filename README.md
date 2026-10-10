@@ -19,6 +19,37 @@ supports English and German.
 - Choose whether pantry recipes may require additional ingredients.
 - Save complete recipe selections and shopping lists to your account.
 
+## Screenshots
+
+The English interface below uses fictional demo data and mocked API responses.
+The ingredient-upload preview is an original illustration, not a photo-recognition
+accuracy example. No personal accounts, photos or API keys are shown.
+
+### Home
+
+![SmartSpoon home page with recipe discovery and an explanation of the workflow](assets/screenshots/home.png)
+
+<details>
+<summary>Ingredient review after a demo photo upload</summary>
+
+![Pantry upload and editable ingredient list in the English interface](assets/screenshots/ingredient-recognition.png)
+
+</details>
+
+<details>
+<summary>Recipe alternatives from pantry ingredients</summary>
+
+![Three pantry recipe alternatives with ingredients and cooking steps](assets/screenshots/pantry-recipes.png)
+
+</details>
+
+<details>
+<summary>Saved recipes and shopping lists</summary>
+
+![Saved pantry and supermarket selections, with fictional test prices clearly labelled](assets/screenshots/saved-selections.png)
+
+</details>
+
 ## Technology
 
 | Area | Stack |
@@ -160,6 +191,10 @@ documented in the backend guide.
 
 ## Contributing
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and review conventions.
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+
 Changes should start on a feature branch and be proposed through a pull request
 against `develop`. `preview` and `main` are the subsequent promotion stages.
 Include a clear description and relevant validation results. Keep credentials,
@@ -168,4 +203,5 @@ local `.env` files, personal photos and database data out of commits.
 ## License
 
 SmartSpoon is licensed under the [MIT License](LICENSE).
-Dependency and model licenses apply separately.
+Dependency and model licenses apply separately; see
+[third-party notices](THIRD_PARTY_NOTICES.md) and the dependency inventory.
