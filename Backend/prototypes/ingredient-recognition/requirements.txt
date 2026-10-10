@@ -1,1 +1,2 @@
--r ../../ingredient-recognition/requirements.txt
+# Keep the prototype and ingredient-recognition service on the same patched version.
+Pillow==12.3.0
