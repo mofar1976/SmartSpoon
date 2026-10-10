@@ -1,0 +1,41 @@
+<form
+  class="flex flex-col gap-5.5"
+  #formElement
+  [formGroup]="form()"
+  (ngSubmit)="submitted.emit()"
+  [attr.aria-busy]="busy()"
+  novalidate
+>
+  <app-auth-username-field [control]="form().controls.username" [busy]="busy()" />
+  <app-auth-password-field
+    [control]="form().controls.password"
+    [busy]="busy()"
+    [register]="register()"
+  />
+  @if (register()) {
+    <app-auth-birth-date-field
+      [control]="form().controls.birthDate"
+      [busy]="busy()"
+      [maxDate]="maxDate()"
+    />
+  }
+  @if (errorKey()) {
+    <p
+      class="m-0 rounded-xl bg-danger-soft px-4 py-3.5 text-caption leading-[1.6] text-danger"
+      role="alert"
+    >
+      {{ errorKey() | translate }}
+    </p>
+  }
+  <button type="submit" class="btn btn-primary mt-1 w-full" [disabled]="busy()">
+    {{
+      busy()
+        ? register()
+          ? i18n.t('auth.creatingAccount')
+          : i18n.t('auth.loggingIn')
+        : register()
+          ? i18n.t('auth.createAccount')
+          : i18n.t('common.login')
+    }}<span class="ml-3.5" aria-hidden="true">↗</span>
+  </button>
+</form>

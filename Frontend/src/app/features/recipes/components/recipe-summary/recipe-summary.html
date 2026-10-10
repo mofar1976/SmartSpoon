@@ -1,0 +1,53 @@
+<aside class="min-w-0 rounded-panel bg-brand-soft p-7 max-xl:p-6" aria-labelledby="plan-note-title">
+  <span class="text-label font-bold tracking-[1.2px] text-brand">{{
+    'recipes.framework' | translate
+  }}</span>
+  <h2
+    class="mt-4.5 mb-6 text-title-lg leading-[1.2] font-bold tracking-[-0.8px] outline-none"
+    id="plan-note-title"
+  >
+    {{ 'recipes.wellPlanned' | translate }}<br />{{ 'recipes.wellEaten' | translate }}
+  </h2>
+  <div class="border-t border-b border-t-brand-outline border-b-brand-outline py-5">
+    <span class="block text-xs text-muted">{{ 'recipes.yourBudget' | translate }}</span
+    ><strong
+      class="mt-2.5 block text-3xl font-bold tracking-[-1px] text-brand max-sm:text-title-lg"
+      >{{
+        summary().budgetCents === null
+          ? i18n.t('common.pending')
+          : ((summary().budgetCents ?? 0) / 100
+            | currency: 'EUR' : 'symbol' : '1.2-2' : i18n.locale())
+      }}</strong
+    >
+  </div>
+  <dl class="my-6 flex flex-col gap-4.5 max-xl:flex-row max-xl:flex-wrap max-xl:gap-6">
+    <div>
+      <dt class="text-xs text-muted">{{ 'recipes.shopAt' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">
+        {{ marketName() ?? i18n.t('common.pending') }}
+      </dd>
+    </div>
+    <div>
+      <dt class="text-xs text-muted">{{ 'recipes.atTable' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">
+        {{
+          (summary().persons === 1 ? 'recipes.peopleCount.one' : 'recipes.peopleCount.other')
+            | translate: { count: summary().persons }
+        }}
+      </dd>
+    </div>
+    <div>
+      <dt class="text-xs text-muted">{{ 'recipes.onPlate' | translate }}</dt>
+      <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().diet }}</dd>
+    </div>
+  </dl>
+  <p class="my-[1em] text-xs leading-[1.7] text-muted">
+    {{ 'recipes.packageNotice' | translate }}
+  </p>
+  <div class="mt-5 mb-3 border-t border-t-brand-outline pt-5 text-xs leading-[1.7] text-muted">
+    {{ 'recipes.draftNotice' | translate }}
+  </div>
+  <button type="button" (click)="startNew.emit()" [disabled]="busy()" class="btn btn-text">
+    {{ 'recipes.startNew' | translate }}
+  </button>
+</aside>

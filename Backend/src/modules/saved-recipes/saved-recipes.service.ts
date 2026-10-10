@@ -4,7 +4,7 @@ import { HydratedDocument, Model, Types } from 'mongoose';
 import { SavedRecipe } from './schemas/saved-recipe.schema';
 import { SaveRecipesDto } from './dto/save-recipes.dto';
 import { ListSavedRecipesDto } from './dto/list-saved-recipes.dto';
-import { SnapshotProofService } from './snapshot-proof.service';
+import { isPantrySnapshot, SnapshotProofService } from './snapshot-proof.service';
 
 @Injectable()
 export class SavedRecipesService {
@@ -14,15 +14,28 @@ export class SavedRecipesService {
   ) {}
   async save(input: SaveRecipesDto, owner: string) {
     const { snapshot, sourceId, generatedAt } = await this.proofs.verify(input.result, owner);
-    const known = new Set(snapshot.shoppingList.map((item) => item.product.id));
-    if (input.checkedProductIds.some((id) => !known.has(id)))
-      throw new BadRequestException('Abgehakte Artikel müssen zu dieser Einkaufsliste gehören.');
+    const checkedProductIds = input.checkedProductIds ?? [];
+    const checkedItemIds = input.checkedItemIds ?? [];
+    if (isPantrySnapshot(snapshot)) {
+      const known = new Set(
+        snapshot.recipes.flatMap((recipe) => recipe.shoppingList.map((item) => item.id)),
+      );
+      if (checkedProductIds.length || checkedItemIds.some((id) => !known.has(id)))
+        throw new BadRequestException(
+          'Abgehakte Vorratsartikel müssen zu den Rezept-Einkaufslisten gehören.',
+        );
+    } else {
+      const known = new Set(snapshot.shoppingList.map((item) => item.product.id));
+      if (checkedItemIds.length || checkedProductIds.some((id) => !known.has(id)))
+        throw new BadRequestException('Abgehakte Produkte müssen zu dieser Einkaufsliste gehören.');
+    }
     const filter = { ownerId: new Types.ObjectId(owner), sourceId };
     const data = {
       ...filter,
       title: input.title ?? snapshot.recipes[0].title,
       result: snapshot,
-      checkedProductIds: input.checkedProductIds,
+      checkedProductIds,
+      checkedItemIds,
       generatedAt,
     };
     let document;
@@ -48,7 +61,7 @@ export class SavedRecipesService {
       this.selections
         .find(filter)
         .select(
-          'title generatedAt createdAt result.totalCostCents result.currency result.priceType result.recipes.title',
+          'title generatedAt createdAt result.mode result.totalCostCents result.currency result.priceType result.recipes.title',
         )
         .sort({ createdAt: -1, _id: -1 })
         .skip(query.offset)
@@ -62,9 +75,14 @@ export class SavedRecipesService {
         title: item.title,
         generatedAt: item.generatedAt.toISOString(),
         createdAt: item.createdAt.toISOString(),
-        totalCostCents: item.result.totalCostCents,
-        currency: item.result.currency,
-        priceType: item.result.priceType,
+        mode: isPantrySnapshot(item.result) ? 'pantry' : 'market',
+        ...(isPantrySnapshot(item.result)
+          ? {}
+          : {
+              totalCostCents: item.result.totalCostCents,
+              currency: item.result.currency,
+              priceType: item.result.priceType,
+            }),
         recipeTitles: item.result.recipes.map((recipe) => recipe.title),
       })),
       total,
@@ -92,8 +110,10 @@ export class SavedRecipesService {
       title: document.title,
       generatedAt: document.generatedAt.toISOString(),
       createdAt: document.createdAt.toISOString(),
+      mode: isPantrySnapshot(document.result) ? 'pantry' : 'market',
       result: document.result,
-      checkedProductIds: document.checkedProductIds,
+      checkedProductIds: document.checkedProductIds ?? [],
+      checkedItemIds: document.checkedItemIds ?? [],
     };
   }
 }

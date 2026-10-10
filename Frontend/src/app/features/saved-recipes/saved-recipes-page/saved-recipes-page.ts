@@ -1,90 +1,86 @@
-import { RecipeWorkspace } from '../../recipes/recipe-workspace';
-import { CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  effect,
-  inject,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { SessionStore } from '../../../core/auth/session-store';
-import { RecipeResults } from '../../recipes/recipe-results/recipe-results';
-import { RecipeSaveState } from '../../recipes/recipe-save-state';
-import { SavedRecipesStore } from '../saved-recipes-store';
+import { TranslatePipe } from '@ngx-translate/core';
+import { combineLatest, distinctUntilChanged, map } from 'rxjs';
+import { AuthFacade } from '../../../shared/store/auth/auth.facade';
+import { SavedRecipesFacade } from '../../../shared/store/saved-recipes/saved-recipes.facade';
+import { RecipeWorkspace } from '../../recipes/recipe-workspace';
+import { DeleteSelectionDialog } from '../components/delete-selection-dialog/delete-selection-dialog';
+import { SavedRecipeDetail } from '../components/saved-recipe-detail/saved-recipe-detail';
+import { SavedRecipesList } from '../components/saved-recipes-list/saved-recipes-list';
+
 @Component({
-  imports: [CurrencyPipe, DatePipe, RouterLink, RecipeResults],
-  providers: [SavedRecipesStore],
+  imports: [
+    AsyncPipe,
+    TranslatePipe,
+    RouterLink,
+    SavedRecipesList,
+    SavedRecipeDetail,
+    DeleteSelectionDialog,
+  ],
   templateUrl: './saved-recipes-page.html',
   styleUrl: './saved-recipes-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SavedRecipesPage {
-  protected readonly store = inject(SavedRecipesStore);
-  private readonly session = inject(SessionStore);
+export class SavedRecipesPage implements OnDestroy {
+  protected readonly store = inject(SavedRecipesFacade);
+  private readonly session = inject(AuthFacade);
   private readonly workspace = inject(RecipeWorkspace);
-  private readonly saveState = inject(RecipeSaveState);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly params = toSignal(this.route.paramMap, {
-    initialValue: this.route.snapshot.paramMap,
-  });
   protected readonly target = signal<{ id: string; title: string } | null>(null);
-  private readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('deleteDialog');
   private offset = 0;
   constructor() {
-    effect(() => {
-      const id = this.params().get('id'),
-        token = this.session.token();
-      untracked(() => {
+    combineLatest([
+      this.route.paramMap,
+      this.session.state$.pipe(
+        map((state) => state.token),
+        distinctUntilChanged(),
+      ),
+    ])
+      .pipe(takeUntilDestroyed())
+      .subscribe(([params, token]) => {
         if (token) {
           this.offset = 0;
-          this.store.load(id);
+          this.store.load(params.get('id'));
           this.closeDelete();
         } else {
           this.target.set(null);
-          this.dialog()?.nativeElement.close();
         }
       });
-    });
-    effect(() => {
-      const deleted = this.store.deletedId();
-      if (deleted)
-        untracked(() => {
-          this.saveState.forget(deleted);
-          this.closeDelete();
-          if (this.params().get('id')) void this.router.navigateByUrl('/gespeichert');
-        });
+    this.store.deletedId$.pipe(takeUntilDestroyed()).subscribe((deleted) => {
+      if (!deleted) return;
+      this.closeDelete();
+      if (this.route.snapshot.paramMap.get('id')) void this.router.navigateByUrl('/gespeichert');
     });
   }
   protected reload(): void {
-    this.store.load(this.params().get('id'), this.store.list()?.offset ?? this.offset);
+    this.store.load(
+      this.route.snapshot.paramMap.get('id'),
+      this.store.snapshot().list?.offset ?? this.offset,
+    );
   }
   protected page(offset: number): void {
     this.offset = offset;
     this.store.load(null, offset);
   }
   protected newRequest(): void {
-    this.workspace.reset();
-    void this.router.navigateByUrl('/rezepte');
+    const pantry = this.store.snapshot().detail?.mode === 'pantry';
+    if (!pantry) this.workspace.reset();
+    void this.router.navigateByUrl(pantry ? '/vorrat' : '/rezepte');
   }
   protected askDelete(id: string, title: string): void {
     this.target.set({ id, title });
-    this.store.deleteError.set('');
-    this.dialog()?.nativeElement.showModal();
+    this.store.clearDeleteError();
   }
   protected closeDelete(): void {
-    if (this.store.deleting()) return;
-    this.dialog()?.nativeElement.close();
+    if (this.store.snapshot().deleteRequestId !== null) return;
     this.target.set(null);
   }
-  protected cancelDelete(event: Event): void {
-    event.preventDefault();
-    this.closeDelete();
+  ngOnDestroy(): void {
+    this.store.clearView();
   }
   protected confirmDelete(): void {
     const target = this.target();

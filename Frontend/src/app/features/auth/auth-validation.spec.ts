@@ -2,7 +2,7 @@ import { FormControl } from '@angular/forms';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { berlinToday, birthDateValidator, usernameValidator } from './auth-validation';
 import { HttpErrorResponse } from '@angular/common/http';
-import { authErrorMessage } from './auth-errors';
+import { authErrorKey } from './auth-errors';
 
 afterEach(() => vi.useRealTimers());
 describe('registration validation', () => {
@@ -35,9 +35,11 @@ describe('registration validation', () => {
   it('shows friendly errors without exposing provider or server details', () => {
     for (const status of [0, 400, 401, 409, 429, 500]) {
       const error = new HttpErrorResponse({ status, error: { message: 'secret-server-detail' } });
-      expect(authErrorMessage(error, true)).not.toContain('secret-server-detail');
+      expect(authErrorKey(error, true)).not.toContain('secret-server-detail');
     }
-    expect(authErrorMessage(new HttpErrorResponse({ status: 409 }), true)).toContain('vergeben');
-    expect(authErrorMessage(new HttpErrorResponse({ status: 429 }), false)).toContain('Minute');
+    expect(authErrorKey(new HttpErrorResponse({ status: 409 }), true)).toBe('errors.authConflict');
+    expect(authErrorKey(new HttpErrorResponse({ status: 429 }), false)).toBe(
+      'errors.authRateLimit',
+    );
   });
 });

@@ -1,212 +1,47 @@
-<div
-  class="page-container grid grid-cols-2 items-start gap-20 pt-16 pb-18 max-lg:gap-8 max-md:grid-cols-1 max-md:pt-8 max-md:pb-12"
->
-  <aside class="min-w-0 pt-8 max-md:pt-0" aria-labelledby="intro-title">
-    <span class="text-label font-bold tracking-[1.3px] text-brand">DEIN ALLTAG. DEIN BUDGET.</span>
-    <h2 class="my-5.5 text-auth-title leading-[1.15] font-bold tracking-[-1.8px]" id="intro-title">
-      Weniger überlegen.<br /><span class="text-brand">Mehr genießen.</span>
-    </h2>
-    <p class="my-[1em] max-w-100 leading-[1.8] text-muted">
-      Ein guter Essensplan beginnt mit dir. Finde Rezepte, die zu deinem Alltag und deinem
-      Geldbeutel passen.
-    </p>
-    <ul class="my-7 list-none p-0">
-      <li
-        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-      >
-        Dein Supermarkt und dein Budget
-      </li>
-      <li
-        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-      >
-        Rezepte nach deinen Essenswünschen
-      </li>
-      <li
-        class="my-4.5 flex items-center gap-3 text-sm before:grid before:size-6 before:place-items-center before:rounded-full before:bg-brand-soft before:text-brand before:content-['✓']"
-      >
-        Eine Einkaufsliste für alles
-      </li>
-    </ul>
-    <div
-      class="mt-9.5 max-w-102.5 rounded-2xl bg-brand-soft px-5.5 py-5 max-md:mt-6 max-md:max-w-none"
-    >
-      <strong class="text-caption">Du entscheidest jedes Mal neu.</strong>
-      <p class="mt-[1em] mb-0 text-xs leading-[1.7] text-muted">
-        Deine Essenswünsche und dein Budget werden nicht in deinem Konto gespeichert.
-      </p>
-    </div>
-  </aside>
-  <section
-    class="min-w-0 rounded-3xl border border-border bg-surface p-9 max-lg:p-7 max-md:row-start-1 max-md:px-5 max-md:py-6"
-    aria-labelledby="auth-title"
+@if (auth.vm$ | async; as vm) {
+  <div
+    class="page-container grid grid-cols-2 items-start gap-20 pt-16 pb-18 max-lg:gap-8 max-md:grid-cols-1 max-md:pt-8 max-md:pb-12"
   >
-    <span class="text-label font-bold tracking-[1.3px] text-brand">{{
-      register ? 'SCHÖN, DASS DU DA BIST' : 'WILLKOMMEN ZURÜCK'
-    }}</span>
-    <h1 class="my-3.5 text-3xl font-bold tracking-[-1px] max-md:text-title-lg" id="auth-title">
-      {{ register ? 'Dein Konto erstellen' : 'Anmelden' }}
-    </h1>
-    <p class="mt-[1em] mb-7 text-sm leading-[1.7] text-muted">
-      {{
-        register
-          ? 'Drei Angaben, und du bist dabei.'
-          : 'Melde dich an und plane deinen nächsten Einkauf.'
-      }}
-    </p>
-    @if (reason === 'expired' || auth.session.expired()) {
-      <p
-        class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
-        role="status"
-      >
-        Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.
-      </p>
-    }
-    @if (auth.session.status() === 'unavailable') {
-      <div
-        class="mt-0 mb-5.5 rounded-xl bg-canvas-muted px-4 py-3.5 text-caption leading-[1.6]"
-        role="status"
-      >
-        <p class="m-0">Deine bestehende Sitzung konnte gerade nicht geprüft werden.</p>
-        <button type="button" (click)="retrySession()" [disabled]="busy()" class="btn btn-text">
-          Verbindung erneut prüfen
-        </button>
-      </div>
-    }
-    <form
-      class="flex flex-col gap-5.5"
-      #formElement
-      [formGroup]="form"
-      (ngSubmit)="submit()"
-      [attr.aria-busy]="busy()"
-      novalidate
+    <app-auth-intro />
+    <section
+      class="min-w-0 rounded-3xl border border-border bg-surface p-9 max-lg:p-7 max-md:row-start-1 max-md:px-5 max-md:py-6"
+      aria-labelledby="auth-title"
     >
-      <div class="field">
-        <label class="field-label" for="auth-username">Benutzername</label>
-        <input
-          id="auth-username"
-          class="field-control"
-          [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
-          [attr.aria-describedby]="
-            'auth-username-hint' +
-            (form.controls.username.touched && form.controls.username.invalid
-              ? ' auth-username-error'
-              : '')
-          "
-          formControlName="username"
-          autocomplete="username"
-          autocapitalize="none"
-          spellcheck="false"
-          maxlength="30"
-          [readOnly]="busy()"
-          required
-        />
-        <p class="field-hint" id="auth-username-hint">3–30 Zeichen: a–z, Zahlen, _ oder -</p>
-        @if (form.controls.username.touched && form.controls.username.invalid) {
-          <p class="field-error" id="auth-username-error">
-            Bitte wähle einen Benutzernamen mit 3–30 erlaubten Zeichen.
-          </p>
-        }
-      </div>
-      <div class="field">
-        <label class="field-label" for="auth-password">Passwort</label>
-        <input
-          id="auth-password"
-          class="field-control pr-28"
-          [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
-          [attr.aria-describedby]="
-            (register ? 'auth-password-hint' : '') +
-            (form.controls.password.touched && form.controls.password.invalid
-              ? ' auth-password-error'
-              : '')
-          "
-          formControlName="password"
-          [type]="showPassword() ? 'text' : 'password'"
-          [autocomplete]="register ? 'new-password' : 'current-password'"
-          minlength="8"
-          maxlength="128"
-          [readOnly]="busy()"
-          required
-        />
-        <button
-          class="btn btn-text absolute top-1.25 right-1 min-w-17.5 px-2 text-label"
-          type="button"
-          (click)="showPassword.set(!showPassword())"
-          [attr.aria-pressed]="showPassword()"
-          [attr.aria-label]="showPassword() ? 'Passwort verbergen' : 'Passwort anzeigen'"
+      <span class="text-label font-bold tracking-[1.3px] text-brand">{{
+        register ? i18n.t('auth.registerEyebrow') : i18n.t('auth.loginEyebrow')
+      }}</span>
+      <h1 class="my-3.5 text-3xl font-bold tracking-[-1px] max-md:text-title-lg" id="auth-title">
+        {{ register ? i18n.t('auth.registerTitle') : i18n.t('common.login') }}
+      </h1>
+      <p class="mt-[1em] mb-7 text-sm leading-[1.7] text-muted">
+        {{ register ? i18n.t('auth.registerDescription') : i18n.t('auth.loginDescription') }}
+      </p>
+      <app-auth-session-notice
+        [expired]="reason === 'expired' || vm.expired"
+        [status]="vm.status"
+        [busy]="vm.busy"
+        (retry)="retrySession()"
+      />
+      <app-auth-form
+        [form]="form"
+        [register]="register"
+        [busy]="vm.busy"
+        [errorKey]="vm.errorKey"
+        [maxDate]="maxDate"
+        (submitted)="submit()"
+      />
+      <p class="mt-6 mb-[1em] text-center text-caption leading-[1.7]">
+        {{ register ? i18n.t('auth.alreadyAccount') : i18n.t('auth.newHere') }}
+        <a
+          class="ml-1 font-semibold underline underline-offset-[3px]"
+          [routerLink]="register ? '/anmelden' : '/registrieren'"
+          [queryParams]="{ returnUrl: returnUrl }"
+          >{{ register ? i18n.t('auth.loginNow') : i18n.t('auth.createAccount') }}</a
         >
-          {{ showPassword() ? 'Verbergen' : 'Anzeigen' }}
-        </button>
-        @if (register) {
-          <p class="field-hint" id="auth-password-hint">Mindestens 8 Zeichen</p>
-        }
-        @if (form.controls.password.touched && form.controls.password.invalid) {
-          <p class="field-error" id="auth-password-error">
-            Das Passwort muss 8–128 Zeichen enthalten.
-          </p>
-        }
-      </div>
-      @if (register) {
-        <div class="field">
-          <label class="field-label" for="auth-birthDate">Geburtsdatum</label>
-          <input
-            id="auth-birthDate"
-            class="field-control"
-            [attr.aria-invalid]="form.controls.birthDate.touched && form.controls.birthDate.invalid"
-            [attr.aria-describedby]="
-              'auth-birthDate-hint' +
-              (form.controls.birthDate.touched && form.controls.birthDate.invalid
-                ? ' auth-birthDate-error'
-                : '')
-            "
-            formControlName="birthDate"
-            type="date"
-            autocomplete="bday"
-            min="0001-01-01"
-            [max]="maxDate"
-            [readOnly]="busy()"
-            required
-          />
-          <p class="field-hint" id="auth-birthDate-hint">
-            Dein Alter hilft bei der Auswahl passender Rezepte.
-          </p>
-          @if (form.controls.birthDate.touched && form.controls.birthDate.invalid) {
-            <p class="field-error" id="auth-birthDate-error">
-              Bitte gib ein gültiges Geburtsdatum ein, das nicht in der Zukunft liegt.
-            </p>
-          }
-        </div>
-      }
-      @if (error()) {
-        <p
-          class="m-0 rounded-xl bg-danger-soft px-4 py-3.5 text-caption leading-[1.6] text-danger"
-          role="alert"
-        >
-          {{ error() }}
-        </p>
-      }
-      <button type="submit" class="btn btn-primary mt-1 w-full" [disabled]="busy()">
-        {{
-          busy()
-            ? register
-              ? 'Konto wird erstellt …'
-              : 'Du wirst angemeldet …'
-            : register
-              ? 'Konto erstellen'
-              : 'Anmelden'
-        }}<span class="ml-3.5" aria-hidden="true">↗</span>
-      </button>
-    </form>
-    <p class="mt-6 mb-[1em] text-center text-caption leading-[1.7]">
-      {{ register ? 'Schon ein Konto?' : 'Neu bei SmartSpoon?' }}
-      <a
-        class="ml-1 font-semibold underline underline-offset-[3px]"
-        [routerLink]="register ? '/anmelden' : '/registrieren'"
-        [queryParams]="{ returnUrl: returnUrl }"
-        >{{ register ? 'Jetzt anmelden' : 'Konto erstellen' }}</a
-      >
-    </p>
-    <p class="mt-4.5 mb-0 text-center text-label text-muted">
-      Deine Anmeldung bleibt in diesem Tab erhalten.
-    </p>
-  </section>
-</div>
+      </p>
+      <p class="mt-4.5 mb-0 text-center text-label text-muted">
+        {{ 'auth.sessionFootnote' | translate }}
+      </p>
+    </section>
+  </div>
+}

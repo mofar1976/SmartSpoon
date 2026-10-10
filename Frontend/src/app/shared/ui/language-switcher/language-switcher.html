@@ -1,0 +1,26 @@
+<div
+  class="inline-flex rounded-lg border border-border p-1"
+  role="group"
+  [attr.aria-label]="'nav.language' | translate"
+>
+  <button
+    type="button"
+    lang="de"
+    class="min-h-11 rounded-md px-3 text-sm font-semibold text-muted hover:text-brand aria-pressed:bg-brand aria-pressed:text-white"
+    [attr.aria-pressed]="i18n.language() === 'de'"
+    [attr.aria-label]="'nav.german' | translate"
+    (click)="i18n.setLanguage('de')"
+  >
+    DE
+  </button>
+  <button
+    type="button"
+    lang="en"
+    class="min-h-11 rounded-md px-3 text-sm font-semibold text-muted hover:text-brand aria-pressed:bg-brand aria-pressed:text-white"
+    [attr.aria-pressed]="i18n.language() === 'en'"
+    [attr.aria-label]="'nav.english' | translate"
+    (click)="i18n.setLanguage('en')"
+  >
+    EN
+  </button>
+</div>

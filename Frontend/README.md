@@ -50,7 +50,7 @@ Produktionsdateien: `dist/smartspoon-frontend/browser/`. Produktionshosting muss
 
 Build, TypeScript, Navigation inklusive direktem Neuladen, unbekannte URLs, Sprunglink, Fokusführung und Breiten 320/390/768/1440 wurden geprüft. Backend-Bereitschaft über den Entwicklungsproxy bestätigt. 49 gezielte Tests prüfen Auth-Sitzung, Ablauf, Logout, API-Token-Grenzen, verspätete Antworten, Guard, Fehlerbehandlung, Formularvalidierung, exakte Cent-Umrechnung, Doppelklickschutz, Anfrageabbruch und temporäre Rezeptdaten. Browserprüfung gegen das reale Backend bestätigt Registrierung, Login, Neuladen und Logout; Fehlerzustände zusätzlich mit gezielten Mock-Antworten geprüft. Die Tests rufen Gemini nicht auf.
 
-Architektur und nächste Schritte: [Frontend-Plan](../docs/FRONTEND_PLAN.md).
+Projektüberblick und Architektur: [README.md](../README.md).
 
 ## Komponentenstruktur
 
@@ -130,4 +130,4 @@ API-Aufrufe für Speicherung/Liste/Detail/Löschen haben zehn Sekunden Zeitlimit
 
 Geprüft: 49 Tests, TypeScript und Produktionsbuild. Live-Browserablauf mit temporärem Nutzer: echte Gemini-Generierung, Speichern, Öffnen/Neuladen, Häkchen-Wiederherstellung, Übersicht, Löschbestätigung und Schutz ohne Anmeldung. Speicher-/Löschfehler mit Mock-Antworten und manueller Wiederholung geprüft; mobile Breiten 320–1440 ohne Überlaufen. Testnutzer und gespeicherte Testdaten anschließend entfernt.
 
-Das offizielle prettier-plugin-tailwindcss sortiert Klassen beim Formatieren und Speichern anhand unseres Themes. Die Prettier-Konfigurationen im Stamm und Frontend verweisen auf src/tailwind.css. Tailwind IntelliSense ist als VS-Code-Erweiterung empfohlen. Regeln und Beispiele: [FRONTEND_STYLING.md](../docs/FRONTEND_STYLING.md).
+Das offizielle prettier-plugin-tailwindcss sortiert Klassen beim Formatieren und Speichern anhand unseres Themes. Die Prettier-Konfigurationen im Stamm und Frontend verweisen auf src/tailwind.css. Tailwind IntelliSense ist als VS-Code-Erweiterung empfohlen. Wiederverwendbare UI liegt unter shared/ui; Komponenten verwenden separate TS-, HTML- und SCSS-Dateien.

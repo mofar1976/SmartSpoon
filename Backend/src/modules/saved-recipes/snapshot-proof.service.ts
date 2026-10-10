@@ -2,8 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomUUID } from 'node:crypto';
 import { RecipeGenerationResponseDto } from '../recipes/dto/recipe-response.dto';
+import { PantryRecipesResponseDto } from '../pantry-recipes/dto/pantry-recipes-response.dto';
 
-export type RecipeSnapshot = Omit<RecipeGenerationResponseDto, 'saveProof'>;
+export type MarketRecipeSnapshot = Omit<RecipeGenerationResponseDto, 'saveProof'>;
+export type PantryRecipeSnapshot = Omit<PantryRecipesResponseDto, 'saveProof'>;
+export type RecipeSnapshot = MarketRecipeSnapshot | PantryRecipeSnapshot;
+export type SavableRecipeResponse = RecipeGenerationResponseDto | PantryRecipesResponseDto;
+export function isPantrySnapshot(snapshot: RecipeSnapshot): snapshot is PantryRecipeSnapshot {
+  return 'mode' in snapshot && snapshot.mode === 'pantry';
+}
 // Stable object key order lets clients serialize the same response in any key order.
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
@@ -32,7 +39,7 @@ export class SnapshotProofService {
       { audience, issuer: 'smartspoon', algorithm: 'HS256', expiresIn: '24h', jwtid: randomUUID() },
     );
   }
-  async verify(response: RecipeGenerationResponseDto, ownerId: string) {
+  async verify(response: SavableRecipeResponse, ownerId: string) {
     try {
       const { saveProof, ...snapshot } = response;
       if (typeof saveProof !== 'string' || saveProof.length > 2048) throw new Error();

@@ -1,177 +1,63 @@
-<div class="page-container pt-12 pb-16 max-md:pt-8 max-md:pb-12">
-  <header class="flex flex-wrap items-center justify-between gap-4">
-    <div>
-      <span class="text-xs font-bold tracking-widest text-brand">DEINE IDEEN FÜR SPÄTER</span>
-      <h1 class="my-4 text-saved-title font-bold tracking-[-0.04em]">Gespeicherte Auswahlen</h1>
-      <p class="my-[1em] leading-[1.7] text-muted">
-        Deine Rezepte und Einkaufslisten. Genau so, wie du sie gespeichert hast.
-      </p>
-    </div>
-    <a class="btn btn-outline" routerLink="/rezepte">Rezepte erstellen</a>
-  </header>
-  @if (store.loading()) {
-    <p class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]" role="status">
-      Deine Auswahl wird geladen …
-    </p>
-  }
-  @if (store.error()) {
-    <div class="rounded-xl bg-danger-soft p-4 leading-[1.6] text-danger" role="alert">
-      <p class="my-[1em]">{{ store.error() }}</p>
-      <button class="btn btn-outline" type="button" (click)="reload()">Erneut laden</button
-      ><a class="btn btn-text" routerLink="/gespeichert">Zur Übersicht</a>
-    </div>
-  }
-  @if (store.list(); as list) {
-    @if (list.total === 0) {
-      <section class="my-8 rounded-3xl border border-border bg-surface px-6 py-12 text-center">
-        <span aria-hidden="true" class="text-5xl text-brand">♡</span>
-        <h2 class="my-[0.83em] text-[1.5em] font-bold">Hier ist Platz für deine Lieblingsideen.</h2>
-        <p class="mx-auto mt-4 mb-6 max-w-112.5 leading-[1.7] text-muted">
-          Erstelle Rezepte und speichere die Auswahl mit ihrer Einkaufsliste. Dann findest du sie
-          hier wieder.
+@if (store.vm$ | async; as vm) {
+  <div class="page-container pt-12 pb-16 max-md:pt-8 max-md:pb-12">
+    <header class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="text-xs font-bold tracking-widest text-brand">{{
+          'saved.eyebrow' | translate
+        }}</span>
+        <h1 class="my-4 text-saved-title font-bold tracking-[-0.04em]">
+          {{ 'saved.title' | translate }}
+        </h1>
+        <p class="my-[1em] leading-[1.7] text-muted">
+          {{ 'saved.description' | translate }}
         </p>
-        <a class="btn btn-primary" routerLink="/rezepte">Erste Rezepte erstellen</a>
-      </section>
-    } @else {
-      <p class="my-[1em] text-sm text-muted" role="status">
-        {{ list.total }} {{ list.total === 1 ? 'gespeicherte Auswahl' : 'gespeicherte Auswahlen' }}
-      </p>
-      <div class="my-6 grid grid-cols-3 gap-5 max-2xl:grid-cols-2 max-md:grid-cols-1">
-        @for (item of list.items; track item.id) {
-          <article class="flex min-w-0 flex-col rounded-2xl border border-border bg-surface p-6">
-            <span class="text-xs text-muted"
-              >Gespeichert am {{ item.createdAt | date: 'dd.MM.yyyy' }}</span
-            >
-            <h2 class="my-[0.83em] text-xl font-bold wrap-anywhere">
-              <a
-                class="text-ink no-underline hover:underline"
-                [routerLink]="['/gespeichert', item.id]"
-                >{{ item.title }}</a
-              >
-            </h2>
-            <ul class="my-[1em] flex-1 list-disc pl-[1.2rem] text-caption leading-[1.7] text-muted">
-              @for (title of item.recipeTitles; track $index) {
-                <li>{{ title }}</li>
-              }
-            </ul>
-            <div
-              class="flex flex-wrap items-center justify-between gap-3 border-t border-t-border py-4"
-            >
-              <strong class="text-title-sm text-brand">{{
-                item.totalCostCents / 100 | currency: 'EUR'
-              }}</strong
-              ><span class="text-xs text-muted">{{
-                item.priceType === 'test' ? 'Fiktive Testpreise' : 'Preise bei Generierung'
-              }}</span>
-            </div>
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <a class="btn btn-outline px-4" [routerLink]="['/gespeichert', item.id]"
-                >Auswahl öffnen</a
-              ><button
-                class="btn btn-text px-4"
-                type="button"
-                (click)="askDelete(item.id, item.title)"
-                [disabled]="store.deleting()"
-                [attr.aria-label]="item.title + ' löschen'"
-              >
-                Löschen
-              </button>
-            </div>
-          </article>
-        }
       </div>
-      <nav
-        class="flex flex-wrap items-center justify-center gap-4 text-caption"
-        aria-label="Gespeicherte Auswahlen durchblättern"
+      <a class="btn btn-outline" routerLink="/rezepte">{{ 'recipes.generate' | translate }}</a>
+    </header>
+    @if (vm.loading) {
+      <p
+        class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]"
+        role="status"
       >
-        <button
-          class="btn btn-outline"
-          type="button"
-          [disabled]="list.offset === 0 || store.deleting()"
-          (click)="page(list.offset - list.limit)"
-        >
-          Vorherige</button
-        ><span
-          >{{ list.offset + 1 }}–{{ list.offset + list.items.length }} von {{ list.total }}</span
-        ><button
-          class="btn btn-outline"
-          type="button"
-          [disabled]="list.offset + list.items.length >= list.total || store.deleting()"
-          (click)="page(list.offset + list.limit)"
-        >
-          Weitere
-        </button>
-      </nav>
+        {{ 'saved.loading' | translate }}
+      </p>
     }
-  }
-  @if (store.detail(); as selection) {
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <a class="btn btn-text" routerLink="/gespeichert">← Alle Auswahlen</a
-      ><button
-        class="btn btn-text"
-        type="button"
-        (click)="askDelete(selection.id, selection.title)"
-        [disabled]="store.deleting()"
-      >
-        Auswahl löschen
-      </button>
-    </div>
-    <h2 class="my-[0.83em] text-heading font-bold wrap-anywhere">{{ selection.title }}</h2>
-    <p class="my-[1em] text-sm text-muted">
-      Gespeichert am {{ selection.createdAt | date: 'dd.MM.yyyy, HH:mm' }} · Erstellt am
-      {{ selection.generatedAt | date: 'dd.MM.yyyy' }}
-    </p>
-    <p class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]">
-      Rezepte, Mengen und Preise stammen aus deiner gespeicherten Auswahl. Die beim Speichern
-      gesetzten Häkchen wurden geladen; neue Häkchenänderungen werden nicht dauerhaft übernommen.
-    </p>
-    <app-recipe-results
-      [result]="selection.result"
-      [stored]="true"
-      [checkedProductIds]="store.checked()"
-      (purchasedChange)="store.setPurchased($event.productId, $event.purchased)"
-      (startNew)="newRequest()"
-    />
-  }
-</div>
-<dialog
-  #deleteDialog
-  class="m-auto w-[calc(100%_-_2rem)] max-w-120 rounded-2xl border border-border bg-surface p-6 text-ink backdrop:bg-ink/55"
-  aria-labelledby="delete-title"
-  aria-describedby="delete-description"
-  (cancel)="cancelDelete($event)"
->
-  <h2 class="my-[0.83em] text-[1.5em] font-bold" id="delete-title">Auswahl löschen?</h2>
-  <p class="my-[1em] leading-[1.7] wrap-anywhere" id="delete-description">
-    „{{ target()?.title }}“ wird mit allen Rezepten und der Einkaufsliste aus deinem Konto gelöscht.
-  </p>
-  @if (store.deleteError()) {
-    <p
-      class="my-[1em] rounded-xl bg-danger-soft p-4 leading-[1.7] wrap-anywhere text-danger"
-      role="alert"
-    >
-      {{ store.deleteError() }}
-    </p>
-  }
-  @if (store.deleting()) {
-    <p class="my-[1em] leading-[1.7] wrap-anywhere" role="status">Die Auswahl wird gelöscht …</p>
-  }
-  <div class="mt-6 flex flex-wrap justify-end gap-3">
-    <button
-      autofocus
-      class="btn btn-outline"
-      type="button"
-      (click)="closeDelete()"
-      [disabled]="store.deleting()"
-    >
-      Abbrechen</button
-    ><button
-      class="btn btn-primary"
-      type="button"
-      (click)="confirmDelete()"
-      [disabled]="store.deleting()"
-    >
-      {{ store.deleting() ? 'Wird gelöscht …' : 'Endgültig löschen' }}
-    </button>
+    @if (vm.errorKey) {
+      <div class="rounded-xl bg-danger-soft p-4 leading-[1.6] text-danger" role="alert">
+        <p class="my-[1em]">{{ vm.errorKey | translate }}</p>
+        <button class="btn btn-outline" type="button" (click)="reload()">
+          {{ 'common.retryLoad' | translate }}</button
+        ><a class="btn btn-text" routerLink="/gespeichert">{{
+          'saved.backOverview' | translate
+        }}</a>
+      </div>
+    }
+    @if (vm.list; as list) {
+      <app-saved-recipes-list
+        [selectionList]="list"
+        [deleting]="vm.deleting"
+        (deleteRequested)="askDelete($event.id, $event.title)"
+        (pageRequested)="page($event)"
+      />
+    }
+    @if (vm.detail; as selection) {
+      <app-saved-recipe-detail
+        [savedSelection]="selection"
+        [checkedProductIds]="vm.checkedProductIds"
+        [checkedItemIds]="vm.checkedItemIds"
+        (pantryPurchasedChanged)="store.setPantryPurchased($event.itemId, $event.purchased)"
+        [deleting]="vm.deleting"
+        (deleteRequested)="askDelete($event.id, $event.title)"
+        (purchasedChanged)="store.setPurchased($event.productId, $event.purchased)"
+        (startNew)="newRequest()"
+      />
+    }
   </div>
-</dialog>
+  <app-delete-selection-dialog
+    [target]="target()"
+    [busy]="vm.deleting"
+    [errorKey]="vm.deleteErrorKey"
+    (cancelled)="closeDelete()"
+    (confirmed)="confirmDelete()"
+  />
+}

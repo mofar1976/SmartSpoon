@@ -1,3 +1,5 @@
+import { PantryRecipesModule } from './modules/pantry-recipes/pantry-recipes.module';
+import { IngredientRecognitionModule } from './modules/ingredient-recognition/ingredient-recognition.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvironment } from './config/environment';
@@ -15,6 +17,8 @@ import { HealthModule } from './modules/health/health.module';
     AuthModule,
     ProductsModule,
     RecipesModule,
+    IngredientRecognitionModule,
+    PantryRecipesModule,
   ],
 })
 export class AppModule {}

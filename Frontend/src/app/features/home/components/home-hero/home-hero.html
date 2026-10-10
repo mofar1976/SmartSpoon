@@ -1,0 +1,83 @@
+<section
+  class="grid grid-cols-[1.1fr_1fr] items-center gap-16 pt-18 pb-16 max-xl:gap-8 max-md:grid-cols-1 max-md:gap-9 max-md:pt-10"
+  aria-labelledby="hero-title"
+>
+  <div>
+    <span class="inline-flex items-center gap-2 text-label font-bold tracking-[1.15px] text-brand"
+      ><span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>
+      {{ 'home.tagline' | translate }}</span
+    >
+    <h1
+      class="my-6 text-hero leading-[1.08] font-[750] tracking-[-2.8px] max-md:tracking-[-1.8px]"
+      id="hero-title"
+    >
+      {{ 'home.eatWell' | translate }}<br /><span class="text-brand">{{
+        'home.spendLess' | translate
+      }}</span>
+    </h1>
+    <p class="my-[1em] max-w-112.5 text-body-lg leading-[1.75] text-muted">
+      {{ 'home.description' | translate }}
+    </p>
+    <div class="mt-7.5 flex flex-wrap items-center gap-6">
+      <a routerLink="/rezepte" class="btn btn-primary"
+        >{{ 'home.discover' | translate }}
+        <span class="ml-4.5 text-xl" aria-hidden="true">↗</span></a
+      ><a class="text-caption font-semibold underline underline-offset-[5px]" href="#so-gehts"
+        >{{ 'home.howLink' | translate }} <span class="ml-1.5" aria-hidden="true">↓</span></a
+      >
+    </div>
+    <p class="mt-5.5 mb-[1em] text-xs text-muted">{{ 'home.footnote' | translate }}</p>
+  </div>
+  <div
+    class="relative flex min-h-105 flex-col items-center rounded-[32px_32px_110px_32px] bg-brand-soft px-7 pt-7 pb-10 max-xl:min-h-87.5 max-xl:px-5 max-md:min-h-auto max-md:rounded-br-art max-md:pb-13"
+    aria-hidden="true"
+  >
+    <div class="text-micro font-bold tracking-[1.7px] text-brand-muted">
+      {{ 'home.artLabel' | translate }}
+    </div>
+    <svg class="mt-1.5 w-[min(100%,_360px)] max-md:max-w-75" viewBox="0 0 360 320" fill="none">
+      <ellipse cx="180" cy="176" rx="148" ry="126" fill="#d9dfc8" />
+      <ellipse cx="180" cy="161" rx="148" ry="126" fill="#fffdf7" />
+      <ellipse cx="180" cy="161" rx="115" ry="96" fill="#eeeede" />
+      <ellipse cx="180" cy="161" rx="106" ry="88" fill="#f8f5e9" />
+      <path
+        d="M99 176c-11-32 6-78 48-84 36-6 58 23 59 49-1 31-33 70-70 60-16-5-30-13-37-25Z"
+        fill="#658657"
+      />
+      <path
+        d="M111 166c25-35 50-48 72-49M126 183c17-21 31-39 54-48"
+        stroke="#c8d8a7"
+        stroke-width="5"
+        stroke-linecap="round"
+      />
+      <path d="M214 104c-13-4-27 8-23 24 3 14 34 21 44 11 10-11-6-31-21-35Z" fill="#e69a54" />
+      <path d="M237 151c-19-6-35 8-30 26 3 17 36 28 49 15 12-13-3-37-19-41Z" fill="#e69a54" />
+      <circle cx="173" cy="186" r="24" fill="#c75e40" />
+      <circle cx="173" cy="186" r="16" fill="#e18a64" />
+      <path d="m165 184 16 5m-8-13-3 21" stroke="#f6c99f" stroke-width="3" stroke-linecap="round" />
+      <circle cx="202" cy="214" r="19" fill="#c75e40" />
+      <circle cx="202" cy="214" r="12" fill="#e18a64" />
+      <g fill="#e2cc87">
+        <ellipse cx="218" cy="87" rx="9" ry="5" transform="rotate(20 218 87)" />
+        <ellipse cx="255" cy="118" rx="9" ry="5" transform="rotate(-25 255 118)" />
+        <ellipse cx="261" cy="214" rx="9" ry="5" />
+        <ellipse cx="144" cy="234" rx="9" ry="5" transform="rotate(-20 144 234)" />
+        <ellipse cx="104" cy="211" rx="9" ry="5" />
+      </g>
+    </svg>
+    <div
+      class="absolute bottom-12 -left-5 flex -rotate-3 items-center gap-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-art max-xl:bottom-9 max-xl:-left-2 max-md:bottom-6 max-md:left-4"
+    >
+      <span class="grid size-7.5 place-items-center rounded-full bg-brand-soft text-brand">✓</span>
+      <div>
+        <strong class="block text-caption">{{ 'home.artTitle' | translate }}</strong
+        ><span class="mt-1 block text-label text-muted">{{
+          'home.artDescription' | translate
+        }}</span>
+      </div>
+    </div>
+    <span class="mr-2 self-end text-label leading-normal text-brand-muted italic max-xl:hidden"
+      >{{ 'home.morePlate' | translate }}<br />{{ 'home.lessReceipt' | translate }}</span
+    >
+  </div>
+</section>

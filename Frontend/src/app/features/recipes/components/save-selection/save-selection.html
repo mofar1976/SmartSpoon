@@ -1,0 +1,5 @@
+@if (recipes.result$ | async; as result) {
+  @if (saved.saveVm$ | async; as vm) {
+    <app-save-selection-form [result]="result" [state]="vm" (saveRequested)="saved.save($event)" />
+  }
+}

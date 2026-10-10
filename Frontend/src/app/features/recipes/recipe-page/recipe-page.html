@@ -1,482 +1,151 @@
-<div class="page-container pt-12 pb-16 max-sm:pt-8 max-sm:pb-12" #content>
-  <header class="mb-9">
-    <div>
-      <span class="text-label font-bold tracking-[1.2px] text-brand">PASSEND ZU DEINEM ALLTAG</span>
-      <h1 class="my-3.5 text-page-title leading-[1.2] font-bold tracking-[-1.5px]">
-        Was kommt heute auf den Tisch?
-      </h1>
-      <p class="my-[1em] text-sm leading-[1.7] text-muted">
-        Ein paar Angaben. Passende Rezepte. Ein Einkauf, der ins Budget passt.
-      </p>
-    </div>
-  </header>
-  @if (workspace.result(); as result) {
-    <app-recipe-results
-      [result]="result"
-      [actionsDisabled]="saveState.busy()"
-      [checkedProductIds]="workspace.checkedProductIds()"
-      (purchasedChange)="workspace.setPurchased($event.productId, $event.purchased)"
-      (edit)="edit()"
-      (startNew)="startNew()"
-      ><app-save-selection
-    /></app-recipe-results>
-  } @else {
-    <div
-      class="grid grid-cols-[minmax(0,_2.15fr)_minmax(0,_1fr)] items-start gap-7 max-xl:grid-cols-1"
-    >
-      <section
-        class="min-w-0 rounded-panel border border-border bg-surface"
-        aria-label="Neue Rezeptanfrage"
-      >
-        <ol
-          class="m-0 flex list-none gap-3 border-b border-b-border px-7 py-6 max-sm:gap-2 max-sm:px-5 max-sm:py-4"
-          aria-label="Schritte der Rezeptanfrage"
+@if (recipes.vm$ | async; as recipeVm) {
+  @if (markets.vm$ | async; as marketVm) {
+    <div class="page-container pt-12 pb-16 max-sm:pt-8 max-sm:pb-12" #content>
+      <header class="mb-9">
+        <div>
+          <span class="text-label font-bold tracking-[1.2px] text-brand">{{
+            'recipes.eyebrow' | translate
+          }}</span>
+          <h1 class="my-3.5 text-page-title leading-[1.2] font-bold tracking-[-1.5px]">
+            {{ 'recipes.title' | translate }}
+          </h1>
+          <p class="my-[1em] text-sm leading-[1.7] text-muted">
+            {{ 'recipes.description' | translate }}
+          </p>
+        </div>
+      </header>
+      @if (recipeVm.result; as result) {
+        <app-recipe-results
+          [result]="result"
+          [actionsDisabled]="(saved.saveVm$ | async)?.busy ?? false"
+          [checkedProductIds]="recipeVm.checkedProductIds"
+          (purchasedChange)="recipes.setPurchased($event.productId, $event.purchased)"
+          (edit)="edit()"
+          (startNew)="startNew()"
+          ><app-save-selection
+        /></app-recipe-results>
+      } @else {
+        <div
+          class="grid grid-cols-[minmax(0,_2.15fr)_minmax(0,_1fr)] items-start gap-7 max-xl:grid-cols-1"
         >
-          @for (name of steps; track $index) {
-            <li class="min-w-0 flex-1">
-              <button
-                class="group flex min-h-11 w-full cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left text-xs leading-normal text-muted disabled:cursor-default aria-[current=step]:font-bold aria-[current=step]:text-brand max-sm:flex-col max-sm:items-start max-sm:gap-1.5 max-sm:text-label"
-                type="button"
-                [attr.aria-current]="workspace.step() === $index ? 'step' : null"
-                [disabled]="$index > workspace.step() || workspace.busy()"
-                (click)="back($index)"
-              >
-                <span
-                  class="grid size-7 shrink-0 place-items-center rounded-full border border-border text-label group-aria-[current=step]:border-brand group-aria-[current=step]:bg-brand group-aria-[current=step]:text-white"
-                  aria-hidden="true"
-                  >{{ $index < workspace.step() ? '✓' : $index + 1 }}</span
-                ><span>{{ name }}</span>
-              </button>
-            </li>
-          }
-        </ol>
-        <form
-          class="p-8 max-sm:px-5 max-sm:py-6"
-          [formGroup]="form"
-          (ngSubmit)="proceed()"
-          [attr.aria-busy]="workspace.busy()"
-          novalidate
-        >
-          <span class="text-label font-bold tracking-[1.2px] text-brand"
-            >SCHRITT {{ workspace.step() + 1 }} VON 3</span
+          <section
+            class="min-w-0 rounded-panel border border-border bg-surface"
+            [attr.aria-label]="'recipes.newRequest' | translate"
           >
-          <h2
-            class="my-3 text-title font-bold tracking-[-0.8px] outline-none"
-            #stepHeading
-            tabindex="-1"
-          >
-            {{ steps[workspace.step()] }}
-          </h2>
-          @if (workspace.step() === 0) {
-            <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
-              Wo kaufst du ein und für wen kochst du?
-            </p>
-            @if (marketsLoading()) {
-              <p
-                class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted"
-                role="status"
+            <ol
+              class="m-0 flex list-none gap-3 border-b border-b-border px-7 py-6 max-sm:gap-2 max-sm:px-5 max-sm:py-4"
+              [attr.aria-label]="'recipes.stepsLabel' | translate"
+            >
+              @for (name of steps; track $index) {
+                <li class="min-w-0 flex-1">
+                  <button
+                    class="group flex min-h-11 w-full cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left text-xs leading-normal text-muted disabled:cursor-default aria-[current=step]:font-bold aria-[current=step]:text-brand max-sm:flex-col max-sm:items-start max-sm:gap-1.5 max-sm:text-label"
+                    type="button"
+                    [attr.aria-current]="workspace.step() === $index ? 'step' : null"
+                    [disabled]="$index > workspace.step() || recipeVm.busy"
+                    (click)="back($index)"
+                  >
+                    <span
+                      class="grid size-7 shrink-0 place-items-center rounded-full border border-border text-label group-aria-[current=step]:border-brand group-aria-[current=step]:bg-brand group-aria-[current=step]:text-white"
+                      aria-hidden="true"
+                      >{{ $index < workspace.step() ? '✓' : $index + 1 }}</span
+                    ><span>{{ name | translate }}</span>
+                  </button>
+                </li>
+              }
+            </ol>
+            <form
+              class="p-8 max-sm:px-5 max-sm:py-6"
+              [formGroup]="form"
+              (ngSubmit)="proceed(marketVm.loading || !!marketVm.errorKey)"
+              [attr.aria-busy]="recipeVm.busy"
+              novalidate
+            >
+              <span class="text-label font-bold tracking-[1.2px] text-brand">{{
+                'recipes.stepCaption' | translate: { step: workspace.step() + 1 }
+              }}</span>
+              <h2
+                class="my-3 text-title font-bold tracking-[-0.8px] outline-none"
+                #stepHeading
+                tabindex="-1"
               >
-                Supermärkte werden geladen …
-              </p>
-            }
-            @if (marketError()) {
-              <div
-                class="mt-6 rounded-xl bg-danger-soft px-4.5 py-4 text-caption leading-[1.7] text-danger"
-                role="alert"
-              >
-                <p class="m-0">{{ marketError() }}</p>
-                <button type="button" (click)="loadMarkets()" class="btn btn-text">
-                  Erneut laden
+                {{ steps[workspace.step()] | translate }}
+              </h2>
+              @if (workspace.step() === 0) {
+                <app-recipe-shopping-step
+                  [form]="form"
+                  [markets]="marketVm"
+                  (reload)="markets.load(true)"
+                />
+              } @else if (workspace.step() === 1) {
+                <app-recipe-food-step [form]="form" />
+              } @else {
+                <app-recipe-review-step
+                  [form]="form"
+                  [summary]="summary()"
+                  [marketName]="marketName$ | async"
+                />
+              }
+              @if (recipeVm.busy) {
+                <div
+                  class="mt-6 flex items-start gap-3.5 rounded-xl bg-brand-soft p-5 text-caption leading-[1.6]"
+                  role="status"
+                >
+                  <span
+                    class="mt-1 size-3 shrink-0 rounded-full bg-brand motion-safe:animate-pulse"
+                    aria-hidden="true"
+                  ></span>
+                  <div>
+                    <strong>{{ 'recipes.generatingTitle' | translate }}</strong>
+                    <p class="mt-1 mb-0 text-muted">
+                      {{ 'recipes.generatingDescription' | translate }}
+                    </p>
+                  </div>
+                </div>
+              }
+              @if (recipeVm.errorKey) {
+                <p
+                  class="mt-6 mb-[1em] rounded-xl bg-danger-soft px-4.5 py-4 text-caption leading-[1.7] text-danger"
+                  role="alert"
+                >
+                  {{ recipeVm.errorKey | translate }}
+                </p>
+              }
+              <div class="mt-8 flex flex-wrap justify-end gap-3">
+                @if (workspace.step() > 0) {
+                  <button
+                    type="button"
+                    (click)="back()"
+                    [disabled]="recipeVm.busy"
+                    class="btn btn-outline max-sm:flex-1"
+                  >
+                    {{ 'common.back' | translate }}
+                  </button>
+                }
+                <button
+                  type="submit"
+                  [disabled]="recipeVm.busy || marketVm.loading || !!marketVm.errorKey"
+                  class="btn btn-primary max-sm:flex-1"
+                >
+                  {{
+                    recipeVm.busy
+                      ? i18n.t('recipes.generatingButton')
+                      : workspace.step() === 2
+                        ? i18n.t('recipes.generate')
+                        : i18n.t('common.next')
+                  }}<span class="ml-3.5" aria-hidden="true">↗</span>
                 </button>
               </div>
-            }
-            <div class="grid grid-cols-2 gap-x-5 gap-y-6 max-sm:grid-cols-1">
-              <div class="field">
-                <label class="field-label" for="recipe-supermarket">Supermarkt</label
-                ><select
-                  id="recipe-supermarket"
-                  class="field-control"
-                  [attr.aria-invalid]="
-                    form.controls.supermarket.touched && form.controls.supermarket.invalid
-                  "
-                  [attr.aria-describedby]="
-                    '' +
-                    (form.controls.supermarket.touched && form.controls.supermarket.invalid
-                      ? ' recipe-supermarket-error'
-                      : '')
-                  "
-                  formControlName="supermarket"
-                  required
-                >
-                  <option value="" disabled>Bitte wählen</option>
-                  @for (market of markets(); track market.id) {
-                    <option [ngValue]="market.id">{{ market.name }}</option>
-                  }
-                </select>
-                @if (form.controls.supermarket.touched && form.controls.supermarket.invalid) {
-                  <p class="field-error" id="recipe-supermarket-error">
-                    Bitte wähle einen Supermarkt.
-                  </p>
-                }
-              </div>
-              <div class="field">
-                <label class="field-label" for="recipe-budgetEuros">Wochenbudget in Euro</label
-                ><input
-                  id="recipe-budgetEuros"
-                  class="field-control pr-14"
-                  [attr.aria-invalid]="
-                    form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid
-                  "
-                  [attr.aria-describedby]="
-                    'recipe-budgetEuros-hint' +
-                    (form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid
-                      ? ' recipe-budgetEuros-error'
-                      : '')
-                  "
-                  formControlName="budgetEuros"
-                  type="text"
-                  inputmode="decimal"
-                  placeholder="z. B. 40,00"
-                  maxlength="7"
-                  required
-                /><span
-                  class="pointer-events-none absolute top-[19px] right-0 pr-4 text-caption text-muted"
-                  >€</span
-                >
-                <p class="field-hint" id="recipe-budgetEuros-hint">
-                  Maximal 1.000 € · gilt für diese Rezeptauswahl
-                </p>
-                @if (form.controls.budgetEuros.touched && form.controls.budgetEuros.invalid) {
-                  <p class="field-error" id="recipe-budgetEuros-error">
-                    Bitte gib 0,01–1.000 € mit höchstens zwei Nachkommastellen ein.
-                  </p>
-                }
-              </div>
-              <div class="field">
-                <label class="field-label" for="recipe-persons">Personen</label
-                ><input
-                  id="recipe-persons"
-                  class="field-control"
-                  [attr.aria-invalid]="
-                    form.controls.persons.touched && form.controls.persons.invalid
-                  "
-                  [attr.aria-describedby]="
-                    '' +
-                    (form.controls.persons.touched && form.controls.persons.invalid
-                      ? ' recipe-persons-error'
-                      : '')
-                  "
-                  type="number"
-                  formControlName="persons"
-                  min="1"
-                  max="10"
-                  step="1"
-                  required
-                />
-                @if (form.controls.persons.touched && form.controls.persons.invalid) {
-                  <p class="field-error" id="recipe-persons-error">
-                    Bitte wähle 1–10 Personen als ganze Zahl.
-                  </p>
-                }
-              </div>
-              <div class="field">
-                <label class="field-label" for="recipe-lifeSituation">Lebenssituation</label
-                ><select
-                  id="recipe-lifeSituation"
-                  class="field-control"
-                  [attr.aria-invalid]="
-                    form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid
-                  "
-                  [attr.aria-describedby]="
-                    '' +
-                    (form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid
-                      ? ' recipe-lifeSituation-error'
-                      : '')
-                  "
-                  formControlName="lifeSituation"
-                  required
-                >
-                  <option value="" disabled>Bitte wählen</option>
-                  @for (option of lifeOptions; track option.value) {
-                    <option [ngValue]="option.value">{{ option.label }}</option>
-                  }
-                </select>
-                @if (form.controls.lifeSituation.touched && form.controls.lifeSituation.invalid) {
-                  <p class="field-error" id="recipe-lifeSituation-error">
-                    Bitte wähle deine Lebenssituation.
-                  </p>
-                }
-              </div>
-            </div>
-          } @else if (workspace.step() === 1) {
-            <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
-              Sag uns, was du essen möchtest und wie viel Zeit du hast.
-            </p>
-            <div class="grid grid-cols-2 gap-x-5 gap-y-6 max-sm:grid-cols-1">
-              <div class="field">
-                <label class="field-label" for="recipe-diet">Ernährungsweise</label
-                ><select
-                  id="recipe-diet"
-                  class="field-control"
-                  [attr.aria-invalid]="form.controls.diet.touched && form.controls.diet.invalid"
-                  [attr.aria-describedby]="
-                    '' +
-                    (form.controls.diet.touched && form.controls.diet.invalid
-                      ? ' recipe-diet-error'
-                      : '')
-                  "
-                  formControlName="diet"
-                >
-                  @for (option of diets; track option.value) {
-                    <option [ngValue]="option.value">{{ option.label }}</option>
-                  }
-                </select>
-              </div>
-              <div class="field">
-                <label class="field-label" for="recipe-maxCookingTimeMinutes"
-                  >Maximale Kochzeit</label
-                ><input
-                  id="recipe-maxCookingTimeMinutes"
-                  class="field-control pr-14"
-                  [attr.aria-invalid]="
-                    form.controls.maxCookingTimeMinutes.touched &&
-                    form.controls.maxCookingTimeMinutes.invalid
-                  "
-                  [attr.aria-describedby]="
-                    '' +
-                    (form.controls.maxCookingTimeMinutes.touched &&
-                    form.controls.maxCookingTimeMinutes.invalid
-                      ? ' recipe-maxCookingTimeMinutes-error'
-                      : '')
-                  "
-                  formControlName="maxCookingTimeMinutes"
-                  type="number"
-                  min="5"
-                  max="180"
-                  step="1"
-                  required
-                /><span
-                  class="pointer-events-none absolute top-[19px] right-0 pr-4 text-caption text-muted"
-                  >Min.</span
-                >
-                @if (
-                  form.controls.maxCookingTimeMinutes.touched &&
-                  form.controls.maxCookingTimeMinutes.invalid
-                ) {
-                  <p class="field-error" id="recipe-maxCookingTimeMinutes-error">
-                    Bitte gib 5–180 Minuten als ganze Zahl ein.
-                  </p>
-                }
-              </div>
-              <div class="field w-full min-w-0">
-                <app-multi-select
-                  formControlName="allergies"
-                  label="Allergien"
-                  controlId="recipe-allergies"
-                  [options]="allergens"
-                  describedBy="recipe-allergies-hint"
-                />
-                <p class="field-hint" id="recipe-allergies-hint">
-                  Optional · mehrere Einträge möglich
-                </p>
-              </div>
-              <div class="field w-full min-w-0">
-                <app-multi-select
-                  formControlName="excludedIngredients"
-                  label="Zutaten ausschließen"
-                  controlId="recipe-excludedIngredients"
-                  [options]="ingredients"
-                  describedBy="recipe-excludedIngredients-hint"
-                />
-                <p class="field-hint" id="recipe-excludedIngredients-hint">
-                  Optional · Zutaten aus unserem Katalog
-                </p>
-              </div>
-            </div>
-            <p
-              class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted"
-            >
-              Bei Allergien: Prüfe beim Einkauf die Herstellerangaben und Hinweise auf Spuren. Unser
-              Testkatalog enthält diese Angaben noch nicht.
-            </p>
-          } @else {
-            <p class="mt-0 mb-7 text-sm leading-[1.7] text-muted">
-              Prüfe deine Angaben. Danach stellen wir die Rezepte für dich zusammen.
-            </p>
-            <div class="field max-w-65">
-              <label class="field-label" for="recipe-recipeCount">Anzahl Rezepte</label
-              ><select
-                id="recipe-recipeCount"
-                class="field-control"
-                [attr.aria-invalid]="
-                  form.controls.recipeCount.touched && form.controls.recipeCount.invalid
-                "
-                [attr.aria-describedby]="
-                  '' +
-                  (form.controls.recipeCount.touched && form.controls.recipeCount.invalid
-                    ? ' recipe-recipeCount-error'
-                    : '')
-                "
-                formControlName="recipeCount"
-              >
-                @for (count of counts; track count) {
-                  <option [ngValue]="count">
-                    {{ count }} {{ count === 1 ? 'Rezept' : 'Rezepte' }}
-                  </option>
-                }
-              </select>
-            </div>
-            <dl class="my-7 grid grid-cols-2 gap-5 max-sm:grid-cols-1">
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Supermarkt</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().market }}</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Budget</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">
-                  {{ (summary().budgetCents ?? 0) / 100 | currency: 'EUR' }}
-                </dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Personen</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().persons }}</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Lebenssituation</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().life }}</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Ernährung</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().diet }}</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Kochzeit</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">Bis {{ summary().minutes }} Min.</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Allergien</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().allergies }}</dd>
-              </div>
-              <div class="min-w-0">
-                <dt class="text-xs text-muted">Ohne</dt>
-                <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().exclusions }}</dd>
-              </div>
-            </dl>
-            <p
-              class="mt-6 mb-0 rounded-xl bg-canvas-muted px-4.5 py-4 text-xs leading-[1.7] text-muted"
-            >
-              Wir erstellen eine Rezeptauswahl, keinen vollständigen Wochenplan. Die Preise stammen
-              derzeit aus einem fiktiven Testkatalog.
-            </p>
-          }
-          @if (workspace.busy()) {
-            <div
-              class="mt-6 flex items-start gap-3.5 rounded-xl bg-brand-soft p-5 text-caption leading-[1.6]"
-              role="status"
-            >
-              <span
-                class="mt-1 size-3 shrink-0 rounded-full bg-brand motion-safe:animate-pulse"
-                aria-hidden="true"
-              ></span>
-              <div>
-                <strong>Deine Rezepte werden zusammengestellt …</strong>
-                <p class="mt-1 mb-0 text-muted">
-                  Das kann etwa eine Minute dauern. Wir prüfen auch die Einkaufskosten.
-                </p>
-              </div>
-            </div>
-          }
-          @if (workspace.error()) {
-            <p
-              class="mt-6 mb-[1em] rounded-xl bg-danger-soft px-4.5 py-4 text-caption leading-[1.7] text-danger"
-              role="alert"
-            >
-              {{ workspace.error() }}
-            </p>
-          }
-          <div class="mt-8 flex flex-wrap justify-end gap-3">
-            @if (workspace.step() > 0) {
-              <button
-                type="button"
-                (click)="back()"
-                [disabled]="workspace.busy()"
-                class="btn btn-outline max-sm:flex-1"
-              >
-                Zurück
-              </button>
-            }
-            <button
-              type="submit"
-              [disabled]="workspace.busy() || marketsLoading() || !!marketError()"
-              class="btn btn-primary max-sm:flex-1"
-            >
-              {{
-                workspace.busy()
-                  ? 'Rezepte werden erstellt …'
-                  : workspace.step() === 2
-                    ? 'Rezepte erstellen'
-                    : 'Weiter'
-              }}<span class="ml-3.5" aria-hidden="true">↗</span>
-            </button>
-          </div>
-        </form>
-      </section>
-      <aside
-        class="min-w-0 rounded-panel bg-brand-soft p-7 max-xl:p-6"
-        aria-labelledby="plan-note-title"
-      >
-        <span class="text-label font-bold tracking-[1.2px] text-brand">DEIN RAHMEN</span>
-        <h2
-          class="mt-4.5 mb-6 text-title-lg leading-[1.2] font-bold tracking-[-0.8px] outline-none"
-          id="plan-note-title"
-        >
-          Gut geplant.<br />Gut gegessen.
-        </h2>
-        <div class="border-t border-b border-t-brand-outline border-b-brand-outline py-5">
-          <span class="block text-xs text-muted">Dein Budget</span
-          ><strong
-            class="mt-2.5 block text-3xl font-bold tracking-[-1px] text-brand max-sm:text-title-lg"
-            >{{
-              summary().budgetCents === null
-                ? 'Noch offen'
-                : ((summary().budgetCents ?? 0) / 100 | currency: 'EUR')
-            }}</strong
-          >
+            </form>
+          </section>
+          <app-recipe-summary
+            [summary]="summary()"
+            [marketName]="marketName$ | async"
+            [busy]="recipeVm.busy"
+            (startNew)="startNew()"
+          />
         </div>
-        <dl class="my-6 flex flex-col gap-4.5 max-xl:flex-row max-xl:flex-wrap max-xl:gap-6">
-          <div>
-            <dt class="text-xs text-muted">Einkauf bei</dt>
-            <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().market }}</dd>
-          </div>
-          <div>
-            <dt class="text-xs text-muted">Am Tisch</dt>
-            <dd class="mt-2 mb-0 text-sm wrap-anywhere">
-              {{ summary().persons }} {{ summary().persons === 1 ? 'Person' : 'Personen' }}
-            </dd>
-          </div>
-          <div>
-            <dt class="text-xs text-muted">Auf dem Teller</dt>
-            <dd class="mt-2 mb-0 text-sm wrap-anywhere">{{ summary().diet }}</dd>
-          </div>
-        </dl>
-        <p class="my-[1em] text-xs leading-[1.7] text-muted">
-          Wir berücksichtigen ganze Kaufpackungen und teilen Zutaten zwischen den Rezepten.
-        </p>
-        <div
-          class="mt-5 mb-3 border-t border-t-brand-outline pt-5 text-xs leading-[1.7] text-muted"
-        >
-          Deine Angaben werden nicht im Profil gespeichert. Beim Neuladen gehen Entwurf und Ergebnis
-          verloren.
-        </div>
-        <button
-          type="button"
-          (click)="startNew()"
-          [disabled]="workspace.busy()"
-          class="btn btn-text"
-        >
-          Neue Anfrage beginnen
-        </button>
-      </aside>
+      }
     </div>
   }
-</div>
+}
