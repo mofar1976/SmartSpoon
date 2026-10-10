@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { SavedRecipesActions as A } from './saved-recipes.actions';
+import { isPantryResult } from '../../../features/saved-recipes/saved-recipes.models';
 import { initialSavedRecipesState } from './saved-recipes.state';
 export const savedRecipesReducer = createReducer(
   initialSavedRecipesState,
@@ -8,6 +9,7 @@ export const savedRecipesReducer = createReducer(
     list: null,
     detail: null,
     checkedProductIds: [],
+    checkedItemIds: [],
     loadRequestId: requestId,
     deleteRequestId: null,
     errorKey: null,
@@ -19,15 +21,24 @@ export const savedRecipesReducer = createReducer(
   ),
   on(A.detailLoaded, (state, { requestId, detail }) =>
     state.loadRequestId === requestId
-      ? { ...state, detail, checkedProductIds: [...detail.checkedProductIds], loadRequestId: null }
+      ? {
+          ...state,
+          detail,
+          checkedProductIds: [...detail.checkedProductIds],
+          checkedItemIds: [...(detail.checkedItemIds ?? [])],
+          loadRequestId: null,
+        }
       : state,
   ),
   on(A.loadFailed, (state, { requestId, errorKey }) =>
     state.loadRequestId === requestId ? { ...state, loadRequestId: null, errorKey } : state,
   ),
-  on(A.saveRequested, (state, { requestId }) => ({
+  on(A.saveRequested, (state, { requestId, source }) => ({
     ...state,
     saveRequestId: requestId,
+    saveSource: source,
+    savedId: null,
+    savedTitle: null,
     saveErrorKey: null,
   })),
   on(A.saveSucceeded, (state, { requestId, id, title }) =>
@@ -40,7 +51,11 @@ export const savedRecipesReducer = createReducer(
       ? { ...state, saveRequestId: null, saveErrorKey: errorKey }
       : state,
   ),
-  on(A.saveErrorSet, (state, { errorKey }) => ({ ...state, saveErrorKey: errorKey })),
+  on(A.saveErrorSet, (state, { errorKey, source }) => ({
+    ...state,
+    saveSource: source,
+    saveErrorKey: errorKey,
+  })),
   on(A.deleteRequested, (state, { requestId }) => ({
     ...state,
     deleteRequestId: requestId,
@@ -55,6 +70,7 @@ export const savedRecipesReducer = createReducer(
           deletedId: id,
           detail: state.detail?.id === id ? null : state.detail,
           checkedProductIds: state.detail?.id === id ? [] : state.checkedProductIds,
+          checkedItemIds: state.detail?.id === id ? [] : state.checkedItemIds,
           savedId: state.savedId === id ? null : state.savedId,
           savedTitle: state.savedId === id ? null : state.savedTitle,
         }
@@ -66,7 +82,9 @@ export const savedRecipesReducer = createReducer(
       : state,
   ),
   on(A.purchasedChanged, (state, { productId, purchased }) =>
-    !state.detail?.result.shoppingList.some((item) => item.product.id === productId)
+    !state.detail ||
+    isPantryResult(state.detail.result) ||
+    !state.detail.result.shoppingList.some((item) => item.product.id === productId)
       ? state
       : {
           ...state,
@@ -75,24 +93,44 @@ export const savedRecipesReducer = createReducer(
             : state.checkedProductIds.filter((id) => id !== productId),
         },
   ),
+  on(A.pantryPurchasedChanged, (state, { itemId, purchased }) =>
+    !state.detail ||
+    !isPantryResult(state.detail.result) ||
+    !state.detail.result.recipes.some((recipe) =>
+      recipe.shoppingList.some((item) => item.id === itemId),
+    )
+      ? state
+      : {
+          ...state,
+          checkedItemIds: purchased
+            ? [...new Set([...state.checkedItemIds, itemId])]
+            : state.checkedItemIds.filter((id) => id !== itemId),
+        },
+  ),
   on(A.clearDeleteError, (state) => ({ ...state, deleteErrorKey: null })),
   on(A.clearView, (state) => ({
     ...state,
     list: null,
     detail: null,
     checkedProductIds: [],
+    checkedItemIds: [],
     loadRequestId: null,
     deleteRequestId: null,
     errorKey: null,
     deleteErrorKey: null,
     deletedId: null,
   })),
-  on(A.clearSave, (state) => ({
-    ...state,
-    saveRequestId: null,
-    saveErrorKey: null,
-    savedId: null,
-    savedTitle: null,
-  })),
+  on(A.clearSave, (state, { source }) =>
+    state.saveSource !== source
+      ? state
+      : {
+          ...state,
+          saveSource: null,
+          saveRequestId: null,
+          saveErrorKey: null,
+          savedId: null,
+          savedTitle: null,
+        },
+  ),
   on(A.reset, () => initialSavedRecipesState),
 );

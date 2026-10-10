@@ -10,17 +10,23 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { RecipeGenerationResponseDto } from '../../recipes/dto/recipe-response.dto';
+import { PantryRecipesResponseDto } from '../../pantry-recipes/dto/pantry-recipes-response.dto';
+import { SavableRecipeResponse } from '../snapshot-proof.service';
 
+@ApiExtraModels(RecipeGenerationResponseDto, PantryRecipesResponseDto)
 export class SaveRecipesDto {
   @ApiProperty({
-    type: RecipeGenerationResponseDto,
+    oneOf: [
+      { $ref: getSchemaPath(RecipeGenerationResponseDto) },
+      { $ref: getSchemaPath(PantryRecipesResponseDto) },
+    ],
     description:
-      'Vollständige, unveränderte Antwort von /recipes/generate einschließlich saveProof. Der signierte Nachweis schützt das Ergebnis vor Manipulation.',
+      'Vollständige, unveränderte Antwort von /recipes/generate oder /pantry-recipes/generate einschließlich saveProof. Der signierte Nachweis schützt das Ergebnis vor Manipulation.',
   })
   @IsObject()
-  result!: RecipeGenerationResponseDto;
+  result!: SavableRecipeResponse;
 
   @ApiPropertyOptional({
     maxLength: 120,
@@ -43,4 +49,16 @@ export class SaveRecipesDto {
   @ArrayUnique()
   @Matches(/^[a-f\d]{24}$/i, { each: true })
   checkedProductIds: string[] = [];
+
+  @ApiPropertyOptional({
+    type: [String],
+    default: [],
+    description:
+      'Nur für Vorratsrezepte: abgehakte IDs aus recipes[].shoppingList[].id. Für Supermarktrezepte checkedProductIds verwenden.',
+  })
+  @IsArray()
+  @ArrayMaxSize(280)
+  @ArrayUnique()
+  @Matches(/^recipe-[1-7]-item-(?:[1-9]|[1-3]\d|40)$/, { each: true })
+  checkedItemIds: string[] = [];
 }

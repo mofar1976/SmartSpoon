@@ -47,6 +47,10 @@ jobs:
         env:
           SAVED_RECIPES_TEST_MONGODB_URI: mongodb://127.0.0.1:27017/smartspoon_saved_verification_ci
           GEMINI_API_KEY: ''
+      - name: Pantry recipes HTTP and Gemini SDK integration
+        run: node --test test/pantry-recipes.integration.cjs
+        env:
+          PANTRY_TEST_MONGODB_URI: mongodb://127.0.0.1:27017/smartspoon_pantry_test_ci
 
   frontend:
     name: Frontend

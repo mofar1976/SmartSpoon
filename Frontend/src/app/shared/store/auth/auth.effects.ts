@@ -149,7 +149,9 @@ export class AuthEffects {
           } else if (
             action.type === AuthActions.sessionExpired.type &&
             state.expired &&
-            (this.router.url.startsWith('/rezepte') || this.router.url.startsWith('/gespeichert'))
+            (this.router.url.startsWith('/rezepte') ||
+              this.router.url.startsWith('/gespeichert') ||
+              this.router.url.startsWith('/vorrat'))
           ) {
             void this.router.navigate(['/anmelden'], {
               queryParams: { reason: 'expired', returnUrl: safeReturnUrl(this.router.url) },

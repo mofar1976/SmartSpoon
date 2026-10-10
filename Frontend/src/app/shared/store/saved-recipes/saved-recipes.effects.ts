@@ -4,6 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import {
   Observable,
+  merge,
   catchError,
   distinctUntilChanged,
   exhaustMap,
@@ -19,6 +20,7 @@ import { SavedRecipe, SavedRecipeList } from '../../../features/saved-recipes/sa
 import { savedRecipesErrorKey } from '../../../features/saved-recipes/saved-recipes-errors';
 import { selectToken } from '../auth/auth.selectors';
 import { AuthActions } from '../auth/auth.actions';
+import { selectPantryState } from '../pantry-recipes/pantry-recipes.selectors';
 import { selectRecipeResult } from '../recipes/recipes.selectors';
 import { selectSavedRecipesState } from './saved-recipes.selectors';
 import { SavedRecipesActions as A } from './saved-recipes.actions';
@@ -64,13 +66,18 @@ export class SavedRecipesEffects {
   readonly save$ = createEffect(() =>
     this.actions$.pipe(
       ofType(A.saveRequested),
-      exhaustMap(({ requestId, result, title, checkedProductIds }) =>
-        this.service.save(result, title, checkedProductIds).pipe(
+      exhaustMap(({ requestId, source, result, title, checkedProductIds, checkedItemIds }) =>
+        this.service.save(result, title, checkedProductIds, checkedItemIds).pipe(
           map((saved) => A.saveSucceeded({ requestId, id: saved.id, title: saved.title })),
           catchError((error) =>
             of(A.saveFailed({ requestId, errorKey: savedRecipesErrorKey(error, 'save') })),
           ),
-          takeUntil(this.actions$.pipe(ofType(A.reset, A.clearSave))),
+          takeUntil(
+            this.actions$.pipe(
+              ofType(A.reset, A.clearSave),
+              filter((action) => action.type === A.reset.type || action.source === source),
+            ),
+          ),
         ),
       ),
     ),
@@ -112,9 +119,16 @@ export class SavedRecipesEffects {
     ),
   );
   readonly clearSave$ = createEffect(() =>
-    this.store.select(selectRecipeResult).pipe(
-      distinctUntilChanged(),
-      map(() => A.clearSave()),
+    merge(
+      this.store.select(selectRecipeResult).pipe(
+        distinctUntilChanged(),
+        map(() => A.clearSave({ source: 'market' })),
+      ),
+      this.store.select(selectPantryState).pipe(
+        map((s) => s.result),
+        distinctUntilChanged(),
+        map(() => A.clearSave({ source: 'pantry' })),
+      ),
     ),
   );
   readonly sessionChanged$ = createEffect(() =>

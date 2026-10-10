@@ -1,0 +1,41 @@
+<section
+  class="rounded-panel border border-border bg-surface p-6 sm:p-8"
+  aria-labelledby="photo-heading"
+>
+  <h2 id="photo-heading" class="mb-3 text-title font-bold">
+    {{ 'pantry.photoTitle' | translate }}
+  </h2>
+  <p class="mb-5 text-sm leading-6 text-muted">{{ 'pantry.photoHint' | translate }}</p>
+  <input
+    #picker
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    class="sr-only"
+    tabindex="-1"
+    [disabled]="busy()"
+    (change)="choose($event)"
+    [attr.aria-label]="'pantry.choosePhoto' | translate"
+  />
+  <div class="flex flex-wrap gap-3">
+    <button type="button" class="btn btn-outline" [disabled]="busy()" (click)="picker.click()">
+      {{ 'pantry.choosePhoto' | translate }}</button
+    ><button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="busy() || !hasPhoto()"
+      (click)="analyze.emit()"
+    >
+      {{ 'pantry.analyze' | translate }}
+    </button>
+  </div>
+  @if (preview()) {
+    <figure class="mt-5">
+      <img
+        [src]="preview()"
+        [alt]="'pantry.photoAlt' | translate"
+        class="max-h-64 w-full rounded-xl object-contain"
+      />
+      <figcaption class="mt-2 text-xs break-all text-muted">{{ filename() }}</figcaption>
+    </figure>
+  }
+</section>

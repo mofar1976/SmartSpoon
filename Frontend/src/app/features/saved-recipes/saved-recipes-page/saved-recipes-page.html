@@ -44,6 +44,8 @@
       <app-saved-recipe-detail
         [savedSelection]="selection"
         [checkedProductIds]="vm.checkedProductIds"
+        [checkedItemIds]="vm.checkedItemIds"
+        (pantryPurchasedChanged)="store.setPantryPurchased($event.itemId, $event.purchased)"
         [deleting]="vm.deleting"
         (deleteRequested)="askDelete($event.id, $event.title)"
         (purchasedChanged)="store.setPurchased($event.productId, $event.purchased)"
