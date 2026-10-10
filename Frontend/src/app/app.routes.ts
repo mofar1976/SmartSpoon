@@ -30,6 +30,15 @@ export const routes: Routes = [
       import('./features/recipes/recipe-page/recipe-page').then((m) => m.RecipePage),
   },
   {
+    path: 'vorrat',
+    canActivate: [authGuard],
+    title: 'titles.pantry',
+    loadComponent: () =>
+      import('./features/pantry-recipes/pantry-recipes-page/pantry-recipes-page').then(
+        (m) => m.PantryRecipesPage,
+      ),
+  },
+  {
     path: 'gespeichert',
     canActivate: [authGuard],
     title: 'titles.saved',

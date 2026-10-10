@@ -11,6 +11,7 @@ export function sanitizeAuthAction(action: Action): Action {
     'user',
     'request',
     'result',
+    'recognition',
     'detail',
     'list',
   ]) {
@@ -19,12 +20,22 @@ export function sanitizeAuthAction(action: Action): Action {
   return sanitized;
 }
 export function sanitizeStoreState(state: {
+  pantryRecipes?: { recognition: unknown; result: unknown };
   auth: AuthState;
   recipes?: RecipesState;
   savedRecipes?: SavedRecipesState;
 }) {
   return {
     ...state,
+    ...(state.pantryRecipes
+      ? {
+          pantryRecipes: {
+            ...state.pantryRecipes,
+            recognition: state.pantryRecipes.recognition ? '[redacted]' : null,
+            result: state.pantryRecipes.result ? '[redacted]' : null,
+          },
+        }
+      : {}),
     ...(state.recipes
       ? { recipes: { ...state.recipes, result: state.recipes.result ? '[redacted]' : null } }
       : {}),

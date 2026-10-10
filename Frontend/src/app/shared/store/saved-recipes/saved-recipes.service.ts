@@ -2,15 +2,27 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { timeout } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api.config';
-import { RecipeResult } from '../../../features/recipes/recipe.models';
+import {
+  isPantryResult,
+  SavableRecipeResult,
+} from '../../../features/saved-recipes/saved-recipes.models';
 import { SavedRecipe, SavedRecipeList } from '../../../features/saved-recipes/saved-recipes.models';
 @Injectable({ providedIn: 'root' })
 export class SavedRecipesService {
   private readonly http = inject(HttpClient);
   private readonly base = inject(API_BASE_URL) + '/saved-recipes';
-  save(result: RecipeResult, title: string, checkedProductIds: string[]) {
+  save(
+    result: SavableRecipeResult,
+    title: string,
+    checkedProductIds: string[],
+    checkedItemIds: string[],
+  ) {
     return this.http
-      .post<SavedRecipe>(this.base, { result, title, checkedProductIds })
+      .post<SavedRecipe>(this.base, {
+        result,
+        title,
+        ...(isPantryResult(result) ? { checkedItemIds } : { checkedProductIds }),
+      })
       .pipe(timeout(10000));
   }
   list(offset = 0) {

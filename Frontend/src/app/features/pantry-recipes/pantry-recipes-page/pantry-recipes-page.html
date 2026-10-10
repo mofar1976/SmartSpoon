@@ -1,0 +1,91 @@
+<div class="page-container py-10 sm:py-14">
+  <header class="mb-8 max-w-3xl">
+    <p class="mb-3 text-sm font-semibold text-brand">{{ 'pantry.eyebrow' | translate }}</p>
+    <h1 class="text-page-title font-bold">{{ 'pantry.title' | translate }}</h1>
+    <p class="mt-4 text-base leading-7 text-muted">{{ 'pantry.intro' | translate }}</p>
+  </header>
+  @if (pantry.vm$ | async; as vm) {
+    @let saveVm = saved.pantrySaveVm$ | async;
+    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <div class="min-w-0">
+        <app-pantry-photo-upload
+          [busy]="vm.busy || (saveVm?.busy ?? false)"
+          [preview]="preview()"
+          [filename]="filename()"
+          [hasPhoto]="!!preview()"
+          (fileSelected)="selectPhoto($event)"
+          (analyze)="analyze()"
+        />
+        @if (photoError(); as error) {
+          <p role="alert" class="mt-4 rounded-xl bg-danger-soft p-4 text-sm text-danger">
+            {{ error | translate }}
+          </p>
+        }
+      </div>
+      <form
+        [formGroup]="form"
+        (ngSubmit)="generate()"
+        class="min-w-0 rounded-panel border border-border bg-surface p-6 sm:p-8"
+      >
+        <fieldset [disabled]="vm.busy || (saveVm?.busy ?? false)" class="min-w-0 border-0 p-0">
+          <app-pantry-ingredient-editor
+            [ingredients]="form.controls.ingredients"
+            [uncertain]="vm.recognition?.uncertainItems ?? []"
+            (add)="addIngredient()"
+            (remove)="removeIngredient($event)"
+          />
+          <label class="mt-6 flex items-start gap-3 text-sm leading-6"
+            ><input
+              type="checkbox"
+              class="mt-1 size-4 shrink-0 accent-brand"
+              formControlName="confirmed"
+            /><span>{{ 'pantry.confirm' | translate }}</span></label
+          >
+          <div class="my-8 border-t border-border"></div>
+          <app-pantry-preferences [form]="form" />
+          @if (submitted() && form.invalid) {
+            <p class="mt-5 rounded-xl bg-danger-soft p-4 text-sm text-danger" role="alert">
+              {{ 'pantry.formError' | translate }}
+            </p>
+          }
+          <button type="submit" class="btn btn-primary mt-6 w-full">
+            {{ 'pantry.generate' | translate }}
+          </button>
+        </fieldset>
+      </form>
+    </div>
+    @if (vm.busy) {
+      <div
+        class="mt-6 flex flex-wrap items-center gap-4 rounded-xl bg-brand-soft p-5"
+        role="status"
+      >
+        <p class="flex-1 text-sm">
+          {{ (vm.operation === 'analysis' ? 'pantry.analyzing' : 'pantry.generating') | translate }}
+        </p>
+        <button type="button" class="btn btn-outline" (click)="pantry.cancel()">
+          {{ 'pantry.cancel' | translate }}
+        </button>
+      </div>
+    }
+    @if (vm.errorKey; as error) {
+      <p class="mt-6 rounded-xl bg-danger-soft p-5 text-sm text-danger" role="alert">
+        {{ error | translate }}
+      </p>
+    }
+    @if (vm.result; as result) {
+      <app-pantry-results
+        [result]="result"
+        [checkedItemIds]="vm.checkedItemIds"
+        [disabled]="saveVm?.busy ?? false"
+        (purchasedChange)="pantry.setPurchased($event.itemId, $event.purchased)"
+      />
+      @if (saveVm) {
+        <app-save-selection-form
+          [result]="result"
+          [state]="saveVm"
+          (saveRequested)="saved.savePantry($event)"
+        />
+      }
+    }
+  }
+</div>

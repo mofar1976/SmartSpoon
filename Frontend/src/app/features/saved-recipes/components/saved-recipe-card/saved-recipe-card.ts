@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { I18nService } from '../../../../core/i18n/i18n-service';
@@ -16,6 +16,10 @@ import { SavedRecipeSummary } from '../../saved-recipes.models';
 export class SavedRecipeCard {
   protected readonly i18n = inject(I18nService);
   readonly item = input.required<SavedRecipeSummary>();
+  readonly marketItem = computed(() => {
+    const item = this.item();
+    return item.mode === 'pantry' ? null : item;
+  });
   readonly deleting = input(false);
   readonly deleteRequested = output<{ id: string; title: string }>();
 }

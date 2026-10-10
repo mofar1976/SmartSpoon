@@ -1,0 +1,77 @@
+@let vm = state();
+<section
+  class="my-6 grid grid-cols-2 gap-8 rounded-2xl border border-border bg-surface p-6 max-[751px]:grid-cols-1 max-[751px]:gap-2"
+  aria-labelledby="save-title"
+  [attr.aria-busy]="vm.busy"
+>
+  <div>
+    <span class="text-xs font-bold tracking-widest text-brand">{{
+      'save.eyebrow' | translate
+    }}</span>
+    <h3 class="my-[0.7rem] text-title-sm font-bold" id="save-title">
+      {{ 'save.title' | translate }}
+    </h3>
+    <p class="my-[1em] text-caption leading-[1.6] text-muted">
+      {{ 'save.description' | translate }}
+    </p>
+  </div>
+  @if (vm.savedId; as id) {
+    <div role="status">
+      <p class="my-[1em] text-caption leading-[1.6] font-semibold text-brand">
+        {{ 'save.success' | translate }}
+      </p>
+      <a class="btn btn-outline" [routerLink]="['/gespeichert', id]">{{
+        'save.open' | translate
+      }}</a>
+      <p class="my-[1em] text-xs leading-[1.6] text-muted">
+        {{ 'save.localChecks' | translate }}
+      </p>
+    </div>
+  } @else if (!result().saveProof) {
+    <p class="my-[1em] text-sm leading-[1.6] text-muted">
+      {{ 'save.missingProof' | translate }}
+    </p>
+  } @else {
+    <form
+      class="flex min-w-0 flex-col gap-4 pt-2"
+      (submit)="$event.preventDefault(); save()"
+      novalidate
+    >
+      <div class="field">
+        <label class="field-label" for="selection-title">{{ 'save.name' | translate }}</label
+        ><input
+          id="selection-title"
+          class="field-control"
+          [formControl]="title"
+          maxlength="120"
+          required
+          [readOnly]="vm.busy"
+          [attr.aria-invalid]="title.touched && title.invalid"
+          aria-describedby="selection-title-hint"
+        />
+        <p id="selection-title-hint" class="field-hint">
+          {{ 'save.nameHint' | translate }}
+        </p>
+        @if (title.touched && title.invalid) {
+          <p class="field-error" role="alert">{{ 'save.nameInvalid' | translate }}</p>
+        }
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="vm.busy">
+        {{ (vm.busy ? 'save.savingButton' : 'save.button') | translate }}
+      </button>
+      @if (vm.busy) {
+        <p role="status" class="my-[1em] text-sm leading-[1.6] text-muted">
+          {{ 'save.savingStatus' | translate }}
+        </p>
+      }
+      @if (vm.errorKey) {
+        <p
+          class="m-0 rounded-xl bg-danger-soft p-4 text-caption leading-[1.6] text-danger"
+          role="alert"
+        >
+          {{ vm.errorKey | translate }}
+        </p>
+      }
+    </form>
+  }
+</section>

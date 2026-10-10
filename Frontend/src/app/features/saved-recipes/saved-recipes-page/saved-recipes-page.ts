@@ -67,8 +67,9 @@ export class SavedRecipesPage implements OnDestroy {
     this.store.load(null, offset);
   }
   protected newRequest(): void {
-    this.workspace.reset();
-    void this.router.navigateByUrl('/rezepte');
+    const pantry = this.store.snapshot().detail?.mode === 'pantry';
+    if (!pantry) this.workspace.reset();
+    void this.router.navigateByUrl(pantry ? '/vorrat' : '/rezepte');
   }
   protected askDelete(id: string, title: string): void {
     this.target.set({ id, title });

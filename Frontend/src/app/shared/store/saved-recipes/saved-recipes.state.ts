@@ -4,6 +4,8 @@ export interface SavedRecipesState {
   list: SavedRecipeList | null;
   detail: SavedRecipe | null;
   checkedProductIds: string[];
+  checkedItemIds: string[];
+  saveSource: 'market' | 'pantry' | null;
   loadRequestId: string | null;
   deleteRequestId: string | null;
   saveRequestId: string | null;
@@ -18,6 +20,8 @@ export const initialSavedRecipesState: SavedRecipesState = {
   list: null,
   detail: null,
   checkedProductIds: [],
+  checkedItemIds: [],
+  saveSource: null,
   loadRequestId: null,
   deleteRequestId: null,
   saveRequestId: null,

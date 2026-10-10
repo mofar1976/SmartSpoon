@@ -1,3 +1,5 @@
+import { PantryRecipesEffects } from './pantry-recipes/pantry-recipes.effects';
+import { pantryReducer } from './pantry-recipes/pantry-recipes.reducer';
 import { SavedRecipesEffects } from './saved-recipes/saved-recipes.effects';
 import { savedRecipesReducer } from './saved-recipes/saved-recipes.reducer';
 import { RecipesEffects } from './recipes/recipes.effects';
@@ -16,6 +18,7 @@ export function provideAppStore() {
     provideStore(
       {
         auth: authReducer,
+        pantryRecipes: pantryReducer,
         supermarkets: supermarketsReducer,
         recipes: recipesReducer,
         savedRecipes: savedRecipesReducer,
@@ -29,7 +32,13 @@ export function provideAppStore() {
         },
       },
     ),
-    provideEffects(AuthEffects, SupermarketsEffects, RecipesEffects, SavedRecipesEffects),
+    provideEffects(
+      PantryRecipesEffects,
+      AuthEffects,
+      SupermarketsEffects,
+      RecipesEffects,
+      SavedRecipesEffects,
+    ),
     ...(isDevMode()
       ? [
           provideStoreDevtools({

@@ -21,6 +21,9 @@ services:
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
       JWT_SECRET: ${JWT_SECRET:?Bitte JWT_SECRET in Backend/.env setzen}
       MONGODB_URI: mongodb://mongodb:27017/kochfaul
+      INGREDIENT_RECOGNITION_URL: http://ingredient-recognition:8090
+      INGREDIENT_RECOGNITION_TOKEN: ${INGREDIENT_RECOGNITION_TOKEN:-}
+      INGREDIENT_RECOGNITION_TIMEOUT_MS: 190000
     ports:
       - "127.0.0.1:${PORT:-3000}:3000"
     depends_on:
@@ -32,6 +35,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+  ingredient-recognition:
+    profiles: [vision]
+    build:
+      context: .
+      dockerfile: ingredient-recognition/Dockerfile
+    environment:
+      PORT: 8090
+      INGREDIENT_RECOGNITION_TOKEN: ${INGREDIENT_RECOGNITION_TOKEN:-}
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      VISION_MODEL: ${VISION_MODEL:-qwen3-vl:4b-instruct}
+      VISION_TIMEOUT_SECONDS: 180
+    ports:
+      - "127.0.0.1:${INGREDIENT_RECOGNITION_PORT:-8090}:8090"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health/ready', timeout=6)"]
+      interval: 15s
+      timeout: 8s
+      retries: 3
+      start_period: 10s
   mongodb:
     image: mongo:8.0
     ports:

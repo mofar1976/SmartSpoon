@@ -22,7 +22,7 @@
       <span>SmartSpoon<span class="text-brand">.</span></span>
     </a>
     <nav
-      class="ml-auto flex gap-7 max-xl:order-3 max-xl:ml-0 max-xl:w-full max-sm:gap-6"
+      class="ml-auto flex gap-7 max-xl:order-3 max-xl:ml-0 max-xl:w-full max-sm:gap-4"
       [attr.aria-label]="'nav.label' | translate"
     >
       <a
@@ -46,6 +46,13 @@
         routerLinkActive=""
         ariaCurrentWhenActive="page"
         >{{ 'nav.saved' | translate }}</a
+      >
+      <a
+        class="border-b-2 border-b-transparent py-2 text-sm font-semibold text-muted no-underline hover:border-b-brand hover:text-brand aria-[current=page]:border-b-brand aria-[current=page]:text-brand"
+        routerLink="/vorrat"
+        routerLinkActive=""
+        ariaCurrentWhenActive="page"
+        >{{ 'nav.pantry' | translate }}</a
       >
     </nav>
     <app-language-switcher class="max-xl:ml-auto" />

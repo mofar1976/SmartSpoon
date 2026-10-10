@@ -23,12 +23,29 @@
   }}
 </p>
 <p class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]">
-  {{ 'saved.snapshotNotice' | translate }}
+  {{ (pantryResult() ? 'saved.pantrySnapshotNotice' : 'saved.snapshotNotice') | translate }}
 </p>
-<app-recipe-results
-  [result]="selection.result"
-  [stored]="true"
-  [checkedProductIds]="checkedProductIds()"
-  (purchasedChange)="purchasedChanged.emit($event)"
-  (startNew)="startNew.emit()"
-/>
+@if (pantryResult(); as result) {
+  <app-pantry-results
+    [result]="result"
+    [checkedItemIds]="checkedItemIds()"
+    [disabled]="deleting()"
+    (purchasedChange)="pantryPurchasedChanged.emit($event)"
+  />
+  <button
+    type="button"
+    class="btn btn-primary mt-7"
+    [disabled]="deleting()"
+    (click)="startNew.emit()"
+  >
+    {{ 'pantry.newRequest' | translate }}
+  </button>
+} @else if (marketResult(); as result) {
+  <app-recipe-results
+    [result]="result"
+    [stored]="true"
+    [checkedProductIds]="checkedProductIds()"
+    (purchasedChange)="purchasedChanged.emit($event)"
+    (startNew)="startNew.emit()"
+  />
+}
