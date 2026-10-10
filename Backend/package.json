@@ -2,6 +2,7 @@
   "name": "smartspoon-backend",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Backend für budgetorientierte KI-Wochenpläne",
   "engines": {
     "node": ">=24.15.0"
