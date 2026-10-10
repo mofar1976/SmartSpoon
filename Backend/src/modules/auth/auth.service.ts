@@ -39,7 +39,9 @@ export class AuthService implements OnModuleInit {
   }
 
   async login(credentials: CredentialsDto) {
-    const user = await this.users.findOne({ username: credentials.username }).select('+passwordHash').exec();
+    if (typeof credentials.username !== 'string' || typeof credentials.password !== 'string')
+      throw new UnauthorizedException('Benutzername oder Passwort ist falsch.');
+    const user = await this.users.findOne({ username: { $eq: credentials.username } }).select('+passwordHash').exec();
     const valid = await this.passwords.verify(credentials.password, user?.passwordHash ?? this.dummyHash);
     if (!user || !valid) throw new UnauthorizedException('Benutzername oder Passwort ist falsch.');
     return this.session(user);

@@ -36,3 +36,15 @@ test('product queries convert integer strings and reject invalid or unbounded pa
     assert.ok((await validate(plainToInstance(ListProductsDto, query))).length > 0);
   }
 });
+
+
+test('product lookups reject MongoDB operator objects before querying', async () => {
+  const { ProductsService } = require('../dist/modules/products/products.service');
+  const service = new ProductsService(new Proxy({}, { get() { throw new Error('Database must not be queried'); } }));
+  for (const input of [{ $ne: null }, ['rewe'], 'unknown']) {
+    await assert.rejects(service.list({ supermarket: input, offset: 0, limit: 5 }), e => e.getStatus() === 400);
+    await assert.rejects(service.forRecipes(input), e => e.getStatus() === 400);
+  }
+  for (const id of [{ $ne: null }, ['1'.repeat(24)], 'invalid'])
+    await assert.rejects(service.findOne(id), e => e.getStatus() === 400);
+});
