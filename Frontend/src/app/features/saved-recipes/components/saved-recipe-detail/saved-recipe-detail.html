@@ -1,0 +1,51 @@
+@let selection = savedSelection();
+<div class="flex flex-wrap items-center justify-between gap-4">
+  <a class="btn btn-text" routerLink="/gespeichert">{{ 'saved.all' | translate }}</a
+  ><button
+    class="btn btn-text"
+    type="button"
+    (click)="deleteRequested.emit({ id: selection.id, title: selection.title })"
+    [disabled]="deleting()"
+  >
+    {{ 'saved.delete' | translate }}
+  </button>
+</div>
+<h2 class="my-[0.83em] text-heading font-bold wrap-anywhere">{{ selection.title }}</h2>
+<p class="my-[1em] text-sm text-muted">
+  {{
+    'saved.dates'
+      | translate
+        : {
+            saved: (selection.createdAt | date: i18n.dateTimeFormat() : undefined : i18n.locale()),
+            generated:
+              (selection.generatedAt | date: i18n.dateFormat() : undefined : i18n.locale()),
+          }
+  }}
+</p>
+<p class="my-[1em] rounded-xl bg-brand-soft px-5 py-4 text-caption leading-[1.7]">
+  {{ (pantryResult() ? 'saved.pantrySnapshotNotice' : 'saved.snapshotNotice') | translate }}
+</p>
+@if (pantryResult(); as result) {
+  <app-pantry-results
+    [result]="result"
+    [checkedItemIds]="checkedItemIds()"
+    [disabled]="deleting()"
+    (purchasedChange)="pantryPurchasedChanged.emit($event)"
+  />
+  <button
+    type="button"
+    class="btn btn-primary mt-7"
+    [disabled]="deleting()"
+    (click)="startNew.emit()"
+  >
+    {{ 'pantry.newRequest' | translate }}
+  </button>
+} @else if (marketResult(); as result) {
+  <app-recipe-results
+    [result]="result"
+    [stored]="true"
+    [checkedProductIds]="checkedProductIds()"
+    (purchasedChange)="purchasedChanged.emit($event)"
+    (startNew)="startNew.emit()"
+  />
+}

@@ -19,3 +19,14 @@ test('startup rejects missing or short JWT secrets', () => {
     assert.throws(() => validateEnvironment({ MONGODB_URI: 'mongodb://localhost/db', JWT_SECRET: secret }), /JWT_SECRET/);
   }
 });
+
+
+test('login rejects MongoDB operator credentials before querying', async () => {
+  const { AuthService } = require('../dist/modules/auth/auth.service');
+  const service = new AuthService(new Proxy({}, { get() { throw new Error('Database must not be queried'); } }), {}, {});
+  for (const credentials of [
+    { username: { $ne: null }, password: 'password' },
+    { username: ['demo'], password: 'password' },
+    { username: 'demo', password: { $ne: null } },
+  ]) await assert.rejects(service.login(credentials), e => e.getStatus() === 401);
+});

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongoSchema, Types } from 'mongoose';
-import { RecipeGenerationResponseDto } from '../../recipes/dto/recipe-response.dto';
+import { RecipeSnapshot } from '../snapshot-proof.service';
 
 @Schema({ timestamps: true, collection: 'saved_recipes' })
 export class SavedRecipe {
@@ -9,11 +9,9 @@ export class SavedRecipe {
   @Prop({ required: true, immutable: true }) sourceId!: string;
   @Prop({ required: true, maxlength: 120 }) title!: string;
   // Only server-signed generation results reach this immutable snapshot.
-  @Prop({ type: MongoSchema.Types.Mixed, required: true, immutable: true }) result!: Omit<
-    RecipeGenerationResponseDto,
-    'saveProof'
-  >;
+  @Prop({ type: MongoSchema.Types.Mixed, required: true, immutable: true }) result!: RecipeSnapshot;
   @Prop({ type: [String], default: [] }) checkedProductIds!: string[];
+  @Prop({ type: [String], default: [] }) checkedItemIds!: string[];
   @Prop({ required: true, type: Date, immutable: true }) generatedAt!: Date;
   createdAt!: Date;
 }

@@ -1,18 +1,20 @@
 <section class="page-container py-20" aria-labelledby="page-title">
-  <span class="text-label font-bold tracking-[1.2px] text-brand">{{ page.eyebrow }}</span>
+  <span class="text-label font-bold tracking-[1.2px] text-brand">{{
+    page.eyebrow | translate
+  }}</span>
   <h1
     class="my-[0.67em] max-w-175 text-upcoming-title leading-[1.15] font-bold tracking-[-1.6px]"
     id="page-title"
   >
-    {{ page.title }}
+    {{ page.title | translate }}
   </h1>
-  <p class="my-[1em] max-w-137.5 leading-[1.8] text-muted">{{ page.text }}</p>
+  <p class="my-[1em] max-w-137.5 leading-[1.8] text-muted">{{ page.text | translate }}</p>
   @if (kind !== 'not-found') {
-    <span class="mt-3 inline-block rounded-xl bg-brand-soft px-3.5 py-2.5 text-xs"
-      >Vorschau · Diese Funktion ist noch in Arbeit</span
-    >
+    <span class="mt-3 inline-block rounded-xl bg-brand-soft px-3.5 py-2.5 text-xs">{{
+      'upcoming.preview' | translate
+    }}</span>
   }
   <div class="mt-7 flex flex-wrap gap-3.5">
-    <a routerLink="/" class="btn btn-primary">Zur Startseite</a>
+    <a routerLink="/" class="btn btn-primary">{{ 'common.home' | translate }}</a>
   </div>
 </section>

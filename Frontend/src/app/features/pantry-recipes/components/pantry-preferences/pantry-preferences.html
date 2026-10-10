@@ -1,0 +1,67 @@
+<div [formGroup]="form()">
+  <h2 class="mb-6 text-title font-bold">{{ 'pantry.preferences' | translate }}</h2>
+  <div class="grid gap-6 sm:grid-cols-2">
+    <label class="field"
+      ><span class="field-label">{{ 'pantry.persons' | translate }}</span
+      ><input
+        class="field-control"
+        type="number"
+        formControlName="persons"
+        min="1"
+        max="10"
+        step="1"
+    /></label>
+    <label class="field"
+      ><span class="field-label">{{ 'pantry.time' | translate }}</span
+      ><input
+        class="field-control"
+        type="number"
+        formControlName="maxCookingTimeMinutes"
+        min="5"
+        max="180"
+        step="1"
+    /></label>
+    <label class="field"
+      ><span class="field-label">{{ 'pantry.count' | translate }}</span
+      ><input
+        class="field-control"
+        type="number"
+        formControlName="recipeCount"
+        min="1"
+        max="7"
+        step="1"
+    /></label>
+    <label class="field"
+      ><span class="field-label">{{ 'pantry.diet' | translate }}</span
+      ><select class="field-control" formControlName="diet">
+        @for (d of diets; track d.value) {
+          <option [value]="d.value">{{ d.label | translate }}</option>
+        }
+      </select></label
+    >
+    <app-multi-select
+      class="sm:col-span-2"
+      controlId="pantry-allergies"
+      [label]="'pantry.allergies' | translate"
+      [options]="allergens()"
+      formControlName="allergies"
+    />
+    <label class="field sm:col-span-2"
+      ><span class="field-label">{{ 'pantry.exclusions' | translate }}</span
+      ><input
+        class="field-control"
+        formControlName="excludedIngredients"
+        aria-describedby="exclusions-hint"
+      /><span id="exclusions-hint" class="field-hint block">{{
+        'pantry.exclusionsHint' | translate
+      }}</span></label
+    >
+  </div>
+  <label class="mt-6 flex items-start gap-3 text-sm leading-6"
+    ><input
+      type="checkbox"
+      class="mt-1 size-4 shrink-0 accent-brand"
+      formControlName="allowAdditionalIngredients"
+    /><span>{{ 'pantry.allowExtra' | translate }}</span></label
+  >
+</div>

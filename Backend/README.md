@@ -1,6 +1,6 @@
 # SmartSpoon Backend
 
-NestJS-Backend für günstige KI-Rezepte und Wochenpläne. Architektur und Fortschritt: [docs/PLAN.md](../docs/PLAN.md).
+NestJS-Backend für günstige KI-Rezepte und Wochenpläne. Projektüberblick: [README.md](../README.md).
 
 ## Start mit Docker
 
@@ -223,3 +223,127 @@ Port passend zur lokalen MongoDB wählen. Das Script verlangt den reservierten D
 ## Bestehende Daten nach Umbenennung
 
 Die App heißt SmartSpoon. Die physische Datenbank `kochfaul` und das Volume `kochfaul_mongodb_data` behalten ihre Namen, damit vorhandene Konten und gespeicherte Rezepte erhalten bleiben. `MONGODB_VOLUME_NAME` kann für isolierte Teststacks ein eigenes Volume wählen; nicht für den regulären Start ändern. Nach der Umbenennung erneut anmelden.
+
+### Fotoanalyse vorhandener Lebensmittel
+
+`POST /api/ingredient-recognition` erfordert einen gültigen Nutzer-Bearer-Token.
+Das Foto wird als `multipart/form-data` im einzigen Feld `image` übertragen:
+
+```sh
+curl http://localhost:3000/api/ingredient-recognition \
+  -H 'Authorization: Bearer DEIN_NUTZER_TOKEN' \
+  -F 'image=@/pfad/produkte.jpg'
+```
+
+JPEG, PNG oder WebP, höchstens 10 MiB. Dateisignatur wird im Backend geprüft;
+der Python-Dienst dekodiert das Bild und prüft die Pixelgrenze. Fotos werden
+nicht gespeichert. Antwort: `model`, `requiresConfirmation: true`, `ingredients`
+mit `name`/`evidence` sowie `uncertainItems`. Interne Messwerte werden nicht ausgegeben.
+Mengen, Allergene oder Haltbarkeit werden nicht zuverlässig aus Bildern ermittelt.
+Die Zutaten müssen vor späterer Rezeptgenerierung vom Nutzer geprüft werden.
+
+Für die lokale Erkennung Ollama starten und das Modell herunterladen; siehe
+`ingredient-recognition/README.md`. Aus Backend/ den Stack aktivieren:
+
+```sh
+docker compose --profile vision up --build -d backend ingredient-recognition
+```
+
+Die Konfiguration steht in `.env.example`. Für NestJS außerhalb von Docker ist
+`INGREDIENT_RECOGNITION_URL=http://127.0.0.1:8090`; Compose setzt den internen
+Dienstnamen. `INGREDIENT_RECOGNITION_TOKEN` ist der gemeinsame interne Diensttoken
+und kein Nutzer-JWT. Ohne Token bleibt der übrige Backend-Stack startfähig;
+Fotoanalyse liefert dann 503. Es gibt keinen Gemini-Fallback für Bilder.
+
+Fehler: fehlendes Foto 400, fehlende Anmeldung 401, zu großes Foto 413, ungültiges
+Bild 422, Anfragelimit/beschäftigter Dienst 429, ungültige Dienstantwort 502,
+fehlende Konfiguration/nicht erreichbarer Dienst 503, Zeitüberschreitung 504.
+Swagger dokumentiert den Upload unter `/api/docs`.
+
+Die Erkennung komplexer Szenen ist noch nicht ausreichend geprüft. Die Fotoanalyse und Rezeptgenerierung aus bestätigten Zutaten sind im Angular-Frontend verfügbar.
+
+### Rezepte aus bestätigten Vorratszutaten
+
+`POST /api/pantry-recipes/generate` erfordert Anmeldung und akzeptiert JSON:
+
+```json
+{
+  "ingredientsConfirmed": true,
+  "ingredients": [
+    { "name": "Milch", "quantity": 500, "unit": "ml" },
+    { "name": "Reis", "quantity": 250, "unit": "g" },
+    { "name": "Banane", "quantity": 3, "unit": "piece" }
+  ],
+  "persons": 2,
+  "maxCookingTimeMinutes": 30,
+  "recipeCount": 3,
+  "diet": "vegetarian",
+  "allergies": [],
+  "excludedIngredients": [],
+  "allowAdditionalIngredients": false
+}
+```
+
+quantity/unit sind optional, müssen aber gemeinsam angegeben werden. Namen sind
+höchstens 80 Zeichen lang; höchstens 40 eindeutige Zutaten. Verfügbare Mengen sind
+positive ganze Zahlen, Einheiten g/ml/piece. Die Erkennungsergebnisse vorher bearbeiten
+und bestätigen; alternativ können Zutaten manuell eingegeben werden. Es werden
+keine Foto-, Supermarkt- oder Preisdaten an Gemini geschickt, nur bestätigte Textdaten
+und die Rezeptwünsche. Das Alter wird aus dem angemeldeten Konto abgeleitet.
+
+Die Antwort besitzt mode=pantry, requiresIngredientReview=true, einen Prüfhinweis,
+recipes und einen 24 Stunden gültigen nutzergebundenen saveProof. Zutaten bekommen source=available/additional. Vorhandene Namen und
+IDs werden vom Backend zugeordnet. Zusatz-Zutaten erscheinen in shoppingList des
+jeweiligen Rezepts, ohne Preise. Jeder Einkaufsartikel erhält eine stabile id wie
+recipe-1-item-1 (Rezept- und Artikelposition, jeweils ab 1). allowAdditionalIngredients=false verbietet auch
+zusätzliches Salz, Öl und Gewürze; Wasser darf in den Schritten vorkommen.
+
+Die Vorschläge sind Alternativen: jede muss einzeln mit bekannten Vorratsmengen
+kochbar sein. Sie sind kein gemeinsamer Wochenplan. Bei fehlenden Mengen kann das
+Backend die Vorratsdeckung nicht prüfen. Es prüft bekannte IDs, Mengen und Einheiten,
+exakte Namensausschlüsse, Rezeptanzahl, Portionen, Kochzeit und erlaubte Zusätze.
+Eine fachlich ungültige Antwort erhält höchstens einen Korrekturaufruf.
+
+Ernährung und Allergien werden an Gemini als Vorgaben übergeben. Ihre semantische
+Einhaltung, Synonyme, Zutaten in Freitextschritten und unbekannte Produktbestandteile
+können mit freien Namen nicht zuverlässig maschinell verifiziert werden. Zutaten und
+Etiketten müssen vor dem Kochen geprüft werden; keine Allergiefreiheitszusage.
+
+Keine Profileingaben speichern. Generierung allein speichert nichts.
+Die vollständige Antwort kann ausdrücklich über POST /api/saved-recipes gespeichert werden.
+Swagger dokumentiert Request und Antwort. Die neue HTTP-Integration läuft in CI mit
+isolierter MongoDB und lokalem Gemini-SDK-Mock, ohne echte Gemini-Aufrufe.
+
+
+### Vorratsrezepte speichern
+
+Die bestehenden Endpunkte `/api/saved-recipes` verwalten beide Rezeptarten. Für Vorratsrezepte:
+
+```json
+{
+  "result": "<vollständige unveränderte JSON-Antwort von /api/pantry-recipes/generate, als Objekt einschließlich saveProof>",
+  "title": "Mein Vorrat",
+  "checkedItemIds": ["recipe-1-item-1"]
+}
+```
+
+`result` muss ein JSON-Objekt sein; der Platzhalter oben beschreibt dieses Objekt.
+`title` ist optional. `checkedItemIds` ist optional, standardmäßig leer und darf nur eindeutige
+IDs aus `result.recipes[].shoppingList[].id` enthalten (maximal 280). `checkedProductIds`
+ist bei Vorratsrezepten leer; bei Supermarktrezepten gilt weiterhin das bisherige Produkt-ID-Format.
+Häkchen sind je Rezeptalternative getrennt, auch wenn Zutaten denselben Namen haben.
+
+Detail- und Listen-Antworten enthalten `mode: "pantry" | "market"`. Details enthalten die
+vollständige Momentaufnahme ohne saveProof, einschließlich Prüfhinweis, Zutatenherkunft,
+Mengen, Einheiten, Kochschritten, Einkaufsliste je Alternative und anfänglicher checkedItemIds.
+Bei Vorratsrezepten gibt es in der Übersicht keine totalCostCents-, currency- oder priceType-Felder.
+Alte Supermarktauswahlen bleiben unverändert lesbar und werden als market ausgewiesen;
+eine Migration ist nicht nötig. Fehlende neue Häkchenfelder werden als leere Arrays ausgegeben.
+
+Eigentümerbindung, 24-Stunden-Nachweis, Manipulationsschutz, idempotentes Speichern,
+Seiteneinteilung und Eigentümerschutz bei Laden/Löschen gelten für beide Rezeptarten.
+Das Speichern startet keine KI-Anfrage. Bilder, Anfrageparameter, Geburtsdatum und Speichernachweis
+werden nicht persistiert. Nach dem Speichern bleibt die Auswahl auch bei abgelaufenem Nachweis abrufbar.
+Das Angular-Frontend bietet auf /vorrat ein gemeinsames Speicherformular und Häkchen
+pro Rezept-Einkaufsliste. /gespeichert zeigt beide Rezeptarten; Vorratsrezepte ohne
+Preise. Geladene Häkchenänderungen bleiben lokal, wie bei Supermarktrezepten.

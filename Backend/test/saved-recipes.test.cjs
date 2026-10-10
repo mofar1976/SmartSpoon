@@ -95,3 +95,51 @@ test('get and delete always filter by owner and conceal other users records', as
   await assert.rejects(service.remove('2'.repeat(24), owner), status(404));
   assert.ok(calls.every((f) => String(f.ownerId) === owner));
 });
+
+const pantrySnapshot = () => ({
+  mode: 'pantry',
+  requiresIngredientReview: true,
+  notice: 'Zutaten prüfen.',
+  recipes: [
+    {
+      title: 'Banane mit Haferflocken',
+      servings: 1,
+      cookingTimeMinutes: 5,
+      ingredients: [
+        {
+          ingredientId: 'ingredient-1',
+          name: 'Banane',
+          quantity: 1,
+          unit: 'piece',
+          source: 'available',
+        },
+        { ingredientId: null, name: 'Haferflocken', quantity: 50, unit: 'g', source: 'additional' },
+      ],
+      steps: ['Banane schneiden.'],
+      shoppingList: [{ id: 'recipe-1-item-1', name: 'Haferflocken', quantity: 50, unit: 'g' }],
+    },
+  ],
+});
+test('pantry proofs protect recipe type, shopping IDs, review notice and amounts; owner and expiry apply', async () => {
+  const snapshot = pantrySnapshot(),
+    result = { ...snapshot, saveProof: await proofs.issue(snapshot, owner) };
+  assert.deepEqual((await proofs.verify(result, owner)).snapshot, snapshot);
+  for (const mutate of [
+    (r) => (r.mode = 'market'),
+    (r) => (r.requiresIngredientReview = false),
+    (r) => (r.notice = ''),
+    (r) => (r.recipes[0].shoppingList[0].id = 'recipe-1-item-2'),
+    (r) => r.recipes[0].ingredients[0].quantity++,
+    (r) => (r.recipes[0].steps[0] = 'Changed'),
+  ]) {
+    const changed = structuredClone(result);
+    mutate(changed);
+    await assert.rejects(proofs.verify(changed, owner), status(400));
+  }
+  await assert.rejects(proofs.verify(result, '2'.repeat(24)), status(400));
+  const claims = jwt.decode(result.saveProof);
+  delete claims.iat;
+  delete claims.exp;
+  const expired = await jwt.signAsync(claims, { expiresIn: -1 });
+  await assert.rejects(proofs.verify({ ...result, saveProof: expired }, owner), status(400));
+});
