@@ -1,6 +1,6 @@
 # SmartSpoon Backend
 
-NestJS-Backend für günstige KI-Rezepte und Wochenpläne. Architektur und Fortschritt: [docs/PLAN.md](../docs/PLAN.md).
+NestJS-Backend für günstige KI-Rezepte und Wochenpläne. Projektüberblick: [README.md](../README.md).
 
 ## Start mit Docker
 
@@ -260,9 +260,7 @@ Bild 422, Anfragelimit/beschäftigter Dienst 429, ungültige Dienstantwort 502,
 fehlende Konfiguration/nicht erreichbarer Dienst 503, Zeitüberschreitung 504.
 Swagger dokumentiert den Upload unter `/api/docs`.
 
-Die Erkennung komplexer Szenen ist noch nicht ausreichend geprüft. Diese Änderung
-liefert die Backend-Fotoanalyse; Rezepte aus bestätigten Zutaten und die Oberfläche
-folgen in den nächsten Schritten.
+Die Erkennung komplexer Szenen ist noch nicht ausreichend geprüft. Die Fotoanalyse und Rezeptgenerierung aus bestätigten Zutaten sind im Angular-Frontend verfügbar.
 
 ### Rezepte aus bestätigten Vorratszutaten
 
